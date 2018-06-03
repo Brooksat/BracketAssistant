@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="60sp"
+    android:orientation="horizontal"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        android:text="Welcome to Ferox's Bracket Maker using Challonge's API."
+        android:textSize="25sp" />
+
+    <EditText
+        android:id="@+id/usernametext"
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:layout_marginTop="4dp"
+        android:text="Username"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+
+
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/passwordtext"
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:text="Password(API KEY)"
+        app:layout_constraintLeft_toLeftOf="@id/usernametext"
+        app:layout_constraintTop_toBottomOf="@id/usernametext" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign In"
+        app:layout_constraintTop_toBottomOf="@id/passwordtext"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:onClick="goToSecondActivity"
+        />
+
+
+</android.support.constraint.ConstraintLayout>
