@@ -41,7 +41,7 @@ public class MatchPairs {
 		ArrayList<participant> playerList = new ArrayList<participant>();
 
 		
-
+		//makes participants and gets name and seed from challonge
 		for (int i = 0; i < ja.size(); i++) {
 
 			participant player = new participant(
@@ -66,7 +66,7 @@ public class MatchPairs {
 		int numberOfMatches = nonPreround + numberOfPreround;
 
 		ArrayList<match> matchList = new ArrayList<match>();
-		//make matches
+		//make matches and adds to list
 		for (int i = 0; i < numberOfMatches; i++) {
 			match aMatch = new match();
 			matchList.add(aMatch);

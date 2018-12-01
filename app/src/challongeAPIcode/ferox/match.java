@@ -2,13 +2,29 @@ package ferox;
 
 public class match {
 	int number;
+	int p1Seed;
+	int p2Seed;
 	participant p1;
 	participant p2;
 	match previous1;
 	match previous2;
-	
+
+
+	public match(int number, int p1Seed, int p2Seed, participant p1, participant p2, match previous1, match previous2) {
+		super();
+		this.number = number;
+		this.p1Seed = p1Seed;
+		this.p2Seed = p2Seed;
+		this.p1 = p1;
+		this.p2 = p2;
+		this.previous1 = previous1;
+		this.previous2 = previous2;
+	}
+
 	public match() {
 		number = 0;
+		p1Seed = 0;
+		p2Seed = 0;
 		p1 = null;
 		p2 = null;
 		previous1 = null;
@@ -28,6 +44,21 @@ public class match {
 	}
 	public void setNumber(int number) {
 		this.number = number;
+	}
+	public int getP1Seed() {
+		return p1Seed;
+	}
+
+	public void setP1Seed(int p1Seed) {
+		this.p1Seed = p1Seed;
+	}
+
+	public int getP2Seed() {
+		return p2Seed;
+	}
+
+	public void setP2Seed(int p2Seed) {
+		this.p2Seed = p2Seed;
 	}
 	public participant getP1() {
 		return p1;
