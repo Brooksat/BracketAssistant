@@ -2,6 +2,7 @@ package ferox;
 
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.lang.Math;
@@ -61,45 +62,86 @@ public class MatchPairs {
 		// power of two
 		int nextOrEqualPowerOfTwo = nextOrEqualPowerOfTwo(playerList.size());
 		int numberOfByes = nextOrEqualPowerOfTwo - playerList.size();
-		int numberOfPreround = (playerList.size() - numberOfByes)/2;
-		int nonPreround = nextOrEqualPowerOfTwo / 4;
-		int numberOfMatches = nonPreround + numberOfPreround;
+		int qualifyRound = (playerList.size() - numberOfByes)/2;
+		int postQualRound = nextOrEqualPowerOfTwo / 4;
+		int numberOfMatches = postQualRound + qualifyRound;
+		
+		bracketBasis basis = new bracketBasis();
+		int[] arr = new int[nextOrEqualPowerOfTwo/2];
+		arr = basis.populateArray(arr, arr.length);
+		System.out.println(Arrays.toString(arr));
 
 		ArrayList<match> matchList = new ArrayList<match>();
 		//make matches and adds to list
 		for (int i = 0; i < numberOfMatches; i++) {
 			match aMatch = new match();
+			if(i<postQualRound) {
+			aMatch.setP1Seed(arr[2*i]);
+			aMatch.setP2Seed(arr[(2*i)+1]);
+			}
 			matchList.add(aMatch);
 		}
-		//set  first participant for non preround matches
-		for (int i = 0; i < numberOfByes; i++) {
-			if (i < nonPreround) {
-				matchList.get(i).setP1(playerList.get(i));
-			} else {
-				matchList.get(nonPreround - (i+1 - nonPreround)).setP2(playerList.get(i));
+		
+		// set participants for post qualifying round
+		
+		for(int i = 0;i<playerList.size();i++) {
+			for (int j = 0; j < postQualRound; j++) {
+				if (i<numberOfByes) {
+					if (playerList.get(i).getSeed() == matchList.get(j).getP1Seed()) {
+						matchList.get(j).setP1(playerList.get(i));
+						break;
+					}
+					if (playerList.get(i).getSeed() == matchList.get(j).getP2Seed()) {
+						matchList.get(j).setP2(playerList.get(i));
+						break;
+					} 
+				}
 			}
 		}
-		//set second participant for non preround matches
-		for (int i = 0; i < matchList.size(); i++) {
-			if(matchList.get(i).getP1()==null) {
-				participant p = new participant();
-				matchList.get(i).setP1(p);
-			}
-			if(matchList.get(i).getP2()==null)
-			{
-				participant p = new participant();
-				matchList.get(i).setP2(p);
-			}
-		}
+		
 		//set participants for preround matches
-		for(int i = nonPreround; i < matchList.size();i++) {
-			matchList.get(i).setP1(playerList.get(numberOfByes+(i-nonPreround)));
-			matchList.get(i).setP2(playerList.get((playerList.size()-(i-nonPreround))-1));
+		for (int i = 0; i < numberOfByes; i++) {
+			
 		}
-
+		
+		//fills empty spots
 		for (int i = 0; i < matchList.size(); i++) {
-			System.out.println(matchList.get(i).getP1().getName() + " vs " + matchList.get(i).getP2().getName());
+		if(matchList.get(i).getP1()==null) {
+			participant p = new participant();
+			matchList.get(i).setP1(p);
 		}
+		if(matchList.get(i).getP2()==null)
+		{
+			participant p = new participant();
+			matchList.get(i).setP2(p);
+		}
+	}
+		
+		for (int i = 0; i < matchList.size(); i++) {
+			System.out.println(matchList.get(i).getP1().name + " vs. " + matchList.get(i).getP2().name);
+		}
+		System.out.println();
+//		//set  first participant for post qualifying round matches matches
+//		for (int i = 0; i < numberOfByes; i++) {
+//			if (i < postQualRound) {
+//				matchList.get(i).setP1(playerList.get(i));
+//			} else {
+//				matchList.get(postQualRound - (i+1 - postQualRound)).setP2(playerList.get(i));
+//			}
+//		}
+//		//set second participant for non preround matches
+//		for (int i = 0; i < matchList.size(); i++) {
+//			if(matchList.get(i).getP1()==null) {
+//				participant p = new participant();
+//				matchList.get(i).setP1(p);
+//			}
+//			if(matchList.get(i).getP2()==null)
+//			{
+//				participant p = new participant();
+//				matchList.get(i).setP2(p);
+//			}
+//		}
+
 
 
 

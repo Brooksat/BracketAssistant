@@ -6,15 +6,10 @@ public class bracketBasis {
 
 	public static void main(String[] args) {
 		bracketBasis basis = new bracketBasis();
-		int multOfTwo = basis.getExponent(Integer.parseInt(args[0]), 1);
-		System.out.println(multOfTwo);
 		
-		int[] arr = new int[(int)Math.pow(2, multOfTwo)];
-		int[] test = {1,0,2,0};
-		int[] test2 = {3,4};
 		
-		//System.out.println(Arrays.toString(basis.matchLowHigh(test, test2)));
 		
+		int[] arr = new int[32];		
 		System.out.println(Arrays.toString(basis.populateArray(arr, arr.length)));
 
 	}
@@ -41,10 +36,6 @@ public class bracketBasis {
 			
 			
 			int[] result = matchLowHigh(tmp, doublesplit);
-			System.out.println(Arrays.toString(tmp));
-			System.out.println(Arrays.toString(doublesplit));
-			System.out.println(Arrays.toString(result));
-            System.out.println();
 			return result;
 			
 			
@@ -81,18 +72,6 @@ public class bracketBasis {
 		}
 		return low;
 	}
-	// finds 2^n = input, only works with powers of 2
-	public int getExponent(int i, int counter) {
-		if(Math.pow(2, counter) == i) {
-			return counter;
-		}
-		else if(counter>10) {
-			System.out.println("Input too large or not a power of two");
-			return 0;
-		}
-		else {
-			return getExponent(i, counter+1);
-		}
-	}
+
 
 }
