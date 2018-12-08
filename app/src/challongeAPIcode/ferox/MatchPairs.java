@@ -1,8 +1,12 @@
 package ferox;
 
 import java.util.Map;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.lang.Math;
@@ -15,6 +19,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.CompareGenerator;
+
 
 public class MatchPairs {
 
@@ -28,7 +34,7 @@ public class MatchPairs {
 		String request = "";
 		try {
 			request = CR.getTournament("ka35zhyo");
-			
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -37,11 +43,11 @@ public class MatchPairs {
 		JsonParser jp = new JsonParser();
 		JsonElement jsonTree = jp.parse(request);
 		JsonArray ja = jsonTree.getAsJsonArray();
-		
+
 
 		ArrayList<participant> playerList = new ArrayList<participant>();
 
-		
+
 		//makes participants and gets name and seed from challonge
 		for (int i = 0; i < ja.size(); i++) {
 
@@ -56,16 +62,18 @@ public class MatchPairs {
 
 	}
 
-//take whats in main and make methods out of them
+	//take whats in main and make methods out of them
 	public void makeBracket(ArrayList<participant> playerList) {
 		// gets next power of two (needs to be put in method) needs to get next or equal
 		// power of two
 		int nextOrEqualPowerOfTwo = nextOrEqualPowerOfTwo(playerList.size());
 		int numberOfByes = nextOrEqualPowerOfTwo - playerList.size();
+		int numNonByes = playerList.size() - numberOfByes;
 		int qualifyRound = (playerList.size() - numberOfByes)/2;
 		int postQualRound = nextOrEqualPowerOfTwo / 4;
 		int numberOfMatches = postQualRound + qualifyRound;
-		
+		int numOfLR1 = playerList.size() % postQualRound;
+
 		bracketBasis basis = new bracketBasis();
 		int[] arr = new int[nextOrEqualPowerOfTwo/2];
 		arr = basis.populateArray(arr, arr.length);
@@ -76,71 +84,52 @@ public class MatchPairs {
 		for (int i = 0; i < numberOfMatches; i++) {
 			match aMatch = new match();
 			if(i<postQualRound) {
-			aMatch.setP1Seed(arr[2*i]);
-			aMatch.setP2Seed(arr[(2*i)+1]);
+				aMatch.setP1Seed(arr[2*i]);
+				aMatch.setP2Seed(arr[(2*i)+1]);
 			}
 			matchList.add(aMatch);
 		}
-		
+
 		// set participants for post qualifying round
-		
-		for(int i = 0;i<playerList.size();i++) {
+
+		for(int i = 0;i<numberOfByes;i++) {
 			for (int j = 0; j < postQualRound; j++) {
-				if (i<numberOfByes) {
-					if (playerList.get(i).getSeed() == matchList.get(j).getP1Seed()) {
-						matchList.get(j).setP1(playerList.get(i));
-						break;
-					}
-					if (playerList.get(i).getSeed() == matchList.get(j).getP2Seed()) {
-						matchList.get(j).setP2(playerList.get(i));
-						break;
-					} 
+
+				if (playerList.get(i).getSeed() == matchList.get(j).getP1Seed()) {
+					matchList.get(j).setP1(playerList.get(i));
+					break;
 				}
+				if (playerList.get(i).getSeed() == matchList.get(j).getP2Seed()) {
+					matchList.get(j).setP2(playerList.get(i));
+					break;
+				} 
+
 			}
 		}
-		
+
 		//set participants for preround matches
-		for (int i = 0; i < numberOfByes; i++) {
-			
+		for (int i = 0; (i+postQualRound) < matchList.size(); i++) {
+		matchList.get(i+postQualRound).setP1(playerList.get(i+numberOfByes));
+		matchList.get(i+postQualRound).setP2(playerList.get(playerList.size()-(i+1)));
 		}
-		
+
 		//fills empty spots
 		for (int i = 0; i < matchList.size(); i++) {
-		if(matchList.get(i).getP1()==null) {
-			participant p = new participant();
-			matchList.get(i).setP1(p);
+			if(matchList.get(i).getP1()==null) {
+				participant p = new participant();
+				matchList.get(i).setP1(p);
+			}
+			if(matchList.get(i).getP2()==null)
+			{
+				participant p = new participant();
+				matchList.get(i).setP2(p);
+			}
 		}
-		if(matchList.get(i).getP2()==null)
-		{
-			participant p = new participant();
-			matchList.get(i).setP2(p);
-		}
-	}
-		
+
 		for (int i = 0; i < matchList.size(); i++) {
 			System.out.println(matchList.get(i).getP1().name + " vs. " + matchList.get(i).getP2().name);
 		}
 		System.out.println();
-//		//set  first participant for post qualifying round matches matches
-//		for (int i = 0; i < numberOfByes; i++) {
-//			if (i < postQualRound) {
-//				matchList.get(i).setP1(playerList.get(i));
-//			} else {
-//				matchList.get(postQualRound - (i+1 - postQualRound)).setP2(playerList.get(i));
-//			}
-//		}
-//		//set second participant for non preround matches
-//		for (int i = 0; i < matchList.size(); i++) {
-//			if(matchList.get(i).getP1()==null) {
-//				participant p = new participant();
-//				matchList.get(i).setP1(p);
-//			}
-//			if(matchList.get(i).getP2()==null)
-//			{
-//				participant p = new participant();
-//				matchList.get(i).setP2(p);
-//			}
-//		}
 
 
 
