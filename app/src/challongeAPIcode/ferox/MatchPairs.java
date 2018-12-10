@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.lang.Math;
 import java.lang.reflect.Type;
@@ -106,7 +107,9 @@ public class MatchPairs {
 
 			}
 		}
+		
 
+		
 		//set participants for preround matches
 		for (int i = 0; (i+postQualRound) < matchList.size(); i++) {
 		matchList.get(i+postQualRound).setP1(playerList.get(i+numberOfByes));
@@ -126,16 +129,73 @@ public class MatchPairs {
 			}
 		}
 
-		for (int i = 0; i < matchList.size(); i++) {
-			System.out.println(matchList.get(i).getP1().name + " vs. " + matchList.get(i).getP2().name);
+		//sets match numbering for preround(i++/i-- can be removed if break is removed)
+
+		int numAssigned = 0;
+		for (int i = 0; i < postQualRound; i++) {
+			for (int j = postQualRound; j < matchList.size(); j++) {
+				if(matchList.get(j).getP1().getSeed() == matchList.get(i).getP1Seed()) {
+
+					
+					matchList.get(j).setNumber(numAssigned+1);
+					numAssigned++;
+
+				}
+				else if(matchList.get(j).getP1().getSeed()==matchList.get(i).getP2Seed()) {
+					
+					matchList.get(j).setNumber(numAssigned+1);
+					numAssigned++;
+
+				}
+			}
 		}
-		System.out.println();
+
+		if(numberOfByes>=postQualRound) {
+			for (int i = 0; i < postQualRound; i++) {
+				if(matchList.get(i).getP2().getSeed() != 0) {
+					matchList.get(i).setNumber(numAssigned+1);
+					numAssigned++;
+				}
+			}
+			for (int i = 0; i < postQualRound; i++) {
+				if(matchList.get(i).getP2().getSeed() == 0) {
+					matchList.get(i).setNumber(numAssigned+1);
+					numAssigned++;
+				}
+			}
+		}
+		else if(numberOfByes<postQualRound) {
+
+			numAssigned = numAssigned + numOfLR1;
+			for(int i = 0;i<postQualRound;i++)
+			{
+				matchList.get(i).setNumber(i+numAssigned+1);
+			}
+		}
+		else {
+			 for (int i = 0; i < matchList.size(); i++) {
+				 matchList.get(i).setNumber(i+1);
+			}
+		}
 
 
+
+		for (int i = 0; i < matchList.size(); i++) {
+			if(i==postQualRound) {
+				System.out.println();
+			}
+			System.out.println(matchList.get(i).getNumber() + "-  " + matchList.get(i).getP1().getName() + " vs. " + matchList.get(i).getP2().getName());
+		}
+		
+
+
+		
 
 
 	}
 
+	
+	
 	public int nextOrEqualPowerOfTwo(int i) {
 		int result = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(i - 1));
 		if (result / 2 == i) {
