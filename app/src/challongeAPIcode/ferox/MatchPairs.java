@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,7 +64,7 @@ public class MatchPairs {
 
 	}
 
-	//take whats in main and make methods out of them
+	//take whats in main and makes bracket
 	public void makeBracket(ArrayList<participant> playerList) {
 		// gets next power of two (needs to be put in method) needs to get next or equal
 		// power of two
@@ -74,9 +75,19 @@ public class MatchPairs {
 		int postQualRound = nextOrEqualPowerOfTwo / 4;
 		int numberOfMatches = postQualRound + qualifyRound;
 		int numOfLR1 = playerList.size() % postQualRound;
+		int[] arr = new int[nextOrEqualPowerOfTwo/2];
+		if(isPowerOfTwo(playerList.size())) {
+			numberOfByes = nextOrEqualPowerOfTwo;
+			qualifyRound = 0;
+			postQualRound = nextOrEqualPowerOfTwo/2;
+			numberOfMatches = playerList.size()/2;
+			arr = new int[nextOrEqualPowerOfTwo];
+
+		}
+		
 
 		bracketBasis basis = new bracketBasis();
-		int[] arr = new int[nextOrEqualPowerOfTwo/2];
+		
 		arr = basis.populateArray(arr, arr.length);
 		System.out.println(Arrays.toString(arr));
 
@@ -92,8 +103,8 @@ public class MatchPairs {
 		}
 
 		// set participants for post qualifying round
-
 		for(int i = 0;i<numberOfByes;i++) {
+
 			for (int j = 0; j < postQualRound; j++) {
 
 				if (playerList.get(i).getSeed() == matchList.get(j).getP1Seed()) {
@@ -129,59 +140,71 @@ public class MatchPairs {
 			}
 		}
 
-		//sets match numbering for preround(i++/i-- can be removed if break is removed)
-
-		int numAssigned = 0;
-		for (int i = 0; i < postQualRound; i++) {
-			for (int j = postQualRound; j < matchList.size(); j++) {
-				if(matchList.get(j).getP1().getSeed() == matchList.get(i).getP1Seed()) {
-
-					
-					matchList.get(j).setNumber(numAssigned+1);
-					numAssigned++;
-
-				}
-				else if(matchList.get(j).getP1().getSeed()==matchList.get(i).getP2Seed()) {
-					
-					matchList.get(j).setNumber(numAssigned+1);
-					numAssigned++;
-
-				}
-			}
-		}
-
-		if(numberOfByes>=postQualRound) {
-			for (int i = 0; i < postQualRound; i++) {
-				if(matchList.get(i).getP2().getSeed() != 0) {
-					matchList.get(i).setNumber(numAssigned+1);
-					numAssigned++;
-				}
-			}
-			for (int i = 0; i < postQualRound; i++) {
-				if(matchList.get(i).getP2().getSeed() == 0) {
-					matchList.get(i).setNumber(numAssigned+1);
-					numAssigned++;
-				}
-			}
-		}
-		else if(numberOfByes<postQualRound) {
-
-			numAssigned = numAssigned + numOfLR1;
-			for(int i = 0;i<postQualRound;i++)
-			{
-				matchList.get(i).setNumber(i+numAssigned+1);
+		//set match numbers
+		if(isPowerOfTwo(playerList.size())) {
+			for (int i = 0; i < matchList.size(); i++) {
+				matchList.get(i).setNumber(i+1);
 			}
 		}
 		else {
-			 for (int i = 0; i < matchList.size(); i++) {
-				 matchList.get(i).setNumber(i+1);
+			int numAssigned = 0;
+			for (int i = 0; i < postQualRound; i++) {
+				for (int j = postQualRound; j < matchList.size(); j++) {
+					if(matchList.get(j).getP1().getSeed() == matchList.get(i).getP1Seed()) {
+
+
+						matchList.get(j).setNumber(numAssigned+1);
+						numAssigned++;
+
+					}
+					else if(matchList.get(j).getP1().getSeed()==matchList.get(i).getP2Seed()) {
+
+						matchList.get(j).setNumber(numAssigned+1);
+						numAssigned++;
+
+					}
+				}
 			}
+
+			if(numberOfByes>=postQualRound) {
+				for (int i = 0; i < postQualRound; i++) {
+					if(matchList.get(i).getP2().getSeed() != 0) {
+						matchList.get(i).setNumber(numAssigned+1);
+						numAssigned++;
+					}
+				}
+				for (int i = 0; i < postQualRound; i++) {
+					if(matchList.get(i).getP2().getSeed() == 0) {
+						matchList.get(i).setNumber(numAssigned+1);
+						numAssigned++;
+					}
+				}
+			}
+			else if(numberOfByes<postQualRound) {
+
+				numAssigned = numAssigned + numOfLR1;
+				for(int i = 0;i<postQualRound;i++)
+				{
+					matchList.get(i).setNumber(i+numAssigned+1);
+				}
+			}
+
 		}
 
 
+	    Collections.sort(matchList, new Comparator<match>() {
+	        @Override public int compare(match p1, match p2) {
+	            return p1.number - p2.number; // Ascending
+	        }
+
+	    });
+	    
+
+		
+		
 
 		for (int i = 0; i < matchList.size(); i++) {
-			if(i==postQualRound) {
+			if(i==qualifyRound) {
 				System.out.println();
 			}
 			System.out.println(matchList.get(i).getNumber() + "-  " + matchList.get(i).getP1().getName() + " vs. " + matchList.get(i).getP2().getName());
@@ -202,5 +225,8 @@ public class MatchPairs {
 			return i;
 		}
 		return result;
+	}
+	public boolean isPowerOfTwo(int num){
+		return (int)(Math.ceil((Math.log(num) / Math.log(2)))) == (int)(Math.floor(((Math.log(num) / Math.log(2))))); 
 	}
 }
