@@ -76,20 +76,16 @@ public class MatchPairs {
 		int numberOfMatches = postQualRound + qualifyRound;
 		int numOfLR1 = playerList.size() % postQualRound;
 		int[] arr = new int[nextOrEqualPowerOfTwo/2];
+		//sets variables in case of an even bracket
 		if(isPowerOfTwo(playerList.size())) {
 			numberOfByes = nextOrEqualPowerOfTwo;
 			qualifyRound = 0;
 			postQualRound = nextOrEqualPowerOfTwo/2;
 			numberOfMatches = playerList.size()/2;
 			arr = new int[nextOrEqualPowerOfTwo];
-
 		}
-		
 
-		bracketBasis basis = new bracketBasis();
-		
-		arr = basis.populateArray(arr, arr.length);
-		System.out.println(Arrays.toString(arr));
+		arr = seedArray(arr, arr.length);
 
 		ArrayList<match> matchList = new ArrayList<match>();
 		//make matches and adds to list
@@ -118,13 +114,11 @@ public class MatchPairs {
 
 			}
 		}
-		
 
-		
 		//set participants for preround matches
 		for (int i = 0; (i+postQualRound) < matchList.size(); i++) {
-		matchList.get(i+postQualRound).setP1(playerList.get(i+numberOfByes));
-		matchList.get(i+postQualRound).setP2(playerList.get(playerList.size()-(i+1)));
+			matchList.get(i+postQualRound).setP1(playerList.get(i+numberOfByes));
+			matchList.get(i+postQualRound).setP2(playerList.get(playerList.size()-(i+1)));
 		}
 
 		//fills empty spots
@@ -190,35 +184,80 @@ public class MatchPairs {
 			}
 
 		}
+		//sorts matches based in match number
+		Collections.sort(matchList, new Comparator<match>() {
+			@Override public int compare(match p1, match p2) {
+				return p1.number - p2.number; // Ascending
+			}
 
-
-	    Collections.sort(matchList, new Comparator<match>() {
-	        @Override public int compare(match p1, match p2) {
-	            return p1.number - p2.number; // Ascending
-	        }
-
-	    });
-	    
-
-		
-		
-
+		});
+		//prints results TO BE REMOVED
 		for (int i = 0; i < matchList.size(); i++) {
 			if(i==qualifyRound) {
 				System.out.println();
 			}
 			System.out.println(matchList.get(i).getNumber() + "-  " + matchList.get(i).getP1().getName() + " vs. " + matchList.get(i).getP2().getName());
 		}
-		
+	}
+
+	//makes an array if ints in order of the seeding of an even tournament bracket
+	public int[] seedArray(int[] arr, int partition) {
+
+		if(partition != 1) {
+			//calls itself until the array = {1} is return
+			int[] split = seedArray(arr,partition/2);
+			int[] tmp = new int[split.length*2];
+			int[] doublesplit = new int[split.length];
+
+			//creates an array that is equal to split except there is a space between each element
+			// if split is equal to [1,2] then tmp is [1,0,2,0]
+			for(int i=0;i<split.length;i++) {
+				tmp[i*2] = split[i];
+			}
+			//makes array equal to next split.length integers after split.length
+			//if array is [1,2], doublesplit is [3,4]
+			for (int i = 0; i < doublesplit.length; i++) {
+				doublesplit[i] = i+split.length+1;
+			}
 
 
-		
+			int[] result = matchLowHigh(tmp, doublesplit);
+			return result;
 
+
+
+		}
+		else if(partition == 1) {
+			int[] i = {1};
+			return i;
+		}
+
+		else {
+			int[] i = {1};
+			return i;
+		}
 
 	}
 
-	
-	
+	//method for seedArray. takes the expanded bracket from next recursive layer and adds the remaining numbers
+	//[1,0,2,0] and [3,4] return [1,4,2,3]
+	public int[] matchLowHigh(int[] low, int[] high) {
+
+
+		int lower = 1;
+		int upper = high[high.length-1];
+		while(lower < upper) {
+			for (int i = 0; i < low.length; i++) {
+				if(low[i]==lower) {
+					low[i+1] = upper;
+				}
+			}
+			++lower;
+			--upper;
+		}
+		return low;
+	}
+
 	public int nextOrEqualPowerOfTwo(int i) {
 		int result = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(i - 1));
 		if (result / 2 == i) {
@@ -226,6 +265,7 @@ public class MatchPairs {
 		}
 		return result;
 	}
+
 	public boolean isPowerOfTwo(int num){
 		return (int)(Math.ceil((Math.log(num) / Math.log(2)))) == (int)(Math.floor(((Math.log(num) / Math.log(2))))); 
 	}
