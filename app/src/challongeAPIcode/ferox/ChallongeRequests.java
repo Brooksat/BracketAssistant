@@ -21,17 +21,7 @@ public class ChallongeRequests {
     ChallongeRequests CR = new ChallongeRequests();
     System.out.println("Testing 1 - Send Http GET request");
     
-
-    //working with gson
-
-    Gson gson = new Gson();
-    try{
-      System.out.println(gson);
-    }
-    catch (Exception e) {
-      System.out.println("Something went wrong trying to convert from json to array object");
-    }
-    
+  
     System.out.println(CR.getTournament("ka35zhyo"));
 
   }
