@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="LineDrawView" >
-        <attr name="line_color" format="color"/>
-
+    <declare-styleable name="matchView" >
+        <attr name="matchNumber" format="string"/>
+        <attr name="player1Seed" format="string"/>
+        <attr name="player2Seed" format="string"/>
+        <attr name="player1Name" format="string"/>
+        <attr name="player2Name" format="string"/>
 
     </declare-styleable>
 </resources>
