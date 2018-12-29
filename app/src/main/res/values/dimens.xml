@@ -4,4 +4,10 @@
     <dimen name="new_tournament_header">40dp</dimen>
     <dimen name="new_tournament_setting">30dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="round_header_width">130dp</dimen>
+    <dimen name="round_header_height">20dp</dimen>
+    <dimen name="bracket_padding">50dp</dimen>
+    <dimen name="match_height">60dp</dimen>
+    <dimen name="match_width">120dp</dimen>
+
 </resources>
