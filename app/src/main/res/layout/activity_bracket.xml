@@ -1,56 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView android:layout_height="match_parent"
-    android:layout_width="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ferox.bracket.BracketView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bracket_root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
+    android:background="@drawable/outline"
 
-    tools:context=".bracket">
+    tools:context=".bracket"
+    android:overScrollMode="never">
+
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:id="@+id/round_winners"
-        app:layout_constraintLeft_toLeftOf="parent"></LinearLayout>
-
-    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <LinearLayout
         android:id="@+id/bracket_winners"
-        app:layout_constraintTop_toBottomOf="@id/round_winners"></LinearLayout>
-
-    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/round_winners" />
+
+    <LinearLayout
         android:id="@+id/round_losers"
-        app:layout_constraintTop_toBottomOf="@id/bracket_winners"></LinearLayout>
-
-    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/bracket_winners" />
+
+    <LinearLayout
         android:id="@+id/bracket_losers"
-        app:layout_constraintTop_toBottomOf="@id/round_losers"></LinearLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/round_losers" />
 
 
-
-
-
-
-
-</android.support.constraint.ConstraintLayout>
-    </HorizontalScrollView>
-</ScrollView>
+</ferox.bracket.BracketView>

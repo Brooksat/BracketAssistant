@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ferox.twoactivities">
+    package="ferox.bracket">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="ferox.bracket.MainActivity"
             android:label="Sign In">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,15 +21,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeActivity"
+            android:name="ferox.bracket.HomeActivity"
             android:label="Second_Activity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="ferox.bracket.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ferox.twoactivities.MainActivity" />
+                android:value="ferox.bracket.MainActivity" />
         </activity>
-        <activity android:name=".NewTournamentActivity" />
-        <activity android:name=".bracket"></activity>
+        <activity android:name="ferox.bracket.NewTournamentActivity" />
+        <activity android:name="ferox.bracket.bracket"></activity>
+
     </application>
 
 </manifest>

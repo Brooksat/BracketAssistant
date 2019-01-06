@@ -1,4 +1,4 @@
-package ferox.twoactivities;
+package ferox.bracket;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -72,6 +72,12 @@ public class bracketConnectorView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
 
-        setMeasuredDimension(  getResources().getDimensionPixelSize(R.dimen.match_width),  getResources().getDimensionPixelSize(R.dimen.match_height)*heightMultiplier);
+
+        int width = getResources().getDimensionPixelSize(R.dimen.match_width);
+        int height = getResources().getDimensionPixelSize(R.dimen.match_height) * heightMultiplier;
+        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.UNSPECIFIED);
+        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.UNSPECIFIED);
+        setMeasuredDimension(desiredWSpec, desiredHSpec);
+        //super.onMeasure(desiredWSpec,desiredHSpec);
     }
 }

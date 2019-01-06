@@ -37,7 +37,7 @@
             app:layout_constraintRight_toRightOf="parent"
             android:onClick="goToCreateTournamentActivity"/>
         <fragment
-            android:name="ferox.twoactivities.TournamentFragment"
+            android:name="ferox.bracket.TournamentFragment"
             android:id="@+id/tournament_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

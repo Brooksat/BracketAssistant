@@ -1,10 +1,9 @@
-package ferox.twoactivities;
+package ferox.bracket;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
 public class NewTournamentActivity extends AppCompatActivity {

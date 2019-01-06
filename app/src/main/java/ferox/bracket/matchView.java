@@ -1,4 +1,4 @@
-package ferox.twoactivities;
+package ferox.bracket;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -61,6 +61,16 @@ public class matchView extends RelativeLayout {
         getMatchView(mMatchNumber, mP1Seed, mP2Seed, mP1Name, mP2Name);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+        int width = getResources().getDimensionPixelSize(R.dimen.match_width);
+        int height = getResources().getDimensionPixelSize(R.dimen.match_height);
+        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.UNSPECIFIED);
+        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.UNSPECIFIED);
+        setMeasuredDimension(desiredWSpec, desiredHSpec);
+        super.onMeasure(desiredWSpec, desiredHSpec);
+    }
 
     private void getMatchView(String matchNumber, String P1Seed, String P2Seed, String P1Name, String P2Name){
 
