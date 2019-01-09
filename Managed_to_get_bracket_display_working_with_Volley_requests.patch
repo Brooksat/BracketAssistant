@@ -1,0 +1,1691 @@
+Index: app/src/main/java/ferox/twoactivities/bracket.java
+===================================================================
+--- app/src/main/java/ferox/twoactivities/bracket.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/java/ferox/twoactivities/bracket.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
+@@ -1,117 +0,0 @@
+-package ferox.twoactivities;
+-
+-import android.app.ActionBar;
+-import android.content.Context;
+-import android.graphics.Canvas;
+-import android.graphics.Color;
+-import android.graphics.Paint;
+-import android.graphics.Rect;
+-import android.os.Bundle;
+-import android.support.constraint.ConstraintLayout;
+-import android.support.v7.app.AppCompatActivity;
+-import android.view.Gravity;
+-import android.view.LayoutInflater;
+-import android.view.View;
+-import android.view.ViewGroup;
+-import android.view.ViewTreeObserver;
+-import android.widget.LinearLayout;
+-import android.widget.Space;
+-import android.widget.TextView;
+-
+-public class bracket extends AppCompatActivity {
+-
+-    int numRoundW;
+-    int numRoundL;
+-    int matchesInRound1;
+-    Canvas mCanvas;
+-    Paint mPaint;
+-
+-
+-    @Override
+-    protected void onCreate(Bundle savedInstanceState) {
+-        super.onCreate(savedInstanceState);
+-        setContentView(R.layout.activity_bracket);
+-
+-        numRoundW = 3;
+-        numRoundL = 6;
+-        matchesInRound1 =8;
+-        makeBracketDisplay(numRoundW, numRoundL, matchesInRound1, this);
+-
+-    }
+-
+-    public void makeBracketDisplay(int numRoundW, int numRoundL, int matchesInRound1, final Context context) {
+-
+-        ConstraintLayout bracketRoot = findViewById(R.id.bracket_root);
+-        LinearLayout roundWinners = findViewById(R.id.round_winners);
+-        LinearLayout bracketWinners = findViewById(R.id.bracket_winners);
+-        LinearLayout roundLosers = findViewById(R.id.round_losers);
+-        LinearLayout bracketLosers = findViewById(R.id.bracket_losers);
+-        //layout params
+-        ViewGroup.MarginLayoutParams roundHeaderLayoutParams = new ViewGroup.MarginLayoutParams(
+-                getResources().getDimensionPixelSize(R.dimen.round_header_width), getResources().getDimensionPixelSize(R.dimen.round_header_height));
+-        roundHeaderLayoutParams.setMargins(0, 0, getResources().getDimensionPixelSize(R.dimen.bracket_padding), 0);
+-
+-
+-        //adds round headers
+-        for (int i = 0; i < numRoundW; i++) {
+-            TextView roundNumber = new TextView(this);
+-            roundNumber.setLayoutParams(roundHeaderLayoutParams);
+-            roundNumber.setGravity(Gravity.CENTER);
+-            roundNumber.setText("Round " + i);
+-            roundWinners.addView(roundNumber);
+-
+-        }
+-        for (int i = 0; i < numRoundL; i++) {
+-            TextView roundNumber = new TextView(this);
+-            roundNumber.setLayoutParams(roundHeaderLayoutParams);
+-            roundNumber.setGravity(Gravity.CENTER);
+-            roundNumber.setText("Round " + i);
+-            roundLosers.addView(roundNumber);
+-        }
+-        //bracket winners
+-        int numberRound = matchesInRound1;
+-        for (int i = 0; numberRound != 0; i++) {
+-
+-            LinearLayout linearLayout = new LinearLayout(this);
+-            LinearLayout space = new LinearLayout(this);
+-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+-            layoutParams.setMargins(0, 0, getResources().getDimensionPixelSize(R.dimen.bracket_padding), 0);
+-            linearLayout.setLayoutParams(layoutParams);
+-            space.setLayoutParams(layoutParams);
+-            linearLayout.setOrientation(LinearLayout.VERTICAL);
+-            linearLayout.setGravity(Gravity.CENTER);
+-
+-
+-            for (int j = 0; j < numberRound; j++) {
+-                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+-                ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
+-                TextView textView1 = match.findViewById(R.id.matchNumber);
+-                textView1.setText(Integer.toString(j));
+-                linearLayout.addView(match);
+-                Space filler = new Space(this);
+-                filler.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,(getResources().getDimensionPixelSize(R.dimen.match_height)/2)*(i+1)));
+-                linearLayout.addView(filler);
+-            }
+-            numberRound = numberRound/2;
+-            bracketWinners.addView(linearLayout);
+-
+-
+-
+-
+-            bracketConnectorView bcv = new bracketConnectorView(this, null,i+1, "");
+-            //bcv.setBackgroundResource(R.drawable.outline);
+-            space.addView(bcv);
+-            bracketWinners.addView(space);
+-
+-
+-
+-
+-
+-        }
+-    }
+-
+-
+-
+-
+-}
+Index: app/src/main/java/ferox/twoactivities/bracketConnectorView.java
+===================================================================
+--- app/src/main/java/ferox/twoactivities/bracketConnectorView.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/java/ferox/bracket/bracketConnectorView.java	(date 1546656088808)
+@@ -1,4 +1,4 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ import android.content.Context;
+ import android.graphics.Canvas;
+@@ -72,6 +72,12 @@
+     @Override
+     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+ 
+-        setMeasuredDimension(  getResources().getDimensionPixelSize(R.dimen.match_width),  getResources().getDimensionPixelSize(R.dimen.match_height)*heightMultiplier);
++
++        int width = getResources().getDimensionPixelSize(R.dimen.match_width);
++        int height = getResources().getDimensionPixelSize(R.dimen.match_height)*heightMultiplier;
++        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.UNSPECIFIED);
++        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.UNSPECIFIED);
++        setMeasuredDimension(desiredWSpec , desiredHSpec );
++        //super.onMeasure(desiredWSpec,desiredHSpec);
+     }
+ }
+Index: app/src/main/java/ferox/twoactivities/matchView.java
+===================================================================
+--- app/src/main/java/ferox/twoactivities/matchView.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/java/ferox/bracket/matchView.java	(date 1546656088943)
+@@ -1,4 +1,4 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ import android.annotation.TargetApi;
+ import android.content.Context;
+@@ -61,6 +61,16 @@
+         getMatchView(mMatchNumber, mP1Seed, mP2Seed, mP1Name, mP2Name);
+     }
+ 
++    @Override
++    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
++
++        int width = getResources().getDimensionPixelSize(R.dimen.match_width);
++        int height = getResources().getDimensionPixelSize(R.dimen.match_height);
++        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.UNSPECIFIED);
++        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.UNSPECIFIED);
++        setMeasuredDimension(desiredWSpec , desiredHSpec );
++        super.onMeasure(desiredWSpec,desiredHSpec);
++    }
+ 
+     private void getMatchView(String matchNumber, String P1Seed, String P2Seed, String P1Name, String P2Name){
+ 
+Index: app/src/main/java/ferox/twoactivities/TournamentFragment.java
+===================================================================
+--- app/src/main/java/ferox/twoactivities/TournamentFragment.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/java/ferox/bracket/TournamentFragment.java	(date 1546656088915)
+@@ -1,4 +1,4 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ 
+ import android.content.Intent;
+Index: app/src/main/res/layout/activity_bracket.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_bracket.xml	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/res/layout/activity_bracket.xml	(date 1546656088764)
+@@ -1,56 +1,48 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ 
+-<ScrollView android:layout_height="match_parent"
+-    android:layout_width="wrap_content"
+-    xmlns:android="http://schemas.android.com/apk/res/android"
+-    >
+-    <HorizontalScrollView
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content">
+-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-    xmlns:app="http://schemas.android.com/apk/res-auto"
+-    xmlns:tools="http://schemas.android.com/tools"
+-    android:id="@+id/bracket_root"
+-    android:layout_width="match_parent"
+-    android:layout_height="match_parent"
++
++
++    <ferox.bracket.BracketView xmlns:android="http://schemas.android.com/apk/res/android"
++        xmlns:app="http://schemas.android.com/apk/res-auto"
++        xmlns:tools="http://schemas.android.com/tools"
++        android:id="@+id/bracket_root"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
+     android:layout_margin="5dp"
++    android:background="@drawable/outline"
++
++        tools:context=".bracket"
++        android:overScrollMode="never">
+ 
+-    tools:context=".bracket">
++
+ 
+-    <LinearLayout
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:orientation="horizontal"
+-        android:id="@+id/round_winners"
+-        app:layout_constraintLeft_toLeftOf="parent"></LinearLayout>
++        <LinearLayout
++            android:id="@+id/round_winners"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:orientation="horizontal"
++            app:layout_constraintLeft_toLeftOf="parent" />
+ 
+-    <LinearLayout
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:orientation="horizontal"
+-        android:id="@+id/bracket_winners"
+-        app:layout_constraintTop_toBottomOf="@id/round_winners"></LinearLayout>
++        <LinearLayout
++            android:id="@+id/bracket_winners"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:orientation="horizontal"
++            app:layout_constraintTop_toBottomOf="@id/round_winners" />
+ 
+-    <LinearLayout
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:orientation="horizontal"
+-        android:id="@+id/round_losers"
+-        app:layout_constraintTop_toBottomOf="@id/bracket_winners"></LinearLayout>
++        <LinearLayout
++            android:id="@+id/round_losers"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:orientation="horizontal"
++            app:layout_constraintTop_toBottomOf="@id/bracket_winners" />
+ 
+-    <LinearLayout
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:orientation="horizontal"
+-        android:id="@+id/bracket_losers"
+-        app:layout_constraintTop_toBottomOf="@id/round_losers"></LinearLayout>
+-
++        <LinearLayout
++            android:id="@+id/bracket_losers"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:orientation="horizontal"
++            app:layout_constraintTop_toBottomOf="@id/round_losers" />
+ 
+ 
+-
+-
+-
+-
+-</android.support.constraint.ConstraintLayout>
+-    </HorizontalScrollView>
+-</ScrollView>
+\ No newline at end of file
++    </ferox.bracket.BracketView>
+Index: app/src/main/res/layout/activity_home.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_home.xml	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/res/layout/activity_home.xml	(date 1546656088899)
+@@ -37,7 +37,7 @@
+             app:layout_constraintRight_toRightOf="parent"
+             android:onClick="goToCreateTournamentActivity"/>
+         <fragment
+-            android:name="ferox.twoactivities.TournamentFragment"
++            android:name="ferox.bracket.TournamentFragment"
+             android:id="@+id/tournament_list_view"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+Index: app/src/main/java/ferox/twoactivities/MainActivity.java
+===================================================================
+--- app/src/main/java/ferox/twoactivities/MainActivity.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/java/ferox/bracket/MainActivity.java	(date 1546656088969)
+@@ -1,4 +1,4 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ import android.content.Intent;
+ import android.support.v7.app.AppCompatActivity;
+Index: app/src/main/java/ferox/bracket/bracket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/bracket.java	(date 1546761268817)
++++ app/src/main/java/ferox/bracket/bracket.java	(date 1546761268817)
+@@ -0,0 +1,159 @@
++package ferox.bracket;
++
++import android.app.Activity;
++import android.content.Context;
++import android.graphics.Canvas;
++import android.graphics.Paint;
++import android.os.Bundle;
++import android.support.constraint.ConstraintLayout;
++import android.support.v7.app.ActionBar;
++import android.support.v7.app.AppCompatActivity;
++import android.view.Gravity;
++import android.view.LayoutInflater;
++import android.view.ScaleGestureDetector;
++import android.view.ViewGroup;
++import android.widget.LinearLayout;
++import android.widget.Space;
++import android.widget.TextView;
++
++import java.util.ArrayList;
++
++public class bracket extends AppCompatActivity {
++
++    int numRoundW;
++    int numRoundL;
++    int matchesInRound1;
++    Canvas mCanvas;
++    Paint mPaint;
++    BracketView bv;
++    MatchPairs mp;
++    ArrayList<match> mMatchList;
++    int postQualRound;
++
++
++
++    ArrayList<match> matchList;
++
++
++    @Override
++    protected void onCreate(Bundle savedInstanceState) {
++        super.onCreate(savedInstanceState);
++        setContentView(R.layout.activity_bracket);
++        ActionBar actionBar = getSupportActionBar();
++        actionBar.hide();
++
++        numRoundW = 3;
++        numRoundL = 6;
++        matchesInRound1 = 10;
++        matchList = new ArrayList<match>();
++        bv = findViewById(R.id.bracket_root);
++
++        mp = new MatchPairs(this);
++        mp.sendGetParticipants();
++
++
++
++
++        ///matchlist.size is size of round one from matchpairs result, still need to set challongerequest to be able to return any needed api url
++        makeBracketDisplay(numRoundW, numRoundL, matchList.size(), this);
++
++    }
++
++
++
++
++
++        public void makeBracketDisplay ( int numRoundW, int numRoundL, int matchesInRound1,
++        final Context context){
++
++            ConstraintLayout bracketRoot = findViewById(R.id.bracket_root);
++            LinearLayout roundWinners = findViewById(R.id.round_winners);
++            LinearLayout bracketWinners = findViewById(R.id.bracket_winners);
++            LinearLayout roundLosers = findViewById(R.id.round_losers);
++            LinearLayout bracketLosers = findViewById(R.id.bracket_losers);
++
++            for(int i=0;i<bracketRoot.getChildCount();i++){
++                ViewGroup child = (ViewGroup) bracketRoot.getChildAt(i);
++                child.removeAllViews();
++            }
++
++            //layout params
++            ViewGroup.MarginLayoutParams roundHeaderLayoutParams = new ViewGroup.MarginLayoutParams(
++                    getResources().getDimensionPixelSize(R.dimen.round_header_width), getResources().getDimensionPixelSize(R.dimen.round_header_height));
++            roundHeaderLayoutParams.setMargins(0, 0, 0, 0);
++
++
++            //adds round headers
++            for (int i = 0; i < numRoundW; i++) {
++                TextView roundNumber = new TextView(this);
++                roundNumber.setLayoutParams(roundHeaderLayoutParams);
++                roundNumber.setGravity(Gravity.CENTER);
++                roundNumber.setText("Round " + i);
++                roundWinners.addView(roundNumber);
++
++            }
++            for (int i = 0; i < numRoundL; i++) {
++                TextView roundNumber = new TextView(this);
++                roundNumber.setLayoutParams(roundHeaderLayoutParams);
++                roundNumber.setGravity(Gravity.CENTER);
++                roundNumber.setText("Round " + i);
++                roundLosers.addView(roundNumber);
++            }
++            //bracket winners
++            int numberRound = matchesInRound1;
++            for (int i = 0; numberRound != 0; i++) {
++
++                LinearLayout linearLayout = new LinearLayout(this);
++                LinearLayout space = new LinearLayout(this);
++                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
++                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
++                layoutParams.setMargins(0, 0, 0, 0);
++                linearLayout.setLayoutParams(layoutParams);
++                space.setLayoutParams(layoutParams);
++                linearLayout.setOrientation(LinearLayout.VERTICAL);
++                linearLayout.setGravity(Gravity.CENTER);
++
++
++                for (int j = 0; j < numberRound; j++) {
++                    LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
++                    ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
++                    TextView textView1 = match.findViewById(R.id.matchNumber);
++                    textView1.setText(Integer.toString(j));
++                    linearLayout.addView(match);
++                    Space filler = new Space(this);
++                    filler.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (getResources().getDimensionPixelSize(R.dimen.match_height) / 2) * ((int) Math.pow(2, i))));
++                    linearLayout.addView(filler);
++                }
++                numberRound = numberRound / 2;
++                bracketWinners.addView(linearLayout);
++
++
++                bracketConnectorView bcv = new bracketConnectorView(this, null, (int) Math.pow(2, i), "");
++                //bcv.setBackgroundResource(R.drawable.outline);
++                space.addView(bcv);
++                bracketWinners.addView(space);
++
++
++            }
++
++
++
++        }
++
++
++    public ArrayList<match> getMatchList() {
++        return matchList;
++    }
++
++    public void setMatchList(ArrayList<match> matchList) {
++        this.matchList = matchList;
++    }
++    public int getPostQualRound() {
++        return postQualRound;
++    }
++
++    public void setPostQualRound(int postQualRound) {
++        this.postQualRound = postQualRound;
++    }
++    }
++
+Index: app/src/main/java/ferox/bracket/BracketView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/BracketView.java	(date 1546758961119)
++++ app/src/main/java/ferox/bracket/BracketView.java	(date 1546758961119)
+@@ -0,0 +1,195 @@
++package ferox.bracket;
++
++import android.content.Context;
++import android.content.res.Resources;
++import android.graphics.Canvas;
++import android.support.constraint.ConstraintLayout;
++import android.util.AttributeSet;
++import android.view.MotionEvent;
++import android.view.ScaleGestureDetector;
++import android.view.View;
++
++import java.util.ArrayList;
++
++
++public class BracketView extends ConstraintLayout {
++
++
++
++    private static final int INVALID_POINTER_ID = 1;
++    private int mActivePointerId = INVALID_POINTER_ID;
++    private float mPosX;
++    private float mPosY;
++    private float mLastTouchX;
++    private float mLastTouchY;
++    private ScaleGestureDetector mScaleDetector;
++    private float mScaleFactor = 1f;
++    final static float mMinZoom = 1f;
++    final static float mMaxZoom = 5.0f;
++    int screenWidth;
++    int screenHeight;
++
++
++
++
++//    public BracketView(Context context) {
++//        //not called?
++//        super(context);
++//        setWillNotDraw(false);
++//        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
++//    }
++
++    public BracketView(Context context, AttributeSet attrs) {
++        super(context, attrs);
++        setWillNotDraw(false);
++        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
++        screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
++        screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
++
++
++
++
++
++    }
++
++//    public BracketView(Context context, AttributeSet attrs, int defStyleAttr) {
++//        super(context, attrs, defStyleAttr);
++//        setWillNotDraw(false);
++//        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
++//
++//    }
++
++
++    @Override
++    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
++
++
++        int childSumWidth=0;
++        int childSumHeight=0;
++
++        for(int i=0; i<getChildCount(); i++) {
++            View child =  getChildAt(i);
++            int childWidth = child.getMeasuredWidth(),
++                    childHeight = child.getMeasuredHeight();
++            childSumWidth += childWidth;
++            childSumHeight += childHeight;
++        }
++
++
++
++        int desiredWSpec = MeasureSpec.makeMeasureSpec(childSumWidth, MeasureSpec.UNSPECIFIED);
++        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight, MeasureSpec.UNSPECIFIED);
++        setMeasuredDimension(desiredWSpec, desiredHSpec);
++        super.onMeasure(desiredWSpec, desiredHSpec);
++    }
++
++    @Override
++    protected void onDraw(Canvas canvas) {
++        super.onDraw(canvas);
++
++        if (mPosX * -1 < 0) {
++            mPosX = 0;
++        } else if (mPosX * -1 > getWidth() * mScaleFactor - screenWidth +300 ) {
++            mPosX = (getWidth() * mScaleFactor  - screenWidth+300)* -1;
++        }
++        if (mPosY * -1 < 0) {
++            mPosY = 0;
++        } else if (mPosY * -1 > getHeight() * mScaleFactor - screenHeight+200) {
++            mPosY = (getHeight() * mScaleFactor - screenHeight+200) * -1;
++        }
++        canvas.translate(mPosX, mPosY);
++        canvas.scale(mScaleFactor, mScaleFactor);
++
++
++    }
++
++
++    @Override
++    public boolean onTouchEvent(MotionEvent event) {
++        //scale detector inspects all events
++        mScaleDetector.onTouchEvent(event);
++
++
++        final int action = event.getAction();
++        switch (action & MotionEvent.ACTION_MASK) {
++            case MotionEvent.ACTION_DOWN: {
++                //get coordintates where screeen was touches
++                final float x = event.getX();
++                final float y = event.getY();
++
++                mLastTouchX = x;
++                mLastTouchY = y;
++
++                //save the ID of the pointer
++                mActivePointerId = event.getPointerId(0);
++
++                break;
++            }
++            case MotionEvent.ACTION_MOVE: {
++                final int pointerIndex = event.findPointerIndex(mActivePointerId);
++
++                //get  coordinates of the active pointer index
++                final float x = event.getX(pointerIndex);
++                final float y = event.getY(pointerIndex);
++
++
++                if (!mScaleDetector.isInProgress()) {
++
++                    //calculate distance in x/y diractions
++                    final float distX = x - mLastTouchX;
++                    final float distY = y - mLastTouchY;
++
++                    mPosX += distX;
++                    mPosY += distY;
++
++                    invalidate();
++                }
++
++                mLastTouchX = x;
++                mLastTouchY = y;
++
++
++                break;
++
++            }
++
++            case MotionEvent.ACTION_UP: {
++                mActivePointerId = INVALID_POINTER_ID;
++                break;
++            }
++            case MotionEvent.ACTION_CANCEL: {
++                mActivePointerId = INVALID_POINTER_ID;
++                break;
++            }
++            case MotionEvent.ACTION_POINTER_UP: {
++                //Extract the index of the pointer that left the screen
++                final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
++                final int pointerId = event.getPointerId(pointerIndex);
++                if (pointerId == mActivePointerId) {
++                    //if active pointer left screen set new active pointer
++                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
++                    mLastTouchX = event.getX(newPointerIndex);
++                    mLastTouchY = event.getY(newPointerIndex);
++                    mActivePointerId = event.getPointerId(newPointerIndex);
++                }
++                break;
++            }
++
++
++        }
++        return true;
++    }
++
++    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
++        @Override
++        public boolean onScale(ScaleGestureDetector detector) {
++            mScaleFactor *= detector.getScaleFactor();
++
++            mScaleFactor = Math.max(mMinZoom, Math.min(mMaxZoom, mScaleFactor));
++            invalidate();
++            return true;
++        }
++    }
++
++
++}
+\ No newline at end of file
+Index: app/src/main/java/ferox/twoactivities/HomeActivity.java
+===================================================================
+--- app/src/main/java/ferox/twoactivities/HomeActivity.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/java/ferox/bracket/HomeActivity.java	(date 1546666500265)
+@@ -1,4 +1,4 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ import android.content.Intent;
+ import android.support.v7.app.AppCompatActivity;
+@@ -13,6 +13,7 @@
+         setContentView(R.layout.activity_home);
+ //        TournamentFragment tournamentList  = new TournamentFragment();
+ //        getSupportFragmentManager().beginTransaction().add(R.id.container, tournamentList).commit();
++
+     }
+ 
+     public void goToCreateTournamentActivity(View view) {
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/AndroidManifest.xml	(date 1546659883087)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-    package="ferox.twoactivities">
++    package="ferox.bracket">
+ 
+     <uses-permission android:name="android.permission.INTERNET" />
+ 
+@@ -10,9 +10,10 @@
+         android:label="@string/app_name"
+         android:roundIcon="@mipmap/ic_launcher_round"
+         android:supportsRtl="true"
+-        android:theme="@style/AppTheme">
++        android:theme="@style/AppTheme"
++        >
+         <activity
+-            android:name=".MainActivity"
++            android:name="ferox.bracket.MainActivity"
+             android:label="Sign In">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+@@ -21,15 +22,16 @@
+             </intent-filter>
+         </activity>
+         <activity
+-            android:name=".HomeActivity"
++            android:name="ferox.bracket.HomeActivity"
+             android:label="Second_Activity"
+-            android:parentActivityName=".MainActivity">
++            android:parentActivityName="ferox.bracket.MainActivity">
+             <meta-data
+                 android:name="android.support.PARENT_ACTIVITY"
+-                android:value="ferox.twoactivities.MainActivity" />
++                android:value="ferox.bracket.MainActivity" />
+         </activity>
+-        <activity android:name=".NewTournamentActivity" />
+-        <activity android:name=".bracket"></activity>
++        <activity android:name="ferox.bracket.NewTournamentActivity" />
++        <activity android:name="ferox.bracket.bracket"></activity>
++
+     </application>
+ 
+ </manifest>
+\ No newline at end of file
+Index: app/src/main/java/ferox/twoactivities/NewTournamentActivity.java
+===================================================================
+--- app/src/main/java/ferox/twoactivities/NewTournamentActivity.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/java/ferox/bracket/NewTournamentActivity.java	(date 1546656088955)
+@@ -1,10 +1,9 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ import android.support.v7.app.AppCompatActivity;
+ import android.os.Bundle;
+ import android.view.MenuItem;
+ import android.view.View;
+-import android.widget.LinearLayout;
+ import android.widget.PopupMenu;
+ 
+ public class NewTournamentActivity extends AppCompatActivity {
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ .idea/vcs.xml	(date 1546224858607)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++    <mapping directory="" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: app/src/main/java/ferox/bracket/participant.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/participant.java	(date 1546656174578)
++++ app/src/main/java/ferox/bracket/participant.java	(date 1546656174578)
+@@ -0,0 +1,34 @@
++package ferox.bracket;
++
++public class participant {
++		  
++		  String name;
++		  int seed;
++		  
++		  public participant(){
++			  this.name = "Undecided";
++			  this.seed = 0;
++		  }
++
++		  public participant(String name, int seed){
++		    this.name = name;
++		    this.seed = seed;
++		  }
++
++		public String getName() {
++			return name;
++		}
++
++		public void setName(String name) {
++			this.name = name;
++		}
++
++		public int getSeed() {
++			return seed;
++		}
++
++		public void setSeed(int seed) {
++			this.seed = seed;
++		}
++		
++}
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/build.gradle	(date 1546670003022)
+@@ -3,7 +3,7 @@
+ android {
+     compileSdkVersion 27
+     defaultConfig {
+-        applicationId "ferox.twoactivities"
++        applicationId "ferox.bracket"
+         minSdkVersion 16
+         targetSdkVersion 27
+         versionCode 1
+@@ -26,6 +26,8 @@
+     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+     implementation 'com.android.support:support-v4:27.1.1'
+     implementation 'com.android.support:recyclerview-v7:27.1.1'
++    implementation 'com.google.code.gson:gson:2.8.5'
++    implementation 'com.android.volley:volley:1.1.1'
+     testImplementation 'junit:junit:4.12'
+     androidTestImplementation 'com.android.support.test:runner:1.0.2'
+     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+Index: app/src/test/java/ferox/twoactivities/ExampleUnitTest.java
+===================================================================
+--- app/src/test/java/ferox/twoactivities/ExampleUnitTest.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/test/java/ferox/bracket/ExampleUnitTest.java	(date 1546656088717)
+@@ -1,4 +1,4 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ import org.junit.Test;
+ 
+Index: app/src/main/java/ferox/bracket/match.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/match.java	(date 1546656174606)
++++ app/src/main/java/ferox/bracket/match.java	(date 1546656174606)
+@@ -0,0 +1,88 @@
++package ferox.bracket;
++
++public class match {
++	int number;
++	int p1Seed;
++	int p2Seed;
++	participant p1;
++	participant p2;
++	match previous1;
++	match previous2;
++
++
++	public match(int number, int p1Seed, int p2Seed, participant p1, participant p2, match previous1, match previous2) {
++		super();
++		this.number = number;
++		this.p1Seed = p1Seed;
++		this.p2Seed = p2Seed;
++		this.p1 = p1;
++		this.p2 = p2;
++		this.previous1 = previous1;
++		this.previous2 = previous2;
++	}
++
++	public match() {
++		number = 0;
++		p1Seed = 0;
++		p2Seed = 0;
++		p1 = null;
++		p2 = null;
++		previous1 = null;
++		previous2 = null;
++	}
++	
++	public match(int number, participant p1, participant p2, match previous1, match previous2) {
++		this.number = number;
++		this.p1 = p1;
++		this.p2 = p2;
++		this.previous1 = previous1;
++		this.previous2 = previous2;
++	}
++
++	public int getNumber() {
++		return number;
++	}
++	public void setNumber(int number) {
++		this.number = number;
++	}
++	public int getP1Seed() {
++		return p1Seed;
++	}
++
++	public void setP1Seed(int p1Seed) {
++		this.p1Seed = p1Seed;
++	}
++
++	public int getP2Seed() {
++		return p2Seed;
++	}
++
++	public void setP2Seed(int p2Seed) {
++		this.p2Seed = p2Seed;
++	}
++	public participant getP1() {
++		return p1;
++	}
++	public void setP1(participant p1) {
++		this.p1 = p1;
++	}
++	public participant getP2() {
++		return p2;
++	}
++	public void setP2(participant p2) {
++		this.p2 = p2;
++	}
++	public match getPrevious1() {
++		return previous1;
++	}
++	public void setPrevious1(match previous1) {
++		this.previous1 = previous1;
++	}
++	public match getPrevious2() {
++		return previous2;
++	}
++	public void setPrevious2(match previous2) {
++		this.previous2 = previous2;
++	}
++
++}
+Index: app/src/main/java/ferox/bracket/MatchPairs.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/MatchPairs.java	(date 1546761384890)
++++ app/src/main/java/ferox/bracket/MatchPairs.java	(date 1546761384890)
+@@ -0,0 +1,363 @@
++package ferox.bracket;
++
++import android.app.Activity;
++import android.content.Context;
++import android.util.Log;
++
++import com.android.volley.Request;
++import com.android.volley.RequestQueue;
++import com.android.volley.Response;
++import com.android.volley.VolleyError;
++import com.android.volley.VolleyLog;
++import com.android.volley.toolbox.StringRequest;
++import com.google.gson.JsonArray;
++import com.google.gson.JsonElement;
++import com.google.gson.JsonParser;
++
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.Comparator;
++
++
++public class MatchPairs {
++
++
++    ChallongeRequests CR;
++    Context mContext;
++    String url = "https://api.challonge.com/v1/tournaments/ka35zhyo/participants.json?api_key=hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
++    String mGetParticipantJson;
++    int mNumOfLR1;
++    int mNumberOfMatches;
++    int mQualifyRound;
++    int mPostQualRound;
++    ArrayList<match> mMatchList;
++
++
++    public MatchPairs(Context context) {
++        mContext = context;
++        CR = new ChallongeRequests(mContext);
++
++
++    }
++
++
++
++    private ArrayList<participant> parsePlayerList(String playerListJson) {
++        JsonParser jp = new JsonParser();
++        JsonElement jsonTree = jp.parse(playerListJson);
++        JsonArray ja = jsonTree.getAsJsonArray();
++
++        ArrayList<participant> playerList = new ArrayList<participant>();
++
++
++        //makes participants and gets name and seed from challonge
++        for (int i = 0; i < ja.size(); i++) {
++
++            participant player = new participant(
++                    ja.get(i).getAsJsonObject().get("participant").getAsJsonObject().get("name").getAsString(),
++                    ja.get(i).getAsJsonObject().get("participant").getAsJsonObject().get("seed").getAsInt());
++            playerList.add(player);
++        }
++        return playerList;
++
++    }
++
++    public void sendGetParticipants() {
++
++        VolleyLog.DEBUG = true;
++
++
++        RequestQueue queue = RequestQueueSingleton.getInstance(mContext.getApplicationContext()).
++                getRequestQueue();
++
++
++
++        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
++                new Response.Listener<String>() {
++                    @Override
++                    public void onResponse(String response) {
++                        Log.d("Response", response);
++                        mGetParticipantJson = response;
++                        makeMatchList(parsePlayerList(mGetParticipantJson));
++                        Log.d("Request" , " Request Received");
++                    }
++                }, new Response.ErrorListener() {
++            @Override
++            public void onErrorResponse(VolleyError error) {
++                Log.d("Response" , " Error");
++            }
++        });
++
++
++        RequestQueueSingleton.getInstance(mContext).addToRequestQueue(stringRequest);
++
++    }
++
++    //take whats in main and makes bracket
++    public ArrayList<match> makeMatchList(ArrayList<participant> playerList) {
++        // gets next power of two (needs to be put in method) needs to get next or equal
++        // power of two
++        int nextOrEqualPowerOfTwo = nextOrEqualPowerOfTwo(playerList.size());
++        int numberOfByes = nextOrEqualPowerOfTwo - playerList.size();
++        int numNonByes = playerList.size() - numberOfByes;
++        int qualifyRound = (playerList.size() - numberOfByes) / 2;
++        int postQualRound = nextOrEqualPowerOfTwo / 4;
++        int numberOfMatches = postQualRound + qualifyRound;
++        int numOfLR1 = playerList.size() % postQualRound;
++        int[] arr = new int[nextOrEqualPowerOfTwo / 2];
++        //sets variables in case of an even bracket
++        if (isPowerOfTwo(playerList.size())) {
++            numberOfByes = nextOrEqualPowerOfTwo;
++            qualifyRound = 0;
++            postQualRound = nextOrEqualPowerOfTwo / 2;
++            numberOfMatches = playerList.size() / 2;
++            arr = new int[nextOrEqualPowerOfTwo];
++        }
++
++
++        //set class parameter
++        mNumberOfMatches = numberOfMatches;
++        mNumOfLR1 = numOfLR1;
++        mPostQualRound = postQualRound;
++        mQualifyRound = qualifyRound;
++
++
++
++        arr = seedArray(arr, arr.length);
++
++        ArrayList<match> matchList = new ArrayList<match>();
++        //make matches and adds to list
++        for (int i = 0; i < numberOfMatches; i++) {
++            match aMatch = new match();
++            if (i < postQualRound) {
++                aMatch.setP1Seed(arr[2 * i]);
++                aMatch.setP2Seed(arr[(2 * i) + 1]);
++            }
++            matchList.add(aMatch);
++        }
++
++        // set participants for post qualifying round
++        for (int i = 0; i < numberOfByes; i++) {
++
++            for (int j = 0; j < postQualRound; j++) {
++
++                if (playerList.get(i).getSeed() == matchList.get(j).getP1Seed()) {
++                    matchList.get(j).setP1(playerList.get(i));
++                    break;
++                }
++                if (playerList.get(i).getSeed() == matchList.get(j).getP2Seed()) {
++                    matchList.get(j).setP2(playerList.get(i));
++                    break;
++                }
++
++            }
++        }
++
++        //set participants for preround matches
++        for (int i = 0; (i + postQualRound) < matchList.size(); i++) {
++            matchList.get(i + postQualRound).setP1(playerList.get(i + numberOfByes));
++            matchList.get(i + postQualRound).setP2(playerList.get(playerList.size() - (i + 1)));
++        }
++
++        //fills empty spots
++        for (int i = 0; i < matchList.size(); i++) {
++            if (matchList.get(i).getP1() == null) {
++                participant p = new participant();
++                matchList.get(i).setP1(p);
++            }
++            if (matchList.get(i).getP2() == null) {
++                participant p = new participant();
++                matchList.get(i).setP2(p);
++            }
++        }
++
++        //set match numbers
++        if (isPowerOfTwo(playerList.size())) {
++            for (int i = 0; i < matchList.size(); i++) {
++                matchList.get(i).setNumber(i + 1);
++            }
++        } else {
++            int numAssigned = 0;
++            for (int i = 0; i < postQualRound; i++) {
++                for (int j = postQualRound; j < matchList.size(); j++) {
++                    if (matchList.get(j).getP1().getSeed() == matchList.get(i).getP1Seed()) {
++
++
++                        matchList.get(j).setNumber(numAssigned + 1);
++                        numAssigned++;
++
++                    } else if (matchList.get(j).getP1().getSeed() == matchList.get(i).getP2Seed()) {
++
++                        matchList.get(j).setNumber(numAssigned + 1);
++                        numAssigned++;
++
++                    }
++                }
++            }
++
++            if (numberOfByes >= postQualRound) {
++                for (int i = 0; i < postQualRound; i++) {
++                    if (matchList.get(i).getP2().getSeed() != 0) {
++                        matchList.get(i).setNumber(numAssigned + 1);
++                        numAssigned++;
++                    }
++                }
++                for (int i = 0; i < postQualRound; i++) {
++                    if (matchList.get(i).getP2().getSeed() == 0) {
++                        matchList.get(i).setNumber(numAssigned + 1);
++                        numAssigned++;
++                    }
++                }
++            } else if (numberOfByes < postQualRound) {
++
++                numAssigned = numAssigned + numOfLR1;
++                for (int i = 0; i < postQualRound; i++) {
++                    matchList.get(i).setNumber(i + numAssigned + 1);
++                }
++            }
++
++        }
++        //sorts matches based in match number
++        Collections.sort(matchList, new Comparator<match>() {
++            @Override
++            public int compare(match p1, match p2) {
++                return p1.number - p2.number; // Ascending
++            }
++
++        });
++
++
++
++        //prints results TO BE REMOVED
++        for (int i = 0; i < matchList.size(); i++) {
++            if (i == qualifyRound) {
++                System.out.println();
++            }
++            System.out.println(matchList.get(i).getNumber() + "-  " + matchList.get(i).getP1().getName() + " vs. " + matchList.get(i).getP2().getName());
++        }
++
++        bracket bracket = (bracket) mContext;
++        bracket.setMatchList(matchList);
++        bracket.setPostQualRound(postQualRound);
++        //need to change function to void
++        bracket.makeBracketDisplay(5, 6, postQualRound, mContext);
++        bracket.bv.requestLayout();
++        Log.d("Match List size", Integer.toString(matchList.size()));
++
++
++        return matchList;
++    }
++
++    //makes an array if ints in order of the seeding of an even tournament bracket
++    public int[] seedArray(int[] arr, int partition) {
++
++        if (partition != 1) {
++            //calls itself until the array = {1} is return
++            int[] split = seedArray(arr, partition / 2);
++            int[] tmp = new int[split.length * 2];
++            int[] doublesplit = new int[split.length];
++
++            //creates an array that is equal to split except there is a space between each element
++            // if split is equal to [1,2] then tmp is [1,0,2,0]
++            for (int i = 0; i < split.length; i++) {
++                tmp[i * 2] = split[i];
++            }
++            //makes array equal to next split.length integers after split.length
++            //if array is [1,2], doublesplit is [3,4]
++            for (int i = 0; i < doublesplit.length; i++) {
++                doublesplit[i] = i + split.length + 1;
++            }
++
++
++            int[] result = matchLowHigh(tmp, doublesplit);
++            return result;
++
++
++        } else if (partition == 1) {
++            int[] i = {1};
++            return i;
++        } else {
++            int[] i = {1};
++            return i;
++        }
++
++    }
++
++    //method for seedArray. takes the expanded bracket from next recursive layer and adds the remaining numbers
++    //[1,0,2,0] and [3,4] return [1,4,2,3]
++    public int[] matchLowHigh(int[] low, int[] high) {
++
++
++        int lower = 1;
++        int upper = high[high.length - 1];
++        while (lower < upper) {
++            for (int i = 0; i < low.length; i++) {
++                if (low[i] == lower) {
++                    low[i + 1] = upper;
++                }
++            }
++            ++lower;
++            --upper;
++        }
++        return low;
++    }
++
++    public int nextOrEqualPowerOfTwo(int i) {
++        int result = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(i - 1));
++        if (result / 2 == i) {
++            return i;
++        }
++        return result;
++    }
++
++    public boolean isPowerOfTwo(int num) {
++        return (int) (Math.ceil((Math.log(num) / Math.log(2)))) == (int) (Math.floor(((Math.log(num) / Math.log(2)))));
++    }
++    public String getmGetParticipantJson() {
++        return mGetParticipantJson;
++    }
++
++    public void setmGetParticipantJson(String mGetParticipantJson) {
++        this.mGetParticipantJson = mGetParticipantJson;
++    }
++
++    public int getmNumOfLR1() {
++        return mNumOfLR1;
++    }
++
++    public void setmNumOfLR1(int mNumOfLR1) {
++        this.mNumOfLR1 = mNumOfLR1;
++    }
++
++    public int getmNumberOfMatches() {
++        return mNumberOfMatches;
++    }
++
++    public void setmNumberOfMatches(int mNumberOfMatches) {
++        this.mNumberOfMatches = mNumberOfMatches;
++    }
++
++    public int getmQualifyRound() {
++        return mQualifyRound;
++    }
++
++    public void setmQualifyRound(int mQualifyRound) {
++        this.mQualifyRound = mQualifyRound;
++    }
++
++    public int getmPostQualRound() {
++        return mPostQualRound;
++    }
++
++    public void setmPostQualRound(int mPostQualRound) {
++        this.mPostQualRound = mPostQualRound;
++    }
++
++    public ArrayList<match> getmMatchList() {
++        return mMatchList;
++    }
++
++    public void setmMatchList(ArrayList<match> mMatchList) {
++        this.mMatchList = mMatchList;
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/ferox/bracket/RequestQueueSingleton.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/RequestQueueSingleton.java	(date 1546670644637)
++++ app/src/main/java/ferox/bracket/RequestQueueSingleton.java	(date 1546670644637)
+@@ -0,0 +1,43 @@
++package ferox.bracket;
++
++import android.content.Context;
++import android.util.LruCache;
++
++import com.android.volley.Request;
++import com.android.volley.RequestQueue;
++import com.android.volley.toolbox.Volley;
++
++public class RequestQueueSingleton {
++    private static RequestQueueSingleton mInstance;
++    private RequestQueue mRequestQueue;
++    private static Context mCtx;
++
++    private RequestQueueSingleton(Context context) {
++        mCtx = context;
++        mRequestQueue = getRequestQueue();
++
++
++    }
++
++    public static synchronized RequestQueueSingleton getInstance(Context context) {
++        if (mInstance == null) {
++            mInstance = new RequestQueueSingleton(context);
++        }
++        return mInstance;
++    }
++
++    public RequestQueue getRequestQueue() {
++        if (mRequestQueue == null) {
++            // getApplicationContext() is key, it keeps you from leaking the
++            // Activity or BroadcastReceiver if someone passes one in.
++            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
++        }
++        return mRequestQueue;
++    }
++
++    public <T> void addToRequestQueue(Request<T> req) {
++        getRequestQueue().add(req);
++    }
++
++
++}
+\ No newline at end of file
+Index: app/src/androidTest/java/ferox/twoactivities/ExampleInstrumentedTest.java
+===================================================================
+--- app/src/androidTest/java/ferox/twoactivities/ExampleInstrumentedTest.java	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/androidTest/java/ferox/bracket/ExampleInstrumentedTest.java	(date 1546657573004)
+@@ -1,4 +1,4 @@
+-package ferox.twoactivities;
++package ferox.bracket;
+ 
+ import android.content.Context;
+ import android.support.test.InstrumentationRegistry;
+@@ -21,6 +21,6 @@
+         // Context of the app under test.
+         Context appContext = InstrumentationRegistry.getTargetContext();
+ 
+-        assertEquals("ferox.twoactivities", appContext.getPackageName());
++        assertEquals("ferox.bracket", appContext.getPackageName());
+     }
+ }
+Index: app/src/main/java/ferox/bracket/bracketBasis.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/bracketBasis.java	(date 1546656804302)
++++ app/src/main/java/ferox/bracket/bracketBasis.java	(date 1546656804302)
+@@ -0,0 +1,72 @@
++package ferox.bracket;
++
++import java.util.Arrays;
++
++public class bracketBasis {
++
++    public static void main(String[] args) {
++        bracketBasis basis = new bracketBasis();
++
++
++        int[] arr = new int[32];
++        System.out.println(Arrays.toString(basis.populateArray(arr, arr.length)));
++
++    }
++
++    //makes array of t
++    public int[] populateArray(int[] arr, int partition) {
++
++        if (partition != 1) {
++            //calls itself until the array = {1} is return
++            int[] split = populateArray(arr, partition / 2);
++            int[] tmp = new int[split.length * 2];
++            int[] doublesplit = new int[split.length];
++
++            //creates an array that is equal to split except there is a space between each element
++            // if split is equal to [1,2] then tmp is [1,0,2,0]
++            for (int i = 0; i < split.length; i++) {
++                tmp[i * 2] = split[i];
++            }
++            //makes array equal to next split.length integers after split.length
++            //if array is [1,2], doublesplit is [3,4]
++            for (int i = 0; i < doublesplit.length; i++) {
++                doublesplit[i] = i + split.length + 1;
++            }
++
++
++            int[] result = matchLowHigh(tmp, doublesplit);
++            return result;
++
++
++        } else if (partition == 1) {
++            int[] i = {1};
++            return i;
++        } else {
++            int[] i = {1};
++            return i;
++        }
++
++    }
++
++    //takes two arrays and will return an array of numbers from 1..n arranged in the order of
++    //seeding in a competitive bracket
++    // 1..4 will return [1,4,2,3], 1..8 will return [1,8,4,5,2,7,3,6] etc...
++    public int[] matchLowHigh(int[] low, int[] high) {
++
++
++        int lower = 1;
++        int upper = high[high.length - 1];
++        while (lower < upper) {
++            for (int i = 0; i < low.length; i++) {
++                if (low[i] == lower) {
++                    low[i + 1] = upper;
++                }
++            }
++            ++lower;
++            --upper;
++        }
++        return low;
++    }
++
++
++}
+Index: app/src/main/java/ferox/bracket/ChallongeRequests.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/ChallongeRequests.java	(date 1546676094960)
++++ app/src/main/java/ferox/bracket/ChallongeRequests.java	(date 1546676094960)
+@@ -0,0 +1,129 @@
++package ferox.bracket;
++
++import android.content.Context;
++import android.util.Log;
++
++import com.android.volley.Request;
++import com.android.volley.RequestQueue;
++import com.android.volley.Response;
++import com.android.volley.VolleyError;
++import com.android.volley.VolleyLog;
++import com.android.volley.toolbox.StringRequest;
++import com.android.volley.toolbox.Volley;
++
++import java.io.BufferedReader;
++import java.io.FileOutputStream;
++import java.io.InputStreamReader;
++import java.net.HttpURLConnection;
++import java.net.URL;
++
++public class ChallongeRequests {
++
++    static String apiurl = "https://api.challonge.com/v1/tournaments";
++    Context mContext;
++    String requestResponse;
++
++    /**
++     * Main.
++     */
++//    public static void main(String[] args) throws Exception {
++//
++//        ChallongeRequests CR = new ChallongeRequests();
++//        System.out.println("Testing 1 - Send Http GET request");
++//
++//
++//        System.out.println(CR.getTournament("ka35zhyo"));
++//
++//    }
++    public ChallongeRequests(Context context){
++        mContext = context;
++    }
++
++
++    public String getTournament(String tournamentName) throws Exception {
++        //String url = apiurl + '/' + tournamentName + ".json?api_key=hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07&include_matches=1&include_participants=1";
++        String url = apiurl + '/' + tournamentName + "/participants" + ".json?api_key=hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
++
++        VolleyLog.DEBUG = true;
++
++
++        RequestQueue queue = RequestQueueSingleton.getInstance(mContext.getApplicationContext()).
++                getRequestQueue();
++
++
++
++        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
++                new Response.Listener<String>() {
++                    @Override
++                    public void onResponse(String response) {
++                        Log.d("Response", response);
++                        requestResponse = response;
++                        Log.d("Request" , " Request Recieved");
++                    }
++                }, new Response.ErrorListener() {
++            @Override
++            public void onErrorResponse(VolleyError error) {
++                requestResponse = "Error";
++                Log.d("Response" , " Error");
++            }
++        });
++
++
++        RequestQueueSingleton.getInstance(mContext).addToRequestQueue(stringRequest);
++
++
++
++
++
++
++//        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
++//
++//        //optional default is GET
++//        con.setRequestMethod("GET");
++//
++//        //add request header
++//        con.setRequestProperty("Show", "Show");
++//
++//        int responseCode = con.getResponseCode();
++//        System.out.println("\nSending 'GET' request to URL : " + url);
++//        System.out.println("Response Code : " + responseCode);
++//
++//        if (responseCode != 200) {
++//            System.out.println("Error Stream");
++//
++//
++//            BufferedReader ine = new BufferedReader(
++//                    new InputStreamReader(con.getErrorStream()));
++//
++//            StringBuffer responsee = new StringBuffer();
++//            String inputLinee;
++//
++//            while ((inputLinee = ine.readLine()) != null) {
++//                responsee.append(inputLinee);
++//
++//            }
++//            ine.close();
++//            FileOutputStream fos = new FileOutputStream("error.txt");
++//            byte[] stb = responsee.toString().getBytes();
++//            fos.write(stb);
++//            System.out.println(responsee.toString());
++//        } else {
++//
++//            BufferedReader in = new BufferedReader(
++//                    new InputStreamReader(con.getInputStream()));
++//            String inputLine;
++//            StringBuffer response = new StringBuffer();
++//
++//            while ((inputLine = in.readLine()) != null) {
++//                response.append(inputLine);
++//            }
++//            in.close();
++//
++//            return response.toString();
++//            //print result
++//            //System.out.println(response.toString());
++//        }
++        return requestResponse;
++    }
++
++}
+Index: app/src/main/res/values/dimens.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/dimens.xml	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ app/src/main/res/values/dimens.xml	(date 1546414452676)
+@@ -6,8 +6,8 @@
+     <dimen name="text_margin">16dp</dimen>
+     <dimen name="round_header_width">130dp</dimen>
+     <dimen name="round_header_height">20dp</dimen>
+-    <dimen name="bracket_padding">50dp</dimen>
++    <dimen name="bracket_padding">20dp</dimen>
+     <dimen name="match_height">60dp</dimen>
+-    <dimen name="match_width">120dp</dimen>
++    <dimen name="match_width">140dp</dimen>
+ 
+ </resources>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision 1ec69ebbe958063f101ea1d17d875da25e10e06a)
++++ .idea/misc.xml	(date 1546753904329)
+@@ -5,27 +5,31 @@
+     <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
+     <option name="myNullables">
+       <value>
+-        <list size="5">
++        <list size="7">
+           <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.Nullable" />
+           <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nullable" />
+           <item index="2" class="java.lang.String" itemvalue="javax.annotation.CheckForNull" />
+           <item index="3" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.Nullable" />
+           <item index="4" class="java.lang.String" itemvalue="android.support.annotation.Nullable" />
++          <item index="5" class="java.lang.String" itemvalue="androidx.annotation.Nullable" />
++          <item index="6" class="java.lang.String" itemvalue="androidx.annotation.RecentlyNullable" />
+         </list>
+       </value>
+     </option>
+     <option name="myNotNulls">
+       <value>
+-        <list size="4">
++        <list size="6">
+           <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
+           <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
+           <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
+           <item index="3" class="java.lang.String" itemvalue="android.support.annotation.NonNull" />
++          <item index="4" class="java.lang.String" itemvalue="androidx.annotation.NonNull" />
++          <item index="5" class="java.lang.String" itemvalue="androidx.annotation.RecentlyNonNull" />
+         </list>
+       </value>
+     </option>
+   </component>
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+   <component name="ProjectType">
+diff --git .idea/caches/build_file_checksums.ser .idea/caches/build_file_checksums.ser
+index c77880ab6b073e6cda37caec9d53eb11892857f7..af46b0f28ac62e14b0c63fa115d3910cd1571035
+GIT binary patch
+literal 537
+zc${1FmVvdnh`~NNKUXg?FQq6yGexf?KR>5fFEb@IQ7^qHF(oHeub?PDD>b=9F91S2
+zm1gFoxMk*~I%lLNXBU^|7Q2L-Ts|(GuF1r}<i#MFTj`TnT;dMa8(f)}9Fm!vT3nKt
+zTj0aMpIeEdv4nx&Co8cmQNOe#Ge_SyvB0{bfPsNALuUIVPoTR5L2`N^IX#cW;tZfX
+zEBmd3hs6>uGBYr_F>vMNC#JY1CYR(Fc`|U8WE7<qXXNLkR20}dFn|D0IR}sw0AjWh
+z27$zaf|w+b)1lrfEn;Abc3SgU{0AFH$O9$@29VVZ0$pbkOOAJ5Ey>i_Cl|W)^>v^V
+zi&INVGV{`lVHyh=>KNESYUkZd*k^N}Jx@15Pb%E$@WK)X4QH#E(Bjmh;+VvgqRhk?
+zsFoN+NEW0Pm1L$CBMiAB+jFy@VH3;C2F@98emK>YFz}!_6Rt3LOZeHzf6V_(nzg;E
+zH!e&U=%<|g<is4Trq=rv*mWmQ{&fG<3Vj8RSrbYa1o61xb1(C%Jqb(wHrb{bKRYXs
+GQ~>}}@x7M-
+

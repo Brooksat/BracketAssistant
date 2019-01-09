@@ -9,5 +9,7 @@
     <dimen name="bracket_padding">20dp</dimen>
     <dimen name="match_height">60dp</dimen>
     <dimen name="match_width">140dp</dimen>
+    <dimen name="match_number_width">20dp</dimen>
+    <dimen name="participant_name_width">100dp</dimen>
 
 </resources>

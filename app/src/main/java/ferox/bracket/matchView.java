@@ -1,17 +1,15 @@
 package ferox.bracket;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-public class matchView extends RelativeLayout {
+public class matchView extends ConstraintLayout {
 
     Context mContext;
     String mMatchNumber;
@@ -19,6 +17,13 @@ public class matchView extends RelativeLayout {
     String mP2Seed;
     String mP1Name = "";
     String mP2Name = "";
+    TextView tMatchNumber;
+    TextView tP1Seed;
+    TextView tP2Seed;
+    TextView tP1Name;
+    TextView tP2Name;
+
+
 
     public matchView(Context context) {
         super(context);
@@ -38,12 +43,17 @@ public class matchView extends RelativeLayout {
         init(context, attrs);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public matchView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    public matchView(Context context, @Nullable AttributeSet attrs, String matchNumber, String P1Seed, String P2Seed, String P1Name, String P2Name) {
+        super(context, attrs);
+        mMatchNumber = matchNumber;
+        mP1Seed = P1Seed;
+        mP2Seed = P2Seed;
+        mP1Name = P1Name;
+        mP2Name = P2Name;
 
-        init(context, attrs);
+        init2(context);
     }
+
 
     private void init(Context context, AttributeSet attrs) {
         mContext = context;
@@ -59,6 +69,16 @@ public class matchView extends RelativeLayout {
         ta.recycle();
 
         getMatchView(mMatchNumber, mP1Seed, mP2Seed, mP1Name, mP2Name);
+    }
+
+    private void init2(Context context) {
+        TextView tMatchNumber = new TextView(getContext());
+        TextView tP1Seed = new TextView(getContext());
+        TextView tP2Seed = new TextView(getContext());
+        TextView tP1Name = new TextView(getContext());
+        TextView tP2Name = new TextView(getContext());
+
+
     }
 
     @Override
@@ -80,7 +100,7 @@ public class matchView extends RelativeLayout {
         System.out.println(P1Name);
         System.out.println(P2Name);
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ConstraintLayout constraintLayout = (ConstraintLayout) inflater.inflate(R.layout.match,this, false);
+        ConstraintLayout constraintLayout = (ConstraintLayout) inflater.inflate(R.layout.match, this, true);
 
         TextView textView1 = constraintLayout.findViewById(R.id.matchNumber);
         textView1.setText(matchNumber);
@@ -94,7 +114,26 @@ public class matchView extends RelativeLayout {
         textView5.setText(P2Name);
 
         addView(constraintLayout);
-        invalidate();
         requestLayout();
+    }
+
+    public void setMatchNumberText(String s) {
+        tMatchNumber.setText(s);
+    }
+
+    public void setP1SeedText(String s) {
+        tP1Seed.setText(s);
+    }
+
+    public void setP2SeedText(String s) {
+        tP2Seed.setText(s);
+    }
+
+    public void setP1NameText(String s) {
+        tP1Name.setText(s);
+    }
+
+    public void setP2NameText(String s) {
+        tP2Name.setText(s);
     }
 }

@@ -8,9 +8,11 @@ public class match {
     participant p2;
     match previous1;
     match previous2;
+    boolean P1Decided;
+    boolean P2Decided;
 
 
-    public match(int number, int p1Seed, int p2Seed, participant p1, participant p2, match previous1, match previous2) {
+    public match(int number, int p1Seed, int p2Seed, participant p1, participant p2, match previous1, match previous2, boolean P1Decided, boolean P2Decided) {
         super();
         this.number = number;
         this.p1Seed = p1Seed;
@@ -19,6 +21,8 @@ public class match {
         this.p2 = p2;
         this.previous1 = previous1;
         this.previous2 = previous2;
+        this.P1Decided = P1Decided;
+        this.P2Decided = P2Decided;
     }
 
     public match() {
@@ -29,6 +33,9 @@ public class match {
         p2 = null;
         previous1 = null;
         previous2 = null;
+        P1Decided = false;
+        P2Decided = false;
+
     }
 
     public match(int number, participant p1, participant p2, match previous1, match previous2) {
@@ -95,4 +102,19 @@ public class match {
         this.previous2 = previous2;
     }
 
+    public boolean isP1Decided() {
+        return P1Decided;
+    }
+
+    public void setP1Decided(boolean p1Decided) {
+        P1Decided = p1Decided;
+    }
+
+    public boolean isP2Decided() {
+        return P2Decided;
+    }
+
+    public void setP2Decided(boolean p2Decided) {
+        P2Decided = p2Decided;
+    }
 }

@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 
-public class MatchPairs {
+public class MatchList {
 
 
     ChallongeRequests CR;
@@ -32,7 +32,7 @@ public class MatchPairs {
     ArrayList<match> mMatchList;
 
 
-    public MatchPairs(Context context) {
+    public MatchList(Context context) {
         mContext = context;
         CR = new ChallongeRequests(mContext);
 
@@ -90,7 +90,16 @@ public class MatchPairs {
 
     }
 
-    //take whats in main and makes bracket
+    /*take whats in main and makes bracket
+        In the case of an uneven bracket the first round is called the qualifying round. The
+        qualifying round is made in a way so that the second round of the tournament will be
+        even(the number of matches and participants is a power of 2. As for the code the second
+        round is referred to the post qualifying round regardless of if whether or not there was a
+        qualifying round.
+
+
+
+     */
     public ArrayList<match> makeMatchList(ArrayList<participant> playerList) {
         // gets next power of two (needs to be put in method) needs to get next or equal
         // power of two
@@ -112,7 +121,7 @@ public class MatchPairs {
         }
 
 
-        //set class parameter
+        //set class parameters
         mNumberOfMatches = numberOfMatches;
         mNumOfLR1 = numOfLR1;
         mPostQualRound = postQualRound;
@@ -139,10 +148,12 @@ public class MatchPairs {
 
                 if (playerList.get(i).getSeed() == matchList.get(j).getP1Seed()) {
                     matchList.get(j).setP1(playerList.get(i));
+                    matchList.get(j).setP1Decided(true);
                     break;
                 }
                 if (playerList.get(i).getSeed() == matchList.get(j).getP2Seed()) {
                     matchList.get(j).setP2(playerList.get(i));
+                    matchList.get(j).setP2Decided(true);
                     break;
                 }
 
@@ -213,8 +224,8 @@ public class MatchPairs {
             }
 
         }
-        //sorts matches based in match number
-        Collections.sort(matchList, new Comparator<match>() {
+        //sorts matches based on match number
+        Collections.sort(matchList.subList(postQualRound, matchList.size()), new Comparator<match>() {
             @Override
             public int compare(match p1, match p2) {
                 return p1.number - p2.number; // Ascending
@@ -234,8 +245,11 @@ public class MatchPairs {
         bracket bracket = (bracket) mContext;
         bracket.setMatchList(matchList);
         bracket.setPostQualRound(postQualRound);
+        bracket.setQualifyRound(qualifyRound);
+        bracket.setNumOfLR1(numOfLR1);
+        bracket.setDoublePostQualRound(postQualRound * 2);
         //need to change function to void
-        bracket.makeBracketDisplay(5, 6, postQualRound, mContext);
+        bracket.makeBracketDisplay(5, 6, mContext);
         bracket.bv.requestLayout();
         Log.d("Match List size", Integer.toString(matchList.size()));
 

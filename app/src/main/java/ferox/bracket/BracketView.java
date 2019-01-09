@@ -21,7 +21,7 @@ public class BracketView extends ConstraintLayout {
     private float mLastTouchY;
     private ScaleGestureDetector mScaleDetector;
     private float mScaleFactor = 1f;
-    final static float mMinZoom = 1f;
+    final static float mMinZoom = 0.75f;
     final static float mMaxZoom = 5.0f;
     int screenWidth;
     int screenHeight;
