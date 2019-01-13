@@ -31,6 +31,8 @@ public class bracket extends AppCompatActivity {
     int doublePostQualRound;
     int qualifyRound;
     int numOfLR1;
+    int mHeightUnit;
+    int mWidthUnit;
 
     ArrayList<match> matchList;
 
@@ -45,15 +47,17 @@ public class bracket extends AppCompatActivity {
         numRoundW = 3;
         numRoundL = 6;
         matchesInRound1 = 10;
+
+        mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height) / 2;
+        mWidthUnit = getResources().getDimensionPixelSize(R.dimen.match_width);
+
+
         matchList = new ArrayList<match>();
         bv = findViewById(R.id.bracket_root);
 
         mp = new MatchList(this);
         mp.sendGetParticipants();
 
-
-        ///matchlist.size is size of round one from matchpairs result, still need to set challongerequest to be able to return any needed api url
-        makeBracketDisplay(numRoundW, numRoundL, this);
 
     }
 
@@ -75,7 +79,7 @@ public class bracket extends AppCompatActivity {
 
         //layout params
         ViewGroup.MarginLayoutParams roundHeaderLayoutParams = new ViewGroup.MarginLayoutParams(
-                getResources().getDimensionPixelSize(R.dimen.round_header_width), getResources().getDimensionPixelSize(R.dimen.round_header_height));
+                mWidthUnit * 2, getResources().getDimensionPixelSize(R.dimen.round_header_height));
         roundHeaderLayoutParams.setMargins(0, 0, 0, 0);
 
 
@@ -101,9 +105,18 @@ public class bracket extends AppCompatActivity {
         //adds winners rounds
         int numberRound = qualifyRound == 0 ? postQualRound : doublePostQualRound;
         for (int i = 0; numberRound != 0; i++) {
-            makeRound(numberRound, i, bracketWinners, bracketConnectorView.MODE_TOP);
+            makeRound(numberRound, i, bracketWinners, 0);
+
+
+            if (numberRound == 1) {
+                for (int j = 0; j < 2; j++) {
+                    makeRound(numberRound, i, bracketWinners, 1);
+                }
+            }
             numberRound = numberRound / 2;
         }
+
+
         setPostQualRoundInfo();
         if (qualifyRound != 0) {
             setUnusedMatchesInvisible();
@@ -111,6 +124,129 @@ public class bracket extends AppCompatActivity {
         //make round for "losers qualifying round"
         makeRound(numOfLR1, 0, bracketLosers, bracketConnectorView.MODE_MIDDLE);
 
+
+    }
+
+
+
+    //adds two layouts to view one is list of matchees the other the bracket connector views
+//mulitplier for sizing based on round
+    public void makeRound(int numMatches, int multiplier, ViewGroup vg, int modifier) {
+
+        LinearLayout matches = new LinearLayout(this);
+        LinearLayout bracketConnector = new LinearLayout(this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(0, 0, 0, 0);
+        matches.setLayoutParams(layoutParams);
+        bracketConnector.setLayoutParams(layoutParams);
+        matches.setOrientation(LinearLayout.VERTICAL);
+        bracketConnector.setOrientation(LinearLayout.VERTICAL);
+        matches.setGravity(Gravity.CENTER);
+
+
+//Matches
+
+        if (multiplier != 0) {
+            Space space = new Space(this);
+            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2)));
+            matches.addView(space);
+        }
+
+        for (int j = 0; j < numMatches; j++) {
+            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
+            TextView textView1 = match.findViewById(R.id.matchNumber);
+            textView1.setText(Integer.toString(j));
+
+            Space space = new Space(this);
+            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    (mHeightUnit * ((int) Math.pow(2, multiplier + 2) - 2))));
+            if (j == numMatches - 1) {
+                space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                        mHeightUnit));
+            }
+
+
+
+            matches.addView(match);
+
+            matches.addView(space);
+
+        }
+
+
+//Bracket connector
+
+
+        for (int i = 0; i < numMatches / 2; i++) {
+            Space space = new Space(this);
+            Space space2 = new Space(this);
+            View space3 = new View(this);
+            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 1)));
+            space2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 1)));
+            space3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    mHeightUnit * 2));
+
+            bracketConnectorView bcv = new bracketConnectorView(this, null
+                    , mHeightUnit * (int) Math.pow(2, multiplier + 1)
+                    , bracketConnectorView.MODE_TOP
+                    , "", i + 1);
+            bracketConnectorView bcv2 = new bracketConnectorView(this, null
+                    , mHeightUnit * (int) Math.pow(2, multiplier + 1)
+                    , bracketConnectorView.MODE_BOTTOM
+                    , "", i + 1);
+
+
+            bracketConnector.addView(space);
+            bracketConnector.addView(bcv);
+            bracketConnector.addView(bcv2);
+            bracketConnector.addView(space2);
+            bracketConnector.addView(space3);
+
+        }
+        if (modifier == 1) {
+            bracketConnectorView bcvr = new bracketConnectorView(this, null,
+                    mHeightUnit * 2,
+                    bracketConnectorView.MODE_MIDDLE,
+                    "",
+                    0);
+
+            Space space = new Space(this);
+            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2)));
+            bracketConnector.addView(space);
+            bracketConnector.addView(bcvr);
+            vg.addView(bracketConnector);
+            vg.addView(matches);
+        } else {
+            vg.addView(matches);
+            vg.addView(bracketConnector);
+        }
+
+
+    }
+
+    private void setPostQualRoundInfo() {
+        ViewGroup bracketWinners = findViewById(R.id.bracket_winners);
+        ViewGroup PQR = (LinearLayout) bracketWinners.getChildAt(qualifyRound == 0 ? 0 : 2);
+        for (int i = 0; i < postQualRound; i++) {
+            //plus 1 caused by conditional space in get round
+            ConstraintLayout match = (ConstraintLayout) PQR.getChildAt(2 * i + 1);
+            TextView matchNumber = match.findViewById(R.id.matchNumber);
+            matchNumber.setText(String.valueOf(matchList.get(i).number));
+            TextView P1Seed = match.findViewById(R.id.seed1);
+            P1Seed.setText(String.valueOf(matchList.get(i).p1Seed));
+            TextView P2Seed = match.findViewById(R.id.seed2);
+            P2Seed.setText(String.valueOf(matchList.get(i).p2Seed));
+            TextView P1Name = match.findViewById(R.id.participant1);
+            P1Name.setText(matchList.get(i).p1.name);
+            TextView P2Name = match.findViewById(R.id.participant2);
+            P2Name.setText(matchList.get(i).p2.name);
+        }
 
     }
 
@@ -152,63 +288,6 @@ public class bracket extends AppCompatActivity {
                 ++iterator;
             }
         }
-    }
-
-    private void setPostQualRoundInfo() {
-        ViewGroup bracketWinners = findViewById(R.id.bracket_winners);
-        ViewGroup PQR = (LinearLayout) bracketWinners.getChildAt(qualifyRound == 0 ? 0 : 2);
-        for (int i = 0; i < postQualRound; i++) {
-            ConstraintLayout match = (ConstraintLayout) PQR.getChildAt(2 * i);
-            TextView matchNumber = match.findViewById(R.id.matchNumber);
-            matchNumber.setText(String.valueOf(matchList.get(i).number));
-            TextView P1Seed = match.findViewById(R.id.seed1);
-            P1Seed.setText(String.valueOf(matchList.get(i).p1Seed));
-            TextView P2Seed = match.findViewById(R.id.seed2);
-            P2Seed.setText(String.valueOf(matchList.get(i).p2Seed));
-            TextView P1Name = match.findViewById(R.id.participant1);
-            P1Name.setText(matchList.get(i).p1.name);
-            TextView P2Name = match.findViewById(R.id.participant2);
-            P2Name.setText(matchList.get(i).p2.name);
-        }
-
-    }
-
-    //adds two layouts to view one is list of matchees the other the bracket connector views
-//mulitplier for sizing based on round
-    public void makeRound(int numMatches, int multiplier, ViewGroup vg, int mode) {
-        LinearLayout bracketWinners = findViewById(R.id.bracket_winners);
-
-
-        LinearLayout matches = new LinearLayout(this);
-        LinearLayout bracketConnector = new LinearLayout(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 0, 0);
-        matches.setLayoutParams(layoutParams);
-        bracketConnector.setLayoutParams(layoutParams);
-        matches.setOrientation(LinearLayout.VERTICAL);
-        matches.setGravity(Gravity.CENTER);
-
-
-        for (int j = 0; j < numMatches; j++) {
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
-            TextView textView1 = match.findViewById(R.id.matchNumber);
-            textView1.setText(Integer.toString(j));
-            matches.addView(match);
-            Space filler = new Space(this);
-            filler.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (getResources().getDimensionPixelSize(R.dimen.match_height) / 2) * ((int) Math.pow(2, multiplier))));
-            matches.addView(filler);
-        }
-
-        vg.addView(matches);
-
-
-        bracketConnectorView bcv = new bracketConnectorView(this, null, (int) Math.pow(2, multiplier), mode, "");
-        //bcv.setBackgroundResource(R.drawable.outline);
-        bracketConnector.addView(bcv);
-        vg.addView(bracketConnector);
-
     }
 
 

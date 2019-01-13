@@ -25,6 +25,7 @@ public class BracketView extends ConstraintLayout {
     final static float mMaxZoom = 5.0f;
     int screenWidth;
     int screenHeight;
+    Context mContext;
 
 
 //    public BracketView(Context context) {
@@ -36,6 +37,7 @@ public class BracketView extends ConstraintLayout {
 
     public BracketView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         setWillNotDraw(false);
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
