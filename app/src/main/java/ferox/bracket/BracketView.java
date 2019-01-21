@@ -21,7 +21,7 @@ public class BracketView extends ConstraintLayout {
     private float mLastTouchY;
     private ScaleGestureDetector mScaleDetector;
     private float mScaleFactor = 1f;
-    final static float mMinZoom = 0.75f;
+    final static float mMinZoom = 0.5f;
     final static float mMaxZoom = 5.0f;
     int screenWidth;
     int screenHeight;
@@ -60,9 +60,13 @@ public class BracketView extends ConstraintLayout {
 
         int childSumWidth = 0;
         int childSumHeight = 0;
+        int childHspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        int childWspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+
 
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
+            child.measure(childWspec, childHspec);
             int childWidth = child.getMeasuredWidth(),
                     childHeight = child.getMeasuredHeight();
             childSumWidth += childWidth;
@@ -80,16 +84,20 @@ public class BracketView extends ConstraintLayout {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+
         if (mPosX * -1 < 0) {
             mPosX = 0;
         } else if (mPosX * -1 > getWidth() * mScaleFactor - screenWidth + 300) {
             mPosX = (getWidth() * mScaleFactor - screenWidth + 300) * -1;
         }
+
+
         if (mPosY * -1 < 0) {
             mPosY = 0;
-        } else if (mPosY * -1 > getHeight() * mScaleFactor - screenHeight + 200) {
-            mPosY = (getHeight() * mScaleFactor - screenHeight + 200) * -1;
+        } else if (mPosY * -1 > getHeight() * mScaleFactor - screenHeight + 300) {
+            mPosY = (getHeight() * mScaleFactor - screenHeight + 300) * -1;
         }
+
         canvas.translate(mPosX, mPosY);
         canvas.scale(mScaleFactor, mScaleFactor);
 
@@ -132,8 +140,14 @@ public class BracketView extends ConstraintLayout {
                     final float distX = x - mLastTouchX;
                     final float distY = y - mLastTouchY;
 
-                    mPosX += distX;
-                    mPosY += distY;
+
+                    if (getWidth() > screenWidth) {
+                        mPosX += distX;
+                    }
+
+                    if (getHeight() > screenHeight) {
+                        mPosY += distY;
+                    }
 
                     invalidate();
                 }

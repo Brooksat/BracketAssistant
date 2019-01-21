@@ -86,8 +86,8 @@ public class matchView extends ConstraintLayout {
 
         int width = getResources().getDimensionPixelSize(R.dimen.match_width);
         int height = getResources().getDimensionPixelSize(R.dimen.match_height);
-        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.UNSPECIFIED);
-        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.UNSPECIFIED);
+        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
         setMeasuredDimension(desiredWSpec, desiredHSpec);
         super.onMeasure(desiredWSpec, desiredHSpec);
     }

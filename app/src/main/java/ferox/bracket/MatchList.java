@@ -19,6 +19,7 @@ import java.util.Comparator;
 
 
 public class MatchList {
+    String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
 
 
     ChallongeRequests CR;
@@ -34,7 +35,7 @@ public class MatchList {
 
     public MatchList(Context context) {
         mContext = context;
-        CR = new ChallongeRequests(mContext);
+        CR = new ChallongeRequests(api_key);
 
 
     }
@@ -108,8 +109,16 @@ public class MatchList {
         int numNonByes = playerList.size() - numberOfByes;
         int qualifyRound = (playerList.size() - numberOfByes) / 2;
         int postQualRound = nextOrEqualPowerOfTwo / 4;
-        int numberOfMatches = postQualRound + qualifyRound;
-        int numOfLR1 = playerList.size() % postQualRound;
+        int numberOfMatches;
+        int numOfLR1;
+        if (postQualRound < 2) {
+            numberOfMatches = 2;
+            numOfLR1 = 0;
+        } else {
+            numberOfMatches = postQualRound + qualifyRound;
+            numOfLR1 = playerList.size() % postQualRound;
+        }
+
         int[] arr = new int[nextOrEqualPowerOfTwo / 2];
         //sets variables in case of an even bracket
         if (isPowerOfTwo(playerList.size())) {
@@ -247,7 +256,6 @@ public class MatchList {
         bracket.setPostQualRound(postQualRound);
         bracket.setQualifyRound(qualifyRound);
         bracket.setNumOfLR1(numOfLR1);
-        bracket.setDoublePostQualRound(postQualRound * 2);
         //need to change function to void
         bracket.makeBracketDisplay(5, 6, mContext);
         bracket.bv.requestLayout();

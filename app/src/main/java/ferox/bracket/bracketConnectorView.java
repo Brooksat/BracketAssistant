@@ -24,7 +24,7 @@ public class bracketConnectorView extends View {
     int color;
 
 
-    public bracketConnectorView(Context context, @Nullable AttributeSet attrs, int heightInput, int mode, String lol, int randint) {
+    public bracketConnectorView(Context context, @Nullable AttributeSet attrs, int heightInput, int mode, String lol) {
         super(context, attrs);
         this.heightInput = heightInput;
         this.mode = mode;
@@ -32,7 +32,6 @@ public class bracketConnectorView extends View {
         mPaint = new Paint(Color.BLACK);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(8);
-        color = randint;
 
     }
 
