@@ -7,7 +7,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -61,16 +60,16 @@ public class MatchList {
 
     }
 
-    public void sendGetParticipants() {
+    public void sendGetParticipants(String name) {
 
-        VolleyLog.DEBUG = true;
+
 
 
         RequestQueue queue = RequestQueueSingleton.getInstance(mContext.getApplicationContext()).
                 getRequestQueue();
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.participantIndex(name),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

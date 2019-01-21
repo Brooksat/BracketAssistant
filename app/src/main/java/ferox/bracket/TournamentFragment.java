@@ -11,16 +11,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class TournamentFragment extends Fragment {
 
-
-    public TournamentFragment() {
-        // Required empty public constructor
-    }
+    private ArrayList<String> menuItems;
 
 
     @Override
@@ -29,7 +28,6 @@ public class TournamentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tournament, container, false);
         ListView listView = view.findViewById(R.id.tournament_list);
 
-        String[] menuItems = {"First Tournament"};
 
         ArrayAdapter<String> listViewAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, menuItems);
         listView.setAdapter(listViewAdapter);
@@ -45,4 +43,11 @@ public class TournamentFragment extends Fragment {
         return view;
     }
 
+    public ArrayList<String> getMenuItems() {
+        return menuItems;
+    }
+
+    public void setMenuItems(ArrayList<String> menuItems) {
+        this.menuItems = menuItems;
+    }
 }

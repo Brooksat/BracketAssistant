@@ -1,12 +1,14 @@
 package ferox.bracket;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,7 @@ public class bracket extends AppCompatActivity {
     int mWidthUnit;
 
     ArrayList<match> matchList;
+    String url;
 
 
     @Override
@@ -42,6 +45,7 @@ public class bracket extends AppCompatActivity {
         setContentView(R.layout.activity_bracket);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+        Intent intent = getIntent();
 
         numRoundW = 3;
         numRoundL = 6;
@@ -54,8 +58,10 @@ public class bracket extends AppCompatActivity {
         matchList = new ArrayList<match>();
         bv = findViewById(R.id.bracket_root);
 
+        url = intent.getStringExtra("tournamentURL");
+        Log.d("tourneyURL", "" + url);
         mp = new MatchList(this);
-        mp.sendGetParticipants();
+        mp.sendGetParticipants(url);
 
 
     }
@@ -338,6 +344,12 @@ public class bracket extends AppCompatActivity {
         this.numOfLR1 = numOfLR1;
     }
 
+    public String getUrl() {
+        return url;
+    }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
 
