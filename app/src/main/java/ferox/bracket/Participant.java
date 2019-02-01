@@ -1,16 +1,16 @@
 package ferox.bracket;
 
-public class participant {
+public class Participant {
 
-    String name;
-    int seed;
+    private String name;
+    private int seed;
 
-    public participant() {
+    public Participant() {
         this.name = "Undecided";
         this.seed = 0;
     }
 
-    public participant(String name, int seed) {
+    public Participant(String name, int seed) {
         this.name = name;
         this.seed = seed;
     }

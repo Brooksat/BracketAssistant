@@ -29,7 +29,7 @@
                 android:value="ferox.bracket.MainActivity" />
         </activity>
         <activity android:name="ferox.bracket.NewTournamentActivity" />
-        <activity android:name="ferox.bracket.bracket"></activity>
+        <activity android:name="ferox.bracket.Bracket"></activity>
 
     </application>
 

@@ -35,7 +35,7 @@ public class TournamentFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(view.getContext(), bracket.class);
+                Intent intent = new Intent(view.getContext(), Bracket.class);
                 startActivity(intent);
             }
         });

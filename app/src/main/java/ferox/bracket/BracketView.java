@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.TextView;
 
 
 public class BracketView extends ConstraintLayout {
@@ -43,15 +44,10 @@ public class BracketView extends ConstraintLayout {
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-
     }
 
-//    public BracketView(Context context, AttributeSet attrs, int defStyleAttr) {
-//        super(context, attrs, defStyleAttr);
-//        setWillNotDraw(false);
-//        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
-//
-//    }
+
+
 
 
     @Override
@@ -75,28 +71,40 @@ public class BracketView extends ConstraintLayout {
 
 
         int desiredWSpec = MeasureSpec.makeMeasureSpec(childSumWidth, MeasureSpec.UNSPECIFIED);
-        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight, MeasureSpec.UNSPECIFIED);
+        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight, MeasureSpec.EXACTLY);
         setMeasuredDimension(desiredWSpec, desiredHSpec);
         super.onMeasure(desiredWSpec, desiredHSpec);
+    }
+
+    public void montitor(TextView tv1, TextView tv2, TextView tv3) {
+        tv1.setText(String.valueOf(mPosY * -1));
+        tv2.setText(String.valueOf(getHeight() * mScaleFactor));
+        tv3.setText(String.valueOf(getHeight() * mScaleFactor - (mPosY * -1)));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
         if (mPosX * -1 < 0) {
             mPosX = 0;
-        } else if (mPosX * -1 > getWidth() * mScaleFactor - screenWidth + 300) {
+        } else if (mPosX * -1 > getWidth() * mScaleFactor - screenWidth + 300 && (getWidth() * mScaleFactor > screenWidth)) {
             mPosX = (getWidth() * mScaleFactor - screenWidth + 300) * -1;
+        } else if ((getWidth() * mScaleFactor < screenWidth)) {
+            mPosX = 0;
         }
 
-
+        //stops bracket from scrolling too far down
         if (mPosY * -1 < 0) {
             mPosY = 0;
-        } else if (mPosY * -1 > getHeight() * mScaleFactor - screenHeight + 300) {
-            mPosY = (getHeight() * mScaleFactor - screenHeight + 300) * -1;
         }
+        //stops bracket from scrolling too far up
+        else if (mPosY * -1 > getHeight() * mScaleFactor - screenHeight && (getHeight() * mScaleFactor > screenHeight)) {
+            mPosY = (getHeight() * mScaleFactor - screenHeight) * -1;
+        } else if ((getHeight() * mScaleFactor < screenHeight)) {
+            mPosY = 0;
+        }
+
 
         canvas.translate(mPosX, mPosY);
         canvas.scale(mScaleFactor, mScaleFactor);
@@ -140,14 +148,8 @@ public class BracketView extends ConstraintLayout {
                     final float distX = x - mLastTouchX;
                     final float distY = y - mLastTouchY;
 
-
-                    if (getWidth() > screenWidth) {
-                        mPosX += distX;
-                    }
-
-                    if (getHeight() > screenHeight) {
-                        mPosY += distY;
-                    }
+                    mPosX += distX;
+                    mPosY += distY;
 
                     invalidate();
                 }

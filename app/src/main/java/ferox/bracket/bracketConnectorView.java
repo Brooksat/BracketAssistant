@@ -79,7 +79,7 @@ public class bracketConnectorView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
 
-        int width = getResources().getDimensionPixelSize(R.dimen.match_width);
+        int width = getResources().getDimensionPixelSize(R.dimen.match_width) / 4;
         int height = heightInput;
         int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
         int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);

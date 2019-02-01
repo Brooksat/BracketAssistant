@@ -56,10 +56,8 @@ public class HomeActivity extends AppCompatActivity {
         for (int i = 0; i < tournaments.size(); i++) {
 
             Tournament tournament = gson.fromJson(tournaments.get(i).getAsJsonObject().get("tournament"), Tournament.class);
-//                    new Tournament(
-//                    tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("name").getAsString(),
-//                    tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("url").getAsString());
-            tournamentList.add(tournament);
+            tournament.setTournamentType(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("tournament_type").getAsString());
+            tournamentList.add(0, tournament);
         }
 
         for (int i = 0; i < tournamentList.size(); i++) {
@@ -76,25 +74,23 @@ public class HomeActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(view.getContext(), bracket.class);
+                Intent intent = new Intent(view.getContext(), Bracket.class);
                 intent.putExtra("tournamentName", tournamentList.get(position).getName());
                 intent.putExtra("tournamentURL", tournamentList.get(position).getUrl());
+                intent.putExtra("tournamentType", tournamentList.get(position).getTournamentType());
+                intent.putExtra("tournamentState", tournamentList.get(position).getState());
                 startActivity(intent);
-                Log.d("position", String.valueOf(position));
-                Log.d("positionURL", tournamentList.get(position).getUrl());
+                Log.d("Type", tournamentList.get(position).getTournamentType());
+
 
             }
         });
-
 
         listView.invalidate();
     }
 
     public void getTournaments() {
-
-
         VolleyLog.DEBUG = true;
-
 
         RequestQueue queue = RequestQueueSingleton.getInstance(getApplicationContext()).
                 getRequestQueue();

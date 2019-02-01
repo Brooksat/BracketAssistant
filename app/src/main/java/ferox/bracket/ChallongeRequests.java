@@ -37,6 +37,21 @@ public class ChallongeRequests {
         return url;
     }
 
+    /*
+    As it currently stands you can put .json at the end of the normal URL for a tournament on
+    challonge.com and you will receive a json that include fields for round and matches_by_round
+    that you can not currently get with any of the official API request methods.
+    Maybe this is a remnant of the old api or some incomplete version of the new api v2. However as
+    far as I know this isn't mentioned anywhere on the official api page. I am glad tho for the
+    moment of serendipity that made me privy to this information because this will make developing
+    this app much more convenient.
+     */
+    public String jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(String url) {
+        String s = "https://challonge.com/";
+        s += url + ".json";
+        return s;
+    }
+
 
     public String participantIndex(String name) {
         String url = apiurl;

@@ -20,6 +20,11 @@ import java.util.Comparator;
 public class MatchList {
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
 
+    static final int MODE_SINGLE_ELIM = 0;
+    static final int MODE_DOUBLE_ELIM = 1;
+    static final int MODE_ROUND_ROBIN = 2;
+    static final int MODE_SWISS = 3;
+
 
     ChallongeRequests CR;
     Context mContext;
@@ -29,7 +34,7 @@ public class MatchList {
     int mNumberOfMatches;
     int mQualifyRound;
     int mPostQualRound;
-    ArrayList<match> mMatchList;
+    ArrayList<Match> mMatchList;
 
 
     public MatchList(Context context) {
@@ -40,18 +45,18 @@ public class MatchList {
     }
 
 
-    private ArrayList<participant> parsePlayerList(String playerListJson) {
+    private ArrayList<Participant> parsePlayerList(String playerListJson) {
         JsonParser jp = new JsonParser();
         JsonElement jsonTree = jp.parse(playerListJson);
         JsonArray ja = jsonTree.getAsJsonArray();
 
-        ArrayList<participant> playerList = new ArrayList<participant>();
+        ArrayList<Participant> playerList = new ArrayList<Participant>();
 
 
         //makes participants and gets name and seed from challonge
         for (int i = 0; i < ja.size(); i++) {
 
-            participant player = new participant(
+            Participant player = new Participant(
                     ja.get(i).getAsJsonObject().get("participant").getAsJsonObject().get("name").getAsString(),
                     ja.get(i).getAsJsonObject().get("participant").getAsJsonObject().get("seed").getAsInt());
             playerList.add(player);
@@ -61,8 +66,6 @@ public class MatchList {
     }
 
     public void sendGetParticipants(String name) {
-
-
 
 
         RequestQueue queue = RequestQueueSingleton.getInstance(mContext.getApplicationContext()).
@@ -100,7 +103,7 @@ public class MatchList {
 
 
      */
-    public ArrayList<match> makeMatchList(ArrayList<participant> playerList) {
+    public ArrayList<Match> makeMatchList(ArrayList<Participant> playerList) {
         // gets next power of two (needs to be put in method) needs to get next or equal
         // power of two
         int nextOrEqualPowerOfTwo = nextOrEqualPowerOfTwo(playerList.size());
@@ -118,6 +121,8 @@ public class MatchList {
             numOfLR1 = playerList.size() % postQualRound;
         }
 
+        Log.d("nPO2", String.valueOf(playerList.size()));
+        Log.d("nPO2", String.valueOf(nextOrEqualPowerOfTwo));
         int[] arr = new int[nextOrEqualPowerOfTwo / 2];
         //sets variables in case of an even bracket
         if (isPowerOfTwo(playerList.size())) {
@@ -138,10 +143,10 @@ public class MatchList {
 
         arr = seedArray(arr, arr.length);
 
-        ArrayList<match> matchList = new ArrayList<match>();
-        //make matches and adds to list
+        ArrayList<Match> matchList = new ArrayList<Match>();
+        //make matches and sets seed for the postQualRound matches
         for (int i = 0; i < numberOfMatches; i++) {
-            match aMatch = new match();
+            Match aMatch = new Match();
             if (i < postQualRound) {
                 aMatch.setP1Seed(arr[2 * i]);
                 aMatch.setP2Seed(arr[(2 * i) + 1]);
@@ -149,7 +154,8 @@ public class MatchList {
             matchList.add(aMatch);
         }
 
-        // set participants for post qualifying round
+        // set participants for post qualifying round to matches by going through the playerlist and checking
+        //its seed against the seeded part of the matchlist
         for (int i = 0; i < numberOfByes; i++) {
 
             for (int j = 0; j < postQualRound; j++) {
@@ -168,30 +174,43 @@ public class MatchList {
             }
         }
 
-        //set participants for preround matches
+        //set participants for preround matches, after the participants in the postQualRound are
+        //matched up the remaining participants are matched by putting next highest seed against the
+        //next lowest. Also sets seed for these matches. These matches will also be in order of
+        //P1Seed at this point in time
         for (int i = 0; (i + postQualRound) < matchList.size(); i++) {
             matchList.get(i + postQualRound).setP1(playerList.get(i + numberOfByes));
+            matchList.get(i + postQualRound).setP1Seed(i + numberOfByes);
             matchList.get(i + postQualRound).setP2(playerList.get(playerList.size() - (i + 1)));
+            matchList.get(i + postQualRound).setP2Seed(playerList.size() - (i + 1));
         }
 
-        //fills empty spots
+        //Any undecided participants will be set to default participant
         for (int i = 0; i < matchList.size(); i++) {
             if (matchList.get(i).getP1() == null) {
-                participant p = new participant();
+                Participant p = new Participant();
                 matchList.get(i).setP1(p);
             }
             if (matchList.get(i).getP2() == null) {
-                participant p = new participant();
+                Participant p = new Participant();
                 matchList.get(i).setP2(p);
             }
         }
 
         //set match numbers
+        //The order of matches in the matchList is currently (postQualRound matches with
+        //participants in correct seed order) -> (remaining matches in order of P1 seed)
+
+
+        //if bracket is even then match number is in order of matchlist
         if (isPowerOfTwo(playerList.size())) {
             for (int i = 0; i < matchList.size(); i++) {
                 matchList.get(i).setNumber(i + 1);
             }
-        } else {
+        }
+        //if bracket is uneven then match number order depends on number range
+        else {
+            //numassigned is used to tell how many matches have been numbered so far
             int numAssigned = 0;
             for (int i = 0; i < postQualRound; i++) {
                 for (int j = postQualRound; j < matchList.size(); j++) {
@@ -209,6 +228,10 @@ public class MatchList {
                     }
                 }
             }
+
+
+            //Matches are number in a different order if number of byes is greater or less than the number
+            //of matches in the post qualifying round
 
             if (numberOfByes >= postQualRound) {
                 for (int i = 0; i < postQualRound; i++) {
@@ -232,11 +255,13 @@ public class MatchList {
             }
 
         }
+
+
         //sorts matches based on match number
-        Collections.sort(matchList.subList(postQualRound, matchList.size()), new Comparator<match>() {
+        Collections.sort(matchList.subList(postQualRound, matchList.size()), new Comparator<Match>() {
             @Override
-            public int compare(match p1, match p2) {
-                return p1.number - p2.number; // Ascending
+            public int compare(Match p1, Match p2) {
+                return p1.getNumber() - p2.getNumber(); // Ascending
             }
 
         });
@@ -250,13 +275,13 @@ public class MatchList {
             System.out.println(matchList.get(i).getNumber() + "-  " + matchList.get(i).getP1().getName() + " vs. " + matchList.get(i).getP2().getName());
         }
 
-        bracket bracket = (bracket) mContext;
+        Bracket bracket = (Bracket) mContext;
         bracket.setMatchList(matchList);
         bracket.setPostQualRound(postQualRound);
         bracket.setQualifyRound(qualifyRound);
         bracket.setNumOfLR1(numOfLR1);
         //need to change function to void
-        bracket.makeBracketDisplay(5, 6, mContext);
+        bracket.startBracketDisplay(5, 6, mContext);
         bracket.bv.requestLayout();
         Log.d("Match List size", Integer.toString(matchList.size()));
 
@@ -264,10 +289,10 @@ public class MatchList {
         return matchList;
     }
 
-    //makes an array if ints in order of the seeding of an even tournament bracket
+    //makes an array of ints in order of the seeding of an even tournament bracket
     public int[] seedArray(int[] arr, int partition) {
 
-        if (partition != 1) {
+        if (partition > 1) {
             //calls itself until the array = {1} is return
             int[] split = seedArray(arr, partition / 2);
             int[] tmp = new int[split.length * 2];
@@ -319,6 +344,10 @@ public class MatchList {
     }
 
     public int nextOrEqualPowerOfTwo(int i) {
+        //zero causes the method to return max int value which causes an out of memeory error
+        if (i == 0) {
+            return 0;
+        }
         int result = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(i - 1));
         if (result / 2 == i) {
             return i;
@@ -370,11 +399,11 @@ public class MatchList {
         this.mPostQualRound = mPostQualRound;
     }
 
-    public ArrayList<match> getmMatchList() {
+    public ArrayList<Match> getmMatchList() {
         return mMatchList;
     }
 
-    public void setmMatchList(ArrayList<match> mMatchList) {
+    public void setmMatchList(ArrayList<Match> mMatchList) {
         this.mMatchList = mMatchList;
     }
 }
