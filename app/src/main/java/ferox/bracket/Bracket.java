@@ -19,8 +19,6 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,6 +28,7 @@ import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 public class Bracket extends AppCompatActivity {
 
@@ -43,7 +42,7 @@ public class Bracket extends AppCompatActivity {
     TextView bracketHeight;
     TextView screenHeight;
     TextView oneParticipantMessage;
-    MatchList mp;
+    MatchList ml;
     ArrayList<Match> mMatchList;
     int postQualRound;
     int qualifyRound;
@@ -67,7 +66,7 @@ public class Bracket extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bracket);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        Objects.requireNonNull(actionBar).hide();
         Intent intent = getIntent();
 
         numRoundW = 3;
@@ -88,8 +87,8 @@ public class Bracket extends AppCompatActivity {
 
         url = intent.getStringExtra("tournamentURL");
         type = intent.getStringExtra("tournamentType");
-        mp = new MatchList(this);
-        mp.sendGetParticipants(url);
+        ml = new MatchList(this);
+        ml.sendGetParticipants(url);
 
         CR = new ChallongeRequests(api_key);
 
@@ -117,14 +116,48 @@ public class Bracket extends AppCompatActivity {
         Log.d("setMatchInfo", "This is being called");
         LinearLayout bw = findViewById(R.id.bracket_winners);
 
-        LinearLayout round = (LinearLayout) bw.getChildAt(2);
 
-        for (int i = 0; i < roundList.get(6).getMatchList().size(); i++) {
-            ConstraintLayout match = (ConstraintLayout) round.getChildAt((2 * i) + 1);
-            setMatchView(match, roundList.get(6).getMatchList().get(i));
+        for (int i = numRoundsLosers; i < roundList.size(); i++) {
+            LinearLayout round = (LinearLayout) bw.getChildAt(2 * (i - numRoundsLosers));
+            Round roundInfo = roundList.get(i);
+            //this case deals with the qualifying round, Player 1 of the first match of the first
+            //round will in an uneven bracket will never have the first seed
+            if (roundInfo.getNumber() == 1 && roundInfo.getMatchList().get(0).getP1Seed() != 1) {
+                int tracker = 0;
+                for (int j = 0; tracker < roundInfo.getMatchList().size() && j < round.getChildCount(); j++) {
+                    if (round.getChildAt(j) instanceof ConstraintLayout && round.getChildAt(j).getVisibility() == View.VISIBLE) {
+                        setMatchView((ConstraintLayout) round.getChildAt(j), roundInfo.getMatchList().get(tracker));
+                        tracker++;
+                    }
+
+                }
+            } else if (roundInfo.getNumber() == 1 && roundInfo.getMatchList().get(0).getP1Seed() == 1) {
+                for (int j = 0; j < roundInfo.getMatchList().size(); j++) {
+
+                    setMatchView((ConstraintLayout) round.getChildAt(j * 2), roundInfo.getMatchList().get(j));
+                }
+            } else {
+                for (int j = 0; j < roundInfo.getMatchList().size(); j++) {
+                    if (roundInfo.getNumber() != numRoundsWinners) {
+                        setMatchView((ConstraintLayout) round.getChildAt((j * 2) + 1), roundInfo.getMatchList().get(j));
+                    } else {
+                        //if single elim then you are at the final round
+                        if (type.equals("single elimination")) {
+                            setMatchView((ConstraintLayout) round.getChildAt(1), roundInfo.getMatchList().get(0));
+                        }
+                        //if double elim then you are at grand finals, according to the API grand
+                        //finals and grand finals reset are considered the same round
+                        else if (type.equals("double elimination")) {
+                            LinearLayout reset = (LinearLayout) bw.getChildAt(bw.getChildCount() - 1);
+
+                            setMatchView((ConstraintLayout) round.getChildAt(1), roundInfo.getMatchList().get(0));
+                            setMatchView((ConstraintLayout) reset.getChildAt(1), roundInfo.getMatchList().get(1));
+                        }
+                    }
+                }
+            }
         }
-
-
+        bv.invalidate();
     }
 
     public void setMatchView(ConstraintLayout match, Match matchInfo) {
@@ -175,8 +208,8 @@ public class Bracket extends AppCompatActivity {
             if (roundTmp.getNumber() < 0) {
                 roundTmp.isInWinners = false;
             }
-            JsonArray currentRound = round;
-            for (JsonElement match : currentRound) {
+
+            for (JsonElement match : round) {
                 Participant player1 = new Participant();
                 Participant player2 = new Participant();
                 Match matchTmp = new Match();
@@ -227,7 +260,10 @@ public class Bracket extends AppCompatActivity {
 
             numRoundsWinners = roundList.get(roundList.size() - 1).getNumber();
             Log.d("roundlistsize", String.valueOf(numRoundsLosers));
-            numRoundsLosers = roundList.get((roundList.size() - 1) - numRoundsWinners).getNumber();
+
+            //double elim bracket of size 2 only has two rounds which causes the second option below
+            //to look for the round of a negative index
+            numRoundsLosers = (numRoundsWinners == 2 ? 0 : roundList.get((roundList.size() - 1) - numRoundsWinners).getNumber() * -1);
         }
         setMatchInfo();
     }
@@ -266,7 +302,11 @@ public class Bracket extends AppCompatActivity {
         for (int i = 0; numberRound != 0; i++) {
 
             makeRound(numberRound, i, bracketWinners, 0);
-            makeBracketConnectors(numberRound, i, bracketWinners, 0);
+            //the winners finals match doesnt have a connects after it, unless double elim
+            //which is handled in makeGrandFinals
+            if (numberRound != 1) {
+                makeBracketConnectors(numberRound, i, bracketWinners, 0);
+            }
 
 //            for (int j=0;j<2;j++){
 //                makeRound(numberRound/2, i, bracketLosers, 0);
@@ -326,9 +366,10 @@ public class Bracket extends AppCompatActivity {
         //creates the matches
         for (int j = 0; j < numMatches; j++) {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
+            assert inflater != null;
+            ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, findViewById(R.id.bracket_root_view));
             TextView textView1 = match.findViewById(R.id.matchNumber);
-            textView1.setText(Integer.toString(j));
+            textView1.setText(String.valueOf(j));
 
             Space space = new Space(this);
             space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -440,30 +481,6 @@ public class Bracket extends AppCompatActivity {
         }
     }
 
-    private void setPostQualRoundInfo() {
-        if (matchList.size() > 2) {
-            ViewGroup bracketWinners = findViewById(R.id.bracket_winners);
-            ViewGroup PQR = (LinearLayout) bracketWinners.getChildAt(qualifyRound == 0 ? 0 : 2);
-            for (int i = 0; i < postQualRound; i++) {
-                //plus 1 caused by conditional space in get round
-                //Because of the if statement in getRound the first round rendered does not have a
-                //space at the beginning of it. There for when the PQR is the first round rendered
-                //then the index for the Contraint layout is 2*i else is it 2*i+1
-                ConstraintLayout match = (ConstraintLayout) PQR.getChildAt(qualifyRound == 0 ? 2 * i : 2 * i + 1);
-                TextView matchNumber = match.findViewById(R.id.matchNumber);
-                matchNumber.setText(String.valueOf(matchList.get(i).getNumber()));
-                TextView P1Seed = match.findViewById(R.id.seed1);
-                P1Seed.setText(String.valueOf(matchList.get(i).getP1Seed()));
-                TextView P2Seed = match.findViewById(R.id.seed2);
-                P2Seed.setText(String.valueOf(matchList.get(i).getP2Seed()));
-                TextView P1Name = match.findViewById(R.id.participant1);
-                P1Name.setText(matchList.get(i).getP1().getName());
-                TextView P2Name = match.findViewById(R.id.participant2);
-                P2Name.setText(matchList.get(i).getP2().getName());
-            }
-        }
-
-    }
 
     private void setUnusedMatchesInvisible() {
         ViewGroup bracketWinners = findViewById(R.id.bracket_winners);
@@ -471,11 +488,11 @@ public class Bracket extends AppCompatActivity {
         ViewGroup QRBC = (LinearLayout) bracketWinners.getChildAt(1);
 
         for (int i = 0; i < postQualRound; i++) {
-            if (matchList.get(i).isP1Decided() == true) {
+            if (matchList.get(i).isP1Decided()) {
                 QR.getChildAt(4 * i).setVisibility(View.INVISIBLE);
                 QRBC.getChildAt(5 * i + 1).setVisibility(View.INVISIBLE);
             }
-            if (matchList.get(i).isP2Decided() == true) {
+            if (matchList.get(i).isP2Decided()) {
                 QR.getChildAt(4 * i + 2).setVisibility(View.INVISIBLE);
                 QRBC.getChildAt(5 * i + 2).setVisibility(View.INVISIBLE);
             }
@@ -490,19 +507,11 @@ public class Bracket extends AppCompatActivity {
                 getRequestQueue();
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("Response", response);
-                        getMatchInfo(response);
-                        Log.d("Request", " Request Received");
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response", " Error");
-            }
-        });
+                response -> {
+                    Log.d("Response", response);
+                    getMatchInfo(response);
+                    Log.d("Request", " Request Received");
+                }, error -> Log.d("Response", " Error"));
 
 
         RequestQueueSingleton.getInstance(this).addToRequestQueue(stringRequest);
