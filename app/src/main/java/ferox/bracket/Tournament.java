@@ -5,6 +5,7 @@ public class Tournament {
     private String url;
     private String tournamentType;
     String state;
+    private int size;
 
     public Tournament() {
         this.name = "Default Name";
@@ -13,11 +14,12 @@ public class Tournament {
         this.state = "Default State";
     }
 
-    public Tournament(String name, String URL, String type, String state) {
+    public Tournament(String name, String URL, String type, String state, int participants_count) {
         this.name = name;
         this.url = URL;
         this.tournamentType = type;
         this.state = state;
+        this.size = size;
     }
 
     public String getName() {
@@ -50,5 +52,13 @@ public class Tournament {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }

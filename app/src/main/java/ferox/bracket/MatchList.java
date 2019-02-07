@@ -84,7 +84,7 @@ public class MatchList {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Response", " Error");
+                Log.d("Response", String.valueOf(error));
             }
         });
 
@@ -276,12 +276,11 @@ public class MatchList {
         }
 
         Bracket bracket = (Bracket) mContext;
-        bracket.setMatchList(matchList);
-        bracket.setPostQualRound(postQualRound);
-        bracket.setQualifyRound(qualifyRound);
-        bracket.setNumOfLR1(numOfLR1);
+        //bracket.setPostQualRound(postQualRound);
+        //bracket.setQualifyRound(qualifyRound);
+        //bracket.setNumOfLR1(numOfLR1);
         //need to change function to void
-        bracket.startBracketDisplay(5, 6, mContext);
+        //bracket.startBracketDisplay(5, 6, mContext);
         bracket.bv.requestLayout();
         Log.d("Match List size", Integer.toString(matchList.size()));
 

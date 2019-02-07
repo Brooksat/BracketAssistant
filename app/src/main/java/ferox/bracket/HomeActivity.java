@@ -57,6 +57,7 @@ public class HomeActivity extends AppCompatActivity {
 
             Tournament tournament = gson.fromJson(tournaments.get(i).getAsJsonObject().get("tournament"), Tournament.class);
             tournament.setTournamentType(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("tournament_type").getAsString());
+            tournament.setSize(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("participants_count").getAsInt());
             tournamentList.add(0, tournament);
         }
 
@@ -79,8 +80,9 @@ public class HomeActivity extends AppCompatActivity {
                 intent.putExtra("tournamentURL", tournamentList.get(position).getUrl());
                 intent.putExtra("tournamentType", tournamentList.get(position).getTournamentType());
                 intent.putExtra("tournamentState", tournamentList.get(position).getState());
+                intent.putExtra("tournamentSize", tournamentList.get(position).getSize());
                 startActivity(intent);
-                Log.d("Type", tournamentList.get(position).getTournamentType());
+                Log.d("Size", String.valueOf(tournamentList.get(position).getSize()));
 
 
             }

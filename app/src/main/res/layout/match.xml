@@ -8,24 +8,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <TextView
         android:id="@+id/matchNumber"
-        android:layout_width="20dp"
+        android:layout_width="@dimen/match_number_width"
         android:layout_height="60dp"
         android:gravity="center"
         android:text="1"
         android:background="@drawable/outline"
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
        />
     <TextView
         android:id="@+id/seed1"
-        android:layout_width="20dp"
+        android:layout_width="@dimen/player_seed_width"
         android:layout_height="30dp"
         android:gravity="center"
         android:text="0"
         app:layout_constraintLeft_toRightOf="@id/matchNumber"
+        app:layout_constraintTop_toTopOf="@id/matchNumber"
         android:background="@drawable/outline"/>
     <TextView
         android:id="@+id/seed2"
-        android:layout_width="20dp"
+        android:layout_width="@dimen/player_seed_width"
         android:layout_height="30dp"
         android:gravity="center"
         android:text="0"
@@ -34,17 +36,18 @@
         android:background="@drawable/outline"/>
     <TextView
         android:id="@+id/participant1"
-        android:layout_width="100dp"
+        android:layout_width="@dimen/player_name_width"
         android:layout_height="30dp"
         android:paddingLeft="5dp"
         android:gravity="center_vertical"
         android:text="Player 1"
         app:layout_constraintLeft_toRightOf="@id/seed1"
+        app:layout_constraintTop_toTopOf="@id/matchNumber"
         android:background="@drawable/outline"/>
 
     <TextView
         android:id="@+id/participant2"
-        android:layout_width="100dp"
+        android:layout_width="@dimen/player_name_width"
         android:layout_height="30dp"
         android:paddingLeft="5dp"
         android:gravity="center_vertical"

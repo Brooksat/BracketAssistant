@@ -24,6 +24,7 @@ public class bracketConnectorView extends View {
     int color;
 
 
+
     public bracketConnectorView(Context context, @Nullable AttributeSet attrs, int heightInput, int mode, String lol) {
         super(context, attrs);
         this.heightInput = heightInput;
@@ -79,7 +80,7 @@ public class bracketConnectorView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
 
-        int width = getResources().getDimensionPixelSize(R.dimen.match_width) / 4;
+        int width = getResources().getDimensionPixelSize(R.dimen.bcv_width);
         int height = heightInput;
         int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
         int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);

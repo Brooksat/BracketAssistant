@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -26,6 +27,8 @@ public class BracketView extends ConstraintLayout {
     final static float mMaxZoom = 5.0f;
     int screenWidth;
     int screenHeight;
+    int statusBarHeight;
+    int navigationBarHeight;
     Context mContext;
 
 
@@ -43,10 +46,23 @@ public class BracketView extends ConstraintLayout {
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-
+        init();
     }
 
+    private void init() {
 
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int resourceId2 = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            Log.d("statusBarHeight", String.valueOf(statusBarHeight));
+        }
+
+        if (resourceId > 0) {
+            navigationBarHeight = getResources().getDimensionPixelSize(resourceId2);
+            Log.d("navigationBarHeight", String.valueOf(navigationBarHeight));
+        }
+    }
 
 
 
@@ -71,7 +87,7 @@ public class BracketView extends ConstraintLayout {
 
 
         int desiredWSpec = MeasureSpec.makeMeasureSpec(childSumWidth, MeasureSpec.UNSPECIFIED);
-        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight, MeasureSpec.EXACTLY);
+        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight + statusBarHeight, MeasureSpec.EXACTLY);
         setMeasuredDimension(desiredWSpec, desiredHSpec);
         super.onMeasure(desiredWSpec, desiredHSpec);
     }

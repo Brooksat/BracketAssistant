@@ -2,17 +2,27 @@ package ferox.bracket;
 
 public class Participant {
 
+    int id;
     private String name;
     private int seed;
 
     public Participant() {
-        this.name = "Undecided";
+        this.id = 0;
+        this.name = "";
         this.seed = 0;
     }
 
     public Participant(String name, int seed) {
         this.name = name;
         this.seed = seed;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

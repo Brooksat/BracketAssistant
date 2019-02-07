@@ -1,9 +1,12 @@
 package ferox.bracket;
 
 public class Match {
+    private int id;
     private int number;
     private int p1Seed;
     private int p2Seed;
+    int p1PreviousIdentifier;
+    int p2PreviousIdentifier;
     private Participant p1;
     private Participant p2;
     private Match p1PreviousMatch;
@@ -14,10 +17,11 @@ public class Match {
     private String p2PrereqText;
 
 
-    public Match(int number, int p1Seed, int p2Seed, Participant p1, Participant p2,
+    public Match(int id, int number, int p1Seed, int p2Seed, Participant p1, Participant p2,
                  Match p1PreviousMatch, Match p2PreviousMatch, boolean P1Decided, boolean P2Decided,
                  String p1PrereqText, String p2PrereqText) {
         super();
+        this.id = id;
         this.number = number;
         this.p1Seed = p1Seed;
         this.p2Seed = p2Seed;
@@ -33,9 +37,12 @@ public class Match {
     }
 
     public Match() {
+        id = 0;
         number = 0;
         p1Seed = 0;
         p2Seed = 0;
+        p1PreviousIdentifier = 0;
+        p2PreviousIdentifier = 0;
         p1 = null;
         p2 = null;
         p1PreviousMatch = null;
@@ -47,14 +54,30 @@ public class Match {
 
     }
 
-    public Match(int number, Participant p1, Participant p2, Match previous1, Match p2PreviousMatch) {
-        this.number = number;
-        this.p1 = p1;
-        this.p2 = p2;
-        this.p1PreviousMatch = previous1;
-        this.p2PreviousMatch = p2PreviousMatch;
+
+    public int getId() {
+        return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getP1PreviousIdentifier() {
+        return p1PreviousIdentifier;
+    }
+
+    public void setP1PreviousIdentifier(int p1PreviousIdentifier) {
+        this.p1PreviousIdentifier = p1PreviousIdentifier;
+    }
+
+    public int getP2PreviousIdentifier() {
+        return p2PreviousIdentifier;
+    }
+
+    public void setP2PreviousIdentifier(int p2PreviousIdentifier) {
+        this.p2PreviousIdentifier = p2PreviousIdentifier;
+    }
 
     public int getNumber() {
         return number;
