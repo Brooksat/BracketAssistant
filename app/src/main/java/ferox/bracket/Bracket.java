@@ -3,6 +3,7 @@ package ferox.bracket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +39,7 @@ public class Bracket extends AppCompatActivity {
     LinearLayout roundLosers;
     LinearLayout bracketWinners;
     LinearLayout bracketLosers;
+    LoadingView lv;
 
     TextView yposition;
     TextView bracketHeight;
@@ -85,6 +87,7 @@ public class Bracket extends AppCompatActivity {
         bracketWinners = findViewById(R.id.bracket_winners);
         roundLosers = findViewById(R.id.round_losers);
         bracketLosers = findViewById(R.id.bracket_losers);
+        lv = findViewById(R.id.loading_view);
 
         url = intent.getStringExtra("tournamentURL");
         type = intent.getStringExtra("tournamentType");
@@ -95,16 +98,16 @@ public class Bracket extends AppCompatActivity {
         getMatches(url);
 
 
-//        final Handler handler = new Handler();
-//        final int delay = 10; //milliseconds
-//
-//        handler.postDelayed(new Runnable() {
-//            public void run() {
-//                //do something
-//                bv.montitor(yposition, bracketHeight, screenHeight);
-//                handler.postDelayed(this, delay);
-//            }
-//        }, delay);
+        final Handler handler = new Handler();
+        final int delay = 800; //milliseconds
+
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                //do something
+                lv.updateAnimation();
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
 
     }
 
@@ -420,7 +423,7 @@ public class Bracket extends AppCompatActivity {
             }
         }
 
-
+        lv.setVisibility(View.GONE);
     }
 
     public void makeGrandFinals(int multiplier, ViewGroup vg) {

@@ -5,8 +5,8 @@ public class Match {
     private int number;
     private int p1Seed;
     private int p2Seed;
-    int p1PreviousIdentifier;
-    int p2PreviousIdentifier;
+    private int p1PreviousIdentifier;
+    private int p2PreviousIdentifier;
     private Participant p1;
     private Participant p2;
     private Match p1PreviousMatch;
