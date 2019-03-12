@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/single_elim"
-        android:title="Single ELimation"></item>
+        android:title="Single Elimination"></item>
     <item android:id="@+id/double_elim"
         android:title="Double Elimination"></item>
     <item android:id="@+id/round_robin"
         android:title="Round Robin"></item>
-    <item android:id="@+id/swiss"
-        android:title="Swiss"></item>
+    <!--<item android:id="@+id/swiss"-->
+    <!--android:title="Swiss"></item>-->
 </menu>

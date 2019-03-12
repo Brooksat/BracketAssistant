@@ -34,6 +34,7 @@ public class ChallongeRequests {
         String url = apiurl;
         url += "/" + name;
         url += jsonTag + apiKeySegment + apiKey;
+        url += "&include_matches=1&include_participants=1";
         return url;
     }
 

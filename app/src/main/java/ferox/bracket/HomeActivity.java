@@ -5,14 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
@@ -34,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Log.d("gettting tourneys", "here");
-        getTournaments();
+        indexTournaments();
         tournamentList = new ArrayList<>();
         nameList = new ArrayList<>();
 
@@ -66,32 +63,29 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-        ListView listView = findViewById(R.id.listOfTournaments);
+        ListView listView = findViewById(R.id.tournament_list);
 
 
-        ArrayAdapter<String> listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nameList);
+        ArrayAdapter<String> listViewAdapter = new ArrayAdapter<String>(this, R.layout.menu_list_item, nameList);
         listView.setAdapter(listViewAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(view.getContext(), Bracket.class);
-                intent.putExtra("tournamentName", tournamentList.get(position).getName());
-                intent.putExtra("tournamentURL", tournamentList.get(position).getUrl());
-                intent.putExtra("tournamentType", tournamentList.get(position).getTournamentType());
-                intent.putExtra("tournamentState", tournamentList.get(position).getState());
-                intent.putExtra("tournamentSize", tournamentList.get(position).getSize());
-                startActivity(intent);
-                Log.d("Size", String.valueOf(tournamentList.get(position).getSize()));
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(view.getContext(), Bracket.class);
+            intent.putExtra("tournamentName", tournamentList.get(position).getName());
+            intent.putExtra("tournamentURL", tournamentList.get(position).getUrl());
+            intent.putExtra("tournamentType", tournamentList.get(position).getTournamentType());
+            intent.putExtra("tournamentState", tournamentList.get(position).getState());
+            intent.putExtra("tournamentSize", tournamentList.get(position).getSize());
+            startActivity(intent);
+            Log.d("TournamentName", String.valueOf(tournamentList.get(position).getName()));
 
 
-            }
         });
 
         listView.invalidate();
     }
 
-    public void getTournaments() {
+    public void indexTournaments() {
         VolleyLog.DEBUG = true;
 
         RequestQueue queue = RequestQueueSingleton.getInstance(getApplicationContext()).
@@ -99,20 +93,11 @@ public class HomeActivity extends AppCompatActivity {
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.tournamentsIndex(null),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("Response", response);
-                        makeTournamentList(response);
-                        Log.d("Request", " Request Received");
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response", " Error");
-            }
-        });
-
+                response -> {
+                    Log.d("Response", response);
+                    makeTournamentList(response);
+                    Log.d("Request", " Request Received");
+                }, error -> Log.d("Response", String.valueOf(error)));
 
         RequestQueueSingleton.getInstance(this).addToRequestQueue(stringRequest);
 

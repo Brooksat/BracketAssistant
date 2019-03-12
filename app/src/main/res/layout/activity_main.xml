@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="60sp"
     android:orientation="horizontal"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    style="@style/menu_layout">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="200sp"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toTopOf="parent"
         android:text="Welcome to Ferox's Bracket Maker using Challonge's API."
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
+        style="@style/menu_h2" />
 
     <EditText
         android:id="@+id/usernametext"
@@ -27,7 +32,10 @@
 
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
+        style="@style/menu_edit_text" />
 
     <EditText
         android:id="@+id/passwordtext"
@@ -35,7 +43,10 @@
         android:layout_height="50sp"
         android:text="Password(API KEY)"
         app:layout_constraintLeft_toLeftOf="@id/usernametext"
-        app:layout_constraintTop_toBottomOf="@id/usernametext" />
+        app:layout_constraintTop_toBottomOf="@id/usernametext"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
+        style="@style/menu_edit_text" />
 
     <Button
         android:layout_width="wrap_content"
@@ -46,6 +57,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:onClick="goToSecondActivity"
+        style="@style/menu_button"
         />
 
 

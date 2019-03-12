@@ -3,4 +3,13 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="menu_background">#424242</color>
+    <color name="menu_background_light">#707070</color>
+    <color name="menu_background_dark">#252525</color>
+    <color name="menu_hint">#A7A7A7</color>
+    <color name="menu_text">#FFFFFF</color>
+    <color name="menu_h1">#313131</color>
+    <color name="menu_title">#6779F0</color>
+    <color name="menu_title_dark">#4955AA</color>
+    <color name="button_background">#DDDDDD</color>
 </resources>

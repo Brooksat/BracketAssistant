@@ -1,11 +1,163 @@
-<resources>
+<resources xmlns:http="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="menu_layout">
+        <item name="android:background">@color/menu_background</item>
+        <item name="android:textColor">@color/menu_text</item>
+    </style>
+
+    <style name="menu_title">
+        <item name="android:background">@color/menu_title</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">55dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
+    <style name="menu_h1">
+        <item name="android:background">@color/menu_h1</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="menu_h2">
+        <item name="android:background">@drawable/menu_bottom_border</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+    <style name="menu_h2_light">
+        <item name="android:background">@drawable/menu_bottom_border_light</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+
+    <style name="menu_edit_text">
+        <item name="android:background">@drawable/menu_edit_text_outline</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textColorHint">@color/menu_hint</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+
+    </style>
+
+
+    <style name="menu_text_radio">
+        <item name="android:background">@color/menu_background</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:buttonTint">@color/menu_title</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="menu_checkbox">
+        <item name="android:background">@color/menu_background</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:buttonTint">@color/menu_title</item>
+        <item name="android:checkMarkTint">@color/menu_title</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+
+    </style>
+
+    <style name="menu_spinner">
+        <item name="android:layout_height">35dp</item>
+        <item name="android:backgroundTint">@color/menu_title</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="menu_list_item">
+        <item name="android:background">@drawable/menu_bottom_border</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_height">65dp</item>
+        <item name="android:paddingStart">15dp</item>
+        <item name="android:paddingEnd">5dp</item>
+    </style>
+
+    <style name="menu_spinner_item">
+        <item name="android:background">@color/menu_background</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="menu_button">
+        <item name="android:tint">@color/menu_title</item>
+        <item name="android:backgroundTint">@color/menu_background</item>
+    </style>
+
+    <style name="match">
+        <item name="android:background">@drawable/match_outline</item>
+        <item name="android:textColor">@color/menu_text</item>
+    </style>
+
+    <style name="menu_tablayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/menu_title</item>
+        <item name="tabSelectedTextColor">@color/menu_title</item>
+        <item name="tabTextAppearance">@style/menu_tab</item>
+    </style>
+
+    <style name="menu_tab">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/menu_text</item>
+    </style>
+
+    <style name="menu_round">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/menu_text</item>
+    </style>
+
 
 </resources>

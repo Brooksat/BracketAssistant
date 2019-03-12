@@ -3,10 +3,10 @@ package ferox.bracket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.TabLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,8 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-public class Bracket extends AppCompatActivity
-        implements BracketFragment.BracketListener {
+public class BracketFragment extends Fragment {
 
     final static int UNUSED_WINNERS = 0;
     final static int UNUSED_LOSERS_ODD = 1;
@@ -41,13 +40,6 @@ public class Bracket extends AppCompatActivity
     final static String PENDING = "pending";
     final static String COMPLETE = "complete";
 
-
-    BracketView bv;
-    LinearLayout roundWinners;
-    LinearLayout roundLosers;
-    LinearLayout bracketWinners;
-    LinearLayout bracketLosers;
-    LoadingView lv;
 
     TextView yposition;
     TextView bracketHeight;
@@ -72,73 +64,67 @@ public class Bracket extends AppCompatActivity
     String state;
     int numberOfParticipants;
 
-    BracketPagerAdapter mBracketPagerAdapter;
-    ViewPagerNoHorsScroll mViewPager;
+    private BracketListener listener;
 
+    BracketView bv;
+    LoadingView lv;
+    LinearLayout roundWinners;
+    LinearLayout roundLosers;
+    LinearLayout bracketWinners;
+    LinearLayout bracketLosers;
 
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bracket);
-        ActionBar actionBar = getSupportActionBar();
-        Intent intent = getIntent();
-
-
-        mViewPager = findViewById(R.id.fragment_container);
-        mViewPager.setOffscreenPageLimit(2);
-        mBracketPagerAdapter = new BracketPagerAdapter(this.getSupportFragmentManager());
-        mViewPager.setAdapter(mBracketPagerAdapter);
-
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.bracket_tab_layout);
-        tabLayout.setupWithViewPager(mViewPager);
-
-
-//        mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height) / 2;
-//        mWidthUnit = getResources().getDimensionPixelSize(R.dimen.match_width);
-//
-//
-//        winnersRounds = new ArrayList<>();
-//        losersRounds = new ArrayList<>();
-//
-//        oneParticipantMessage = findViewById(R.id.one_participant_message);
-//        bv = findViewById(R.id.bracket_root);
-//
-//
-//
-//        roundWinners = findViewById(R.id.round_winners);
-//        bracketWinners = findViewById(R.id.bracket_winners);
-//        roundLosers = findViewById(R.id.round_losers);
-//        bracketLosers = findViewById(R.id.bracket_losers);
-//        lv = findViewById(R.id.loading_view);
-//
-//        url = intent.getStringExtra("tournamentURL");
-//        type = intent.getStringExtra("tournamentType");
-//        numberOfParticipants = intent.getIntExtra("tournamentSize", 0);
-//
-//        CR = new ChallongeRequests(api_key);
-
-        //getMatches(url);
-
-
-//        final Handler handler = new Handler();
-//        Runnable runnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                lv.updateAnimation();
-//            }
-//        };
-//        final int delay = 800; //milliseconds
-//
-//        handler.postDelayed(runnable, delay);
-
+    public interface BracketListener {
+        LinearLayout getStuff();
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Intent intent = getActivity().getIntent();
+        View v = inflater.inflate(R.layout.fragment_bracket, container, false);
+        bv = v.findViewById(R.id.bracket_root);
+        roundWinners = v.findViewById(R.id.round_winners);
+        bracketWinners = v.findViewById(R.id.bracket_winners);
+        roundLosers = v.findViewById(R.id.round_losers);
+        bracketLosers = v.findViewById(R.id.bracket_losers);
+        lv = v.findViewById(R.id.loading_view);
+
+        mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height) / 2;
+        mWidthUnit = getResources().getDimensionPixelSize(R.dimen.match_width);
 
 
+        winnersRounds = new ArrayList<>();
+        losersRounds = new ArrayList<>();
 
+        oneParticipantMessage = v.findViewById(R.id.one_participant_message);
+
+        url = intent.getStringExtra("tournamentURL");
+        type = intent.getStringExtra("tournamentType");
+        numberOfParticipants = intent.getIntExtra("tournamentSize", 0);
+
+
+        CR = new ChallongeRequests(api_key);
+
+        getMatches(url);
+
+        return v;
+    }
+
+    public void getMatches(String URL) {
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
+                response -> {
+                    Log.d("Response", response);
+                    getMatchInfo(response);
+                    Log.d("Request", " Request Received");
+                }, error -> Log.d("Response", String.valueOf(error)));
+
+
+        RequestQueueSingleton.getInstance(this.getContext()).addToRequestQueue(stringRequest);
+
+    }
 
     public void getMatchInfo(String jsonString) {
         JsonParser jsonParser = new JsonParser();
@@ -230,26 +216,9 @@ public class Bracket extends AppCompatActivity
         Collections.reverse(losersRounds);
         init();
 
-        startBracketDisplay(1, 1, this);
+        startBracketDisplay(1, 1, this.getContext());
 
     }
-
-
-    public void getMatches(String URL) {
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
-                response -> {
-                    Log.d("Response", response);
-                    getMatchInfo(response);
-                    Log.d("Request", " Request Received");
-                }, error -> Log.d("Response", String.valueOf(error)));
-
-
-        RequestQueueSingleton.getInstance(this).addToRequestQueue(stringRequest);
-
-    }
-
 
     public void startBracketDisplay(int numRoundW, int numRoundL, Context context) {
         if (numberOfParticipants < 2) {
@@ -271,10 +240,10 @@ public class Bracket extends AppCompatActivity
         Log.d("number rounds", String.valueOf(winnersRounds.size() + " " + losersRounds.size()));
 
         //ConstraintLayout bracketRoot = findViewById(R.id.bracket_root);
-        LinearLayout roundWinners = findViewById(R.id.round_winners);
+        LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
         //LinearLayout bracketWinners = findViewById(R.id.bracket_winners);
         // LinearLayout roundLosers = findViewById(R.id.round_losers);
-        LinearLayout bracketLosers = findViewById(R.id.bracket_losers);
+        LinearLayout bracketLosers = getView().findViewById(R.id.bracket_losers);
 
         //empties the linear layouts. May not be needed
 //        for (int i = 0; i < bracketRoot.getChildCount(); i++) {
@@ -489,7 +458,7 @@ public class Bracket extends AppCompatActivity
     public void makeRound(int numMatches, int multiplier, ViewGroup vg, int modifier) {
 
         Log.d("makeRoundCalled", String.valueOf(modifier));
-        LinearLayout matches = new LinearLayout(this);
+        LinearLayout matches = new LinearLayout(this.getContext());
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         matches.setLayoutParams(layoutParams);
@@ -499,7 +468,7 @@ public class Bracket extends AppCompatActivity
 
         //for every round after round 1 there is a space added before the matches for alignment
         if (multiplier != 0 || modifier == 1) {
-            Space space = new Space(this);
+            Space space = new Space(this.getContext());
             space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2 + (modifier == 0 ? 0 : 1))));
             matches.addView(space);
@@ -507,11 +476,11 @@ public class Bracket extends AppCompatActivity
 
         //creates the matches
         for (int j = 0; j < numMatches; j++) {
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             assert inflater != null;
             ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
 
-            Space space = new Space(this);
+            Space space = new Space(this.getContext());
             space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     (mHeightUnit * ((int) Math.pow(2, multiplier + 2) - 2))));
             if (j == numMatches - 1) {
@@ -539,16 +508,16 @@ public class Bracket extends AppCompatActivity
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout bracketConnector = new LinearLayout(this);
+        LinearLayout bracketConnector = new LinearLayout(this.getContext());
         bracketConnector.setLayoutParams(layoutParams);
         bracketConnector.setOrientation(LinearLayout.VERTICAL);
 
         //for non grand finals rounds
         if (modifier == 0) {
             for (int i = 0; i < numMatches / 2; i++) {
-                Space space = new Space(this);
-                Space space2 = new Space(this);
-                Space space3 = new Space(this);
+                Space space = new Space(this.getContext());
+                Space space2 = new Space(this.getContext());
+                Space space3 = new Space(this.getContext());
                 space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 1)));
                 space2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -556,11 +525,11 @@ public class Bracket extends AppCompatActivity
                 space3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         mHeightUnit * 2));
 
-                bracketConnectorView bcv = new bracketConnectorView(this, null
+                bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null
                         , mHeightUnit * (int) Math.pow(2, multiplier + 1)
                         , bracketConnectorView.MODE_TOP
                         , "");
-                bracketConnectorView bcv2 = new bracketConnectorView(this, null
+                bracketConnectorView bcv2 = new bracketConnectorView(this.getContext(), null
                         , mHeightUnit * (int) Math.pow(2, multiplier + 1)
                         , bracketConnectorView.MODE_BOTTOM
                         , "");
@@ -576,19 +545,19 @@ public class Bracket extends AppCompatActivity
         }
         //grandfinals
         else if (modifier == 1) {
-            Space space = new Space(this);
+            Space space = new Space(this.getContext());
             space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 1)));
-            bracketConnectorView bcv = new bracketConnectorView(this, null, mHeightUnit, bracketConnectorView.MODE_TOP, "");
+            bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null, mHeightUnit, bracketConnectorView.MODE_TOP, "");
             bracketConnector.addView(space);
             bracketConnector.addView(bcv);
         }
         //grandfinals reset
         else if (modifier == 2) {
-            Space space = new Space(this);
+            Space space = new Space(this.getContext());
             space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2 + 1)));
-            bracketConnectorView bcv = new bracketConnectorView(this, null, mHeightUnit * 2, bracketConnectorView.MODE_MIDDLE, "");
+            bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null, mHeightUnit * 2, bracketConnectorView.MODE_MIDDLE, "");
             bracketConnector.addView(space);
             bracketConnector.addView(bcv);
         }
@@ -596,14 +565,14 @@ public class Bracket extends AppCompatActivity
         else if (modifier == 4) {
 
             if (multiplier != 0) {
-                Space space = new Space(this);
+                Space space = new Space(this.getContext());
                 space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2)));
                 bracketConnector.addView(space);
             }
             for (int i = 0; i < numMatches; i++) {
-                bracketConnectorView bcv = new bracketConnectorView(this, null, mHeightUnit * 2, bracketConnectorView.MODE_MIDDLE, "");
-                Space space = new Space(this);
+                bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null, mHeightUnit * 2, bracketConnectorView.MODE_MIDDLE, "");
+                Space space = new Space(this.getContext());
                 space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         (mHeightUnit * ((int) Math.pow(2, multiplier + 2) - 2))));
                 bracketConnector.addView(bcv);
@@ -617,8 +586,8 @@ public class Bracket extends AppCompatActivity
 
 
     public void setRoundHeaders(int numRounds) {
-        LinearLayout roundWinners = findViewById(R.id.round_winners);
-        LinearLayout roundLosers = findViewById(R.id.round_losers);
+        LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
+        LinearLayout roundLosers = getView().findViewById(R.id.round_losers);
 
         ViewGroup.MarginLayoutParams roundHeaderLayoutParams = new ViewGroup.MarginLayoutParams(
                 getResources().getDimensionPixelSize(R.dimen.match_width) + getResources().getDimensionPixelSize(R.dimen.bcv_width), getResources().getDimensionPixelSize(R.dimen.round_header_height));
@@ -627,14 +596,14 @@ public class Bracket extends AppCompatActivity
 
         //adds round headers
         for (int i = 0; i < winnersRounds.size(); i++) {
-            TextView roundNumber = new TextView(this);
+            TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
             roundNumber.setLayoutParams(roundHeaderLayoutParams);
             roundNumber.setGravity(Gravity.CENTER);
             roundNumber.setText(winnersRounds.get(i).getName());
             roundWinners.addView(roundNumber);
         }
         for (int i = 0; i < losersRounds.size(); i++) {
-            TextView roundNumber = new TextView(this);
+            TextView roundNumber = new TextView(this.getContext());
             roundNumber.setLayoutParams(roundHeaderLayoutParams);
             roundNumber.setGravity(Gravity.CENTER);
             roundNumber.setText(losersRounds.get(i).getName());
@@ -696,53 +665,36 @@ public class Bracket extends AppCompatActivity
 
 
     @Override
-    public LinearLayout getStuff() {
-        Log.d("Interface method", "is called");
-        BracketFragment bf = (BracketFragment) mBracketPagerAdapter.getItem(0);
-        bracketWinners = bf.getBracketWinners();
-        return null;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof BracketListener) {
+            listener = (BracketListener) context;
+            listener.getStuff();
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement BracketListener");
+        }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
 
-//    public boolean isPowerOfTwo(int num) {
-//        return (num & (num - 1)) == 0;
-//    }
-//
-//    public int nextOrEqualPowerOfTwo(int i) {
-//        //zero causes the method to return max int value which causes an out of memeory error
-//        if (i == 0) {
-//            return 0;
-//        }
-//        int result = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(i - 1));
-//        if (result / 2 == i) {
-//            return i;
-//        }
-//        return result;
-//    }
+    public LinearLayout getRoundWinners() {
+        return roundWinners;
+    }
 
+    public LinearLayout getRoundLosers() {
+        return roundLosers;
+    }
 
-//    public int getPostQualRound() {
-//        return postQualRound;
-//    }
-//
-//    public void setPostQualRound(int postQualRound) {
-//        this.postQualRound = postQualRound;
-//    }
-//
-//    public void setQualifyRound(int qualifyRound) {
-//        this.qualifyRound = qualifyRound;
-//    }
-//
-//    public void setNumOfLR1(int numOfLR1) {
-//        this.numOfLR1 = numOfLR1;
-//    }
-//
-//    public String getUrl() {
-//        return url;
-//    }
-//
-//    public void setUrl(String url) {
-//        this.url = url;
-//    }
+    public LinearLayout getBracketWinners() {
+        return bracketWinners;
+    }
+
+    public LinearLayout getBracketLosers() {
+        return bracketLosers;
+    }
 }
-
