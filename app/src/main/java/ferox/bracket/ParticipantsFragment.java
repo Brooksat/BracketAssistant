@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class ParticipantsFragment extends Fragment {
@@ -31,7 +33,10 @@ public class ParticipantsFragment extends Fragment {
 
     String url;
 
+
     RecyclerView recyclerView;
+    RecyclerViewAdapter adapter;
+    ItemTouchHelper helper;
     ArrayList<String> playerSeeds = new ArrayList<>();
     ArrayList<String> playerNames = new ArrayList<>();
     ChallongeRequests CR = new ChallongeRequests(api_key);
@@ -46,6 +51,29 @@ public class ParticipantsFragment extends Fragment {
 
 
         recyclerView = v.findViewById(R.id.participant_list);
+
+        helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder moved, RecyclerView.ViewHolder target) {
+
+                int movedPosition = moved.getAdapterPosition();
+                int targetPostition = target.getAdapterPosition();
+
+                Collections.swap(playerSeeds, movedPosition, targetPostition);
+                Collections.swap(playerNames, movedPosition, targetPostition);
+
+                adapter.notifyItemMoved(movedPosition, targetPostition);
+
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+
+        helper.attachToRecyclerView(recyclerView);
 
         url = intent.getStringExtra("tournamentURL");
         showTournament();
@@ -94,7 +122,7 @@ public class ParticipantsFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.getContext(), playerSeeds, playerNames);
+        adapter = new RecyclerViewAdapter(this.getContext(), playerSeeds, playerNames);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
