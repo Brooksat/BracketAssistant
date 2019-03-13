@@ -38,9 +38,8 @@ public class ParticipantsFragment extends Fragment {
     RecyclerViewAdapter adapter;
     ItemTouchHelper helper;
     ArrayList<String> playerSeeds = new ArrayList<>();
-    ArrayList<String> playerNames = new ArrayList<>();
+    ArrayList<Participant> players = new ArrayList<>();
     ChallongeRequests CR = new ChallongeRequests(api_key);
-    ArrayList<Participant> playerList = new ArrayList<>();
 
 
     @Nullable
@@ -54,23 +53,39 @@ public class ParticipantsFragment extends Fragment {
 
         helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder moved, RecyclerView.ViewHolder target) {
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
 
-                int movedPosition = moved.getAdapterPosition();
+                int movedPosition = viewHolder.getAdapterPosition();
                 int targetPostition = target.getAdapterPosition();
 
-                Collections.swap(playerSeeds, movedPosition, targetPostition);
-                Collections.swap(playerNames, movedPosition, targetPostition);
+                //Collections.swap(playerSeeds, movedPosition, targetPostition);
+                Collections.swap(players, movedPosition, targetPostition);
 
                 adapter.notifyItemMoved(movedPosition, targetPostition);
+                adapter.notifyItemChanged(targetPostition);
+                adapter.notifyItemChanged(movedPosition);
 
                 return false;
+            }
+
+            @Override
+            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+
+                int viewHolderPos = viewHolder.getAdapterPosition();
+
+                if ((viewHolderPos + 1) != players.get(viewHolderPos).getSeed()) {
+                    updateParticipantSeed(url, String.valueOf(players.get(viewHolderPos).getId()), viewHolderPos + 1);
+                }
+
+
             }
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
             }
+
         });
 
         helper.attachToRecyclerView(recyclerView);
@@ -99,6 +114,23 @@ public class ParticipantsFragment extends Fragment {
 
     }
 
+    public void updateParticipantSeed(String tournamentURL, String participantId, int seed) {
+        VolleyLog.DEBUG = true;
+
+        RequestQueue queue = RequestQueueSingleton.getInstance(this.getContext().getApplicationContext()).
+                getRequestQueue();
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.PUT, CR.participantUpdate(tournamentURL, participantId, seed),
+                response -> {
+                    Log.d("ParticipantUpdate", response);
+                    Log.d("Request", " Request Received");
+                }, error -> Log.d("Response", String.valueOf(error)));
+
+        RequestQueueSingleton.getInstance(this.getContext()).addToRequestQueue(stringRequest);
+
+    }
+
     public void initPlayerList(String jsonString) {
 
         JsonParser jsonParser = new JsonParser();
@@ -109,11 +141,10 @@ public class ParticipantsFragment extends Fragment {
             Participant player = new Participant();
             JsonObject participantObject = participant.getAsJsonObject().get("participant").getAsJsonObject();
 
-            player.setId(participantObject.get("tournament_id").getAsInt());
+            player.setId(participantObject.get("id").getAsInt());
             player.setName(participantObject.get("name").getAsString());
             player.setSeed(participantObject.get("seed").getAsInt());
-            playerList.add(player);
-            playerNames.add(player.getName());
+            players.add(player);
             playerSeeds.add(String.valueOf(player.getSeed()));
 
         }
@@ -122,7 +153,7 @@ public class ParticipantsFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        adapter = new RecyclerViewAdapter(this.getContext(), playerSeeds, playerNames);
+        adapter = new RecyclerViewAdapter(this.getContext(), playerSeeds, players);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
