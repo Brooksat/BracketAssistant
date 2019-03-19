@@ -1,9 +1,6 @@
 package ferox.bracket;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +9,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
+
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
 
@@ -19,11 +20,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Context mContext;
     ArrayList<String> seeds = new ArrayList<>();
     ArrayList<String> names = new ArrayList<>();
+    ArrayList<Participant> players;
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<String> seeds, ArrayList<String> names) {
+    public RecyclerViewAdapter(Context mContext, ArrayList<Participant> players) {
         this.mContext = mContext;
-        this.seeds = seeds;
-        this.names = names;
+        this.players = players;
     }
 
     @NonNull
@@ -37,13 +38,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.participantSeedView.setText(seeds.get(position));
-        holder.participantNameView.setText(names.get(position));
+
+        holder.participantSeedView.setText(String.valueOf(players.get(position).getSeed()));
+        holder.participantNameView.setText(players.get(position).getName());
     }
 
     @Override
     public int getItemCount() {
-        return names.size();
+        return players.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

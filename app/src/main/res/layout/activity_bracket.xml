@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bracket_root_view"
     android:layout_width="match_parent"
@@ -9,7 +9,7 @@
     style="@style/menu_layout">
 
 
-    <android.support.design.widget.TabLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/bracket_tab_layout"
         style="@style/menu_tablayout"
         android:layout_width="match_parent"
@@ -27,7 +27,4 @@
     </ferox.bracket.ViewPagerNoHorsScroll>
 
 
-
-
-
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,13 +3,14 @@ package ferox.bracket;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 
 public class BracketView extends ConstraintLayout {

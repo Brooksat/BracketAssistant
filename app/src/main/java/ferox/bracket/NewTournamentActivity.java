@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +20,8 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 import java.util.Locale;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class NewTournamentActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 

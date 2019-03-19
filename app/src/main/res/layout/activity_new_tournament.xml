@@ -17,7 +17,7 @@
         android:orientation="vertical"
         android:paddingBottom="50dp">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/basic_info_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -118,10 +118,10 @@
                 app:layout_constraintTop_toBottomOf="@id/description_header" />
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/game_info_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -162,7 +162,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/format_header">
 
-                <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/single_elim_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -176,9 +176,9 @@
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                </android.support.constraint.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/double_elim_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -214,9 +214,9 @@
                             android:text="None" />
                     </RadioGroup>
 
-                </android.support.constraint.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/round_robin_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -241,7 +241,7 @@
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/round_robin_custom_parameters"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -309,16 +309,16 @@
                             app:layout_constraintTop_toTopOf="@id/points_per_gameset_tie" />
 
 
-                    </android.support.constraint.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </android.support.constraint.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/registration_info_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -451,10 +451,10 @@
                 app:layout_constraintTop_toTopOf="@id/max_number_participants_header" />
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/advanced_options_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -513,7 +513,7 @@
             </LinearLayout>
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 

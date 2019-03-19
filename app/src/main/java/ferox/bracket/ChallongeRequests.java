@@ -62,6 +62,10 @@ public class ChallongeRequests {
         return url;
     }
 
+    public String participantUpdate(String url, String ID, int seed) {
+        return " ";
+    }
+
     public String makeAPIParameter(String field, Object value) {
         String s = "&" + field + "=" + String.valueOf(value);
         return s;

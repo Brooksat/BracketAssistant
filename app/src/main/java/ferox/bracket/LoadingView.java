@@ -2,10 +2,11 @@ package ferox.bracket;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
-public class LoadingView extends android.support.v7.widget.AppCompatTextView {
+import androidx.annotation.Nullable;
+
+public class LoadingView extends androidx.appcompat.widget.AppCompatTextView {
     static final int DELAY = 800;
     Handler handler;
     Runnable runnable;
