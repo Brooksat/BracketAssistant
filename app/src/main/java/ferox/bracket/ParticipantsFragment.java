@@ -17,12 +17,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +37,6 @@ public class ParticipantsFragment extends Fragment {
 
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
-    ItemTouchHelper helper;
     ArrayList<String> playerSeeds = new ArrayList<>();
     ArrayList<Participant> players = new ArrayList<>();
     ChallongeRequests CR = new ChallongeRequests(api_key);
@@ -48,48 +47,24 @@ public class ParticipantsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Intent intent = getActivity().getIntent();
         View v = inflater.inflate(R.layout.fragment_participants, container, false);
+        CustomLinearLayoutManager linearLayoutManager = new CustomLinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
 
+        adapter = new RecyclerViewAdapter(getContext(), players, linearLayoutManager);
+
+
+        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+        ((DefaultItemAnimator) itemAnimator).setSupportsChangeAnimations(false);
+
+
+        // idk what getActivity gets
         recyclerView = v.findViewById(R.id.participant_list);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setItemAnimator(itemAnimator);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        recyclerView.setAdapter(adapter);
+        adapter.getHelper().attachToRecyclerView(recyclerView);
 
-        helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-
-                int movedPosition = viewHolder.getAdapterPosition();
-                int targetPostition = target.getAdapterPosition();
-
-                //Collections.swap(playerSeeds, movedPosition, targetPostition);
-                Collections.swap(players, movedPosition, targetPostition);
-
-                adapter.notifyItemMoved(movedPosition, targetPostition);
-                adapter.notifyItemChanged(targetPostition);
-                adapter.notifyItemChanged(movedPosition);
-
-                return false;
-            }
-
-            @Override
-            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                super.clearView(recyclerView, viewHolder);
-
-                int viewHolderPos = viewHolder.getAdapterPosition();
-
-                if ((viewHolderPos + 1) != players.get(viewHolderPos).getSeed()) {
-                    updateParticipantSeed(url, String.valueOf(players.get(viewHolderPos).getId()), viewHolderPos + 1);
-                }
-
-
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-            }
-
-        });
-
-        helper.attachToRecyclerView(recyclerView);
 
         url = intent.getStringExtra("tournamentURL");
         showTournament();
@@ -150,12 +125,9 @@ public class ParticipantsFragment extends Fragment {
 
         }
 
-        initRecyclerView();
+
+        adapter.notifyDataSetChanged();
     }
 
-    private void initRecyclerView() {
-        adapter = new RecyclerViewAdapter(this.getContext(), players);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-    }
+
 }
