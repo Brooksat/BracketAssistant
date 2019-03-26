@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,24 +46,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 int movedPosition = viewHolder.getAdapterPosition();
                 int targetPostition = target.getAdapterPosition();
 
-//                int firstPosition = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-//                int offsetTop = 0;
-//
-//                if(firstPosition >= 0) {
-//                    View firstView = linearLayoutManager.findViewByPosition(firstPosition);
-//                    offsetTop = linearLayoutManager.getDecoratedTop(firstView) - linearLayoutManager.getTopDecorationHeight(firstView);
-//                }
-
-                //Collections.swap(playerSeeds, movedPosition, targetPostition);
+                swapSeed(players.get(movedPosition), players.get(targetPostition));
                 Collections.swap(players, movedPosition, targetPostition);
 
                 notifyItemMoved(movedPosition, targetPostition);
                 notifyItemChanged(targetPostition);
                 notifyItemChanged(movedPosition);
 
-//                if(firstPosition >= 0) {
-//                    linearLayoutManager.scrollToPositionWithOffset(firstPosition, offsetTop);
-//                }
 
                 return true;
             }
@@ -114,19 +104,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.participantSeedView.setText(String.valueOf(players.get(position).getSeed()));
         holder.participantNameView.setText(players.get(position).getName());
-        holder.participantSeedView.setOnTouchListener((v, event) -> {
-            switch (event.getActionMasked()) {
-                case (MotionEvent.ACTION_DOWN): {
-                    holder.participantListItemLayout.requestDisallowInterceptTouchEvent(true);
-                    helper.startDrag(holder);
-                    break;
-                }
-                case (MotionEvent.ACTION_UP): {
-                    holder.participantListItemLayout.requestDisallowInterceptTouchEvent(false);
-                }
+
+        holder.participantDragHandle.setOnTouchListener((v, event) -> {
+
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                helper.startDrag(holder);
             }
+//            switch (event.getActionMasked()) {
+//
+//
+//                case (MotionEvent.ACTION_DOWN): {
+//                    holder.participantListItemLayout.requestDisallowInterceptTouchEvent(true);
+//                    helper.startDrag(holder);
+//                    break;
+//                }
+//                case (MotionEvent.ACTION_UP): {
+//                    holder.participantListItemLayout.requestDisallowInterceptTouchEvent(false);
+//                }
+//            }
             return false;
         });
+
 
 
     }
@@ -138,6 +136,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 
+        ImageView participantDragHandle;
         TextView participantSeedView;
         TextView participantNameView;
         ImageButton participantEditView;
@@ -146,6 +145,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public CustomViewHolder(View itemView) {
             super(itemView);
+            participantDragHandle = itemView.findViewById(R.id.participant_drag_handle);
             participantSeedView = itemView.findViewById(R.id.participant_seed);
             participantNameView = itemView.findViewById(R.id.participants_list_name);
             participantEditView = itemView.findViewById(R.id.participant_edit);
@@ -156,6 +156,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
 
 
+    }
+
+
+    public void swapSeed(Participant p1, Participant p2) {
+        int tmp = p1.getSeed();
+        p1.setSeed(p2.getSeed());
+        p2.setSeed(tmp);
     }
 
     public static String getTAG() {
