@@ -23,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class HomeActivity extends AppCompatActivity {
 
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
-    ChallongeRequests CR = new ChallongeRequests(api_key);
     ArrayList<Tournament> tournamentList;
     ArrayList<String> nameList;
 
@@ -93,7 +92,7 @@ public class HomeActivity extends AppCompatActivity {
                 getRequestQueue();
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.tournamentsIndex(null),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, ChallongeRequests.tournamentsIndex(null),
                 response -> {
                     Log.d("Response", response);
                     makeTournamentList(response);

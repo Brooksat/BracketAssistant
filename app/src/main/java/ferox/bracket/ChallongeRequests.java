@@ -1,20 +1,28 @@
 package ferox.bracket;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+
 public class ChallongeRequests {
 
-    static String apiurl = "https://api.challonge.com/v1/tournaments";
-    String jsonTag = ".json";
-    String apiKeySegment = "?api_key=";
-    String apiKey;
+    static Context applicationContext;
+    static private String apiurl = "https://api.challonge.com/v1/tournaments";
+    static private String jsonTag = ".json";
+    static private String apiKeySegment = "?api_key=";
+    static private String apiKey;
 
 
-    public ChallongeRequests(String apiKey) {
-        this.apiKey = apiKey;
+    public ChallongeRequests() {
+
 
     }
 
-    public String tournamentsIndex(String subDomain) {
-        String url = this.apiurl;
+    static public String tournamentsIndex(String subDomain) {
+        String url = apiurl;
         url += jsonTag;
         url += apiKeySegment + apiKey;
         if (subDomain != null) {
@@ -23,14 +31,14 @@ public class ChallongeRequests {
         return url;
     }
 
-    public String tounamentCreate(String name, String URL, int type, String subdomain, String description, boolean thirdPlaceMatch
+    static public String tounamentCreate(String name, String URL, int type, String subdomain, String description, boolean thirdPlaceMatch
     ) {
         String url = apiurl;
         url += jsonTag + apiKeySegment + apiKey;
         return url;
     }
 
-    public String tournamentShow(String name) {
+    static public String tournamentShow(String name) {
         String url = apiurl;
         url += "/" + name;
         url += jsonTag + apiKeySegment + apiKey;
@@ -47,14 +55,14 @@ public class ChallongeRequests {
     moment of serendipity that made me privy to this information because this will make developing
     this app much more convenient.
      */
-    public String jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(String url) {
+    static public String jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(String url) {
         String s = "https://challonge.com/";
         s += url + ".json";
         return s;
     }
 
 
-    public String participantIndex(String name) {
+    static public String participantIndex(String name) {
         String url = apiurl;
         url += "/" + name;
         url += "/participants";
@@ -62,14 +70,68 @@ public class ChallongeRequests {
         return url;
     }
 
-    public String participantUpdate(String url, String ID, int seed) {
+    static public String participantUpdate(String url, String ID, int seed) {
         return " ";
     }
 
-    public String makeAPIParameter(String field, Object value) {
+
+    public void sendRequest(StringRequest stringRequest) {
+
+
+    }
+
+
+    static public String sendGet(final VolleyCallback callback, String requestURL) {
+
+
+        RequestQueue queue = RequestQueueSingleton.getInstance(applicationContext).
+                getRequestQueue();
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, requestURL,
+                response -> callback.onSuccess(response),
+                error -> Log.d("Response", String.valueOf(error)));
+
+        RequestQueueSingleton.getInstance(applicationContext).addToRequestQueue(stringRequest);
+
+        return " ";
+    }
+
+    static public String makeAPIParameter(String field, Object value) {
         String s = "&" + field + "=" + String.valueOf(value);
         return s;
     }
 
 
+    public static String getApiurl() {
+        return apiurl;
+    }
+
+    public static void setApiurl(String apiurl) {
+        ChallongeRequests.apiurl = apiurl;
+    }
+
+    public static String getJsonTag() {
+        return jsonTag;
+    }
+
+    public static void setJsonTag(String jsonTag) {
+        ChallongeRequests.jsonTag = jsonTag;
+    }
+
+    public static String getApiKeySegment() {
+        return apiKeySegment;
+    }
+
+    public static void setApiKeySegment(String apiKeySegment) {
+        ChallongeRequests.apiKeySegment = apiKeySegment;
+    }
+
+    public static String getApiKey() {
+        return apiKey;
+    }
+
+    public static void setApiKey(String apiKey) {
+        ChallongeRequests.apiKey = apiKey;
+    }
 }

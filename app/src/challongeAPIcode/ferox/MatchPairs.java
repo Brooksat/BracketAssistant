@@ -32,7 +32,7 @@ public class MatchPairs {
 
 		// NEED TO GET SPECIFIC FIELDS FOR JSON LIST
 
-		ChallongeRequests CR = new ChallongeRequests();
+
 		String request = "";
 		try {
 			request = CR.getTournament("ka35zhyo");

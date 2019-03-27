@@ -15,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         VolleyLog.DEBUG = true;
+        ChallongeRequests.setApiKey("hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07");
+
     }
 
     public void goToSecondActivity(View view) {

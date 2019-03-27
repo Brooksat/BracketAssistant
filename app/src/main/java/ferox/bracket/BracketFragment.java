@@ -55,7 +55,6 @@ public class BracketFragment extends Fragment {
     int numRoundsLosers;
 
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
-    ChallongeRequests CR;
 
     ArrayList<Round> winnersRounds;
     ArrayList<Round> losersRounds;
@@ -82,6 +81,7 @@ public class BracketFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+
         Intent intent = getActivity().getIntent();
         View v = inflater.inflate(R.layout.fragment_bracket, container, false);
         bv = v.findViewById(R.id.bracket_root);
@@ -105,8 +105,6 @@ public class BracketFragment extends Fragment {
         numberOfParticipants = intent.getIntExtra("tournamentSize", 0);
 
 
-        CR = new ChallongeRequests(api_key);
-
         getMatches(url);
 
         return v;
@@ -115,7 +113,7 @@ public class BracketFragment extends Fragment {
     public void getMatches(String URL) {
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
                 response -> {
                     Log.d("Response", response);
                     getMatchInfo(response);

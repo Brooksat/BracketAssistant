@@ -26,7 +26,7 @@ public class MatchList {
     static final int MODE_SWISS = 3;
 
 
-    ChallongeRequests CR;
+
     Context mContext;
     String url = "https://api.challonge.com/v1/tournaments/ka35zhyo/participants.json?api_key=hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
     String mGetParticipantJson;
@@ -39,7 +39,6 @@ public class MatchList {
 
     public MatchList(Context context) {
         mContext = context;
-        CR = new ChallongeRequests(api_key);
 
 
     }
@@ -72,7 +71,7 @@ public class MatchList {
                 getRequestQueue();
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.participantIndex(name),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, ChallongeRequests.participantIndex(name),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

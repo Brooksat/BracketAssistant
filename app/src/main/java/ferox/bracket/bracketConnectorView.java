@@ -2,7 +2,6 @@ package ferox.bracket;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
@@ -31,7 +30,8 @@ public class bracketConnectorView extends View {
         this.heightInput = heightInput;
         this.mode = mode;
         //mCanvas = new Canvas();
-        mPaint = new Paint(Color.BLACK);
+        mPaint = new Paint();
+        mPaint.setColor(getResources().getColor(R.color.menu_title));
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(8);
 

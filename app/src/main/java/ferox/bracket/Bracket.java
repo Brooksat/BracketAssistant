@@ -63,7 +63,7 @@ public class Bracket extends AppCompatActivity
     int numRoundsLosers;
 
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
-    ChallongeRequests CR;
+
 
     ArrayList<Round> winnersRounds;
     ArrayList<Round> losersRounds;
@@ -239,7 +239,7 @@ public class Bracket extends AppCompatActivity
     public void getMatches(String URL) {
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
                 response -> {
                     Log.d("Response", response);
                     getMatchInfo(response);

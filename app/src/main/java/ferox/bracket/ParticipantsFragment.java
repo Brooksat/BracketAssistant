@@ -2,15 +2,10 @@ package ferox.bracket;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,7 +34,7 @@ public class ParticipantsFragment extends Fragment {
     RecyclerViewAdapter adapter;
     ArrayList<String> playerSeeds = new ArrayList<>();
     ArrayList<Participant> players = new ArrayList<>();
-    ChallongeRequests CR = new ChallongeRequests(api_key);
+
 
 
     @Nullable
@@ -67,51 +62,18 @@ public class ParticipantsFragment extends Fragment {
 
 
         url = intent.getStringExtra("tournamentURL");
-        showTournament();
+        ChallongeRequests.sendGet(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
         return v;
     }
 
 
-    public void showTournament() {
-        VolleyLog.DEBUG = true;
 
-        RequestQueue queue = RequestQueueSingleton.getInstance(this.getContext().getApplicationContext()).
-                getRequestQueue();
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, CR.tournamentShow(url),
-                response -> {
-                    Log.d("Response", response);
-                    initPlayerList(response);
-                    Log.d("Request", " Request Received");
-                }, error -> Log.d("Response", String.valueOf(error)));
-
-        RequestQueueSingleton.getInstance(this.getContext()).addToRequestQueue(stringRequest);
-
-    }
-
-    public void updateParticipantSeed(String tournamentURL, String participantId, int seed) {
-        VolleyLog.DEBUG = true;
-
-        RequestQueue queue = RequestQueueSingleton.getInstance(this.getContext().getApplicationContext()).
-                getRequestQueue();
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.PUT, CR.participantUpdate(tournamentURL, participantId, seed),
-                response -> {
-                    Log.d("ParticipantUpdate", response);
-                    Log.d("Request", " Request Received");
-                }, error -> Log.d("Response", String.valueOf(error)));
-
-        RequestQueueSingleton.getInstance(this.getContext()).addToRequestQueue(stringRequest);
-
-    }
 
     public void initPlayerList(String jsonString) {
 
         JsonParser jsonParser = new JsonParser();
         JsonElement tournament = jsonParser.parse(jsonString);
-        JsonArray participants = tournament.getAsJsonObject().get("tournament").getAsJsonObject().get("participants").getAsJsonArray();
+        JsonArray participants = tournament.getAsJsonArray();
 
         for (JsonElement participant : participants) {
             Participant player = new Participant();
