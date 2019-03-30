@@ -26,6 +26,6 @@ public class CustomLinearLayoutManager extends LinearLayoutManager {
 
     @Override
     public boolean isAutoMeasureEnabled() {
-        return false;
+        return super.isAutoMeasureEnabled();
     }
 }

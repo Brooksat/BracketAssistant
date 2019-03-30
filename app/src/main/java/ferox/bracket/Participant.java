@@ -5,12 +5,12 @@ public class Participant {
     int id;
     private String name;
     private int seed;
+    private String tournamentID;
 
     public Participant() {
-        this.id = 0;
-        this.name = "";
-        this.seed = 0;
+
     }
+
 
     public Participant(String name, int seed) {
         this.name = name;
@@ -41,4 +41,11 @@ public class Participant {
         this.seed = seed;
     }
 
+    public String getTournamentID() {
+        return tournamentID;
+    }
+
+    public void setTournamentID(String tournamentID) {
+        this.tournamentID = tournamentID;
+    }
 }

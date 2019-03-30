@@ -1,10 +1,13 @@
 package ferox.bracket;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +17,7 @@ import java.util.Collections;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,22 +27,28 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private static final String TAG = "RecyclerViewAdapter";
     ItemTouchHelper helper;
     LinearLayoutManager linearLayoutManager;
-
-
-
+    DefaultItemAnimator defaultItemAnimator;
 
     Context mContext;
     ArrayList<String> seeds = new ArrayList<>();
     ArrayList<String> names = new ArrayList<>();
     ArrayList<Participant> players;
 
+    AlertDialog.Builder builder;
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<Participant> players, LinearLayoutManager linearLayoutManager) {
+
+    public RecyclerViewAdapter(Context mContext, ArrayList<Participant> players, LinearLayoutManager linearLayoutManager, DefaultItemAnimator defaultItemAnimator) {
         this.mContext = mContext;
+        builder = new AlertDialog.Builder(this.mContext);
+        builder.setTitle("Edit Participant Name");
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+
         this.players = players;
         this.linearLayoutManager = linearLayoutManager;
-
-        this.helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+        this.defaultItemAnimator = defaultItemAnimator;
+        this.helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START) {
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -53,40 +63,72 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 notifyItemChanged(targetPostition);
                 notifyItemChanged(movedPosition);
 
-
                 return true;
             }
 
-            @Override
-            public int interpolateOutOfBoundsScroll(@NonNull RecyclerView recyclerView, int viewSize, int viewSizeOutOfBounds, int totalSize, long msSinceStartScroll) {
 
-                return super.interpolateOutOfBoundsScroll(recyclerView, viewSize, viewSizeOutOfBounds, totalSize, msSinceStartScroll);
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+
+
+                Participant player = players.get(viewHolder.getAdapterPosition());
+                //TODO handle time errors and add drag down to refresh list to make sure list is accurate
+                //TODO make it so that if a viewholder is picked up and droped in the same spot then no API request is sent
+                player.setSeed(viewHolder.getAdapterPosition() + 1);
+                ParticipantSettings settings = new ParticipantSettings();
+                settings.setSeed(player.getSeed());
+                ChallongeRequests.sendRequest(response -> {
+                }, ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
+
 
             }
 
-            //            @Override
-//            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-//                super.clearView(recyclerView, viewHolder);
-//
-//                int viewHolderPos = viewHolder.getAdapterPosition();
-//
-//                if ((viewHolderPos + 1) != players.get(viewHolderPos).getSeed()) {
-//                    updateParticipantSeed(url, String.valueOf(players.get(viewHolderPos).getId()), viewHolderPos + 1);
-//                }
-//
-//
-//            }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+//                players.remove(position);
+//                notifyItemRemoved(position);
+
+                new AlertDialog.Builder(viewHolder.itemView.getContext()).setMessage("Delete participant?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            players.remove(position);
+                            notifyItemRemoved(position);
+                            //TODO add in delete functionality also a participant should not be delete if the tournament has started
+                        })
+                        .setNegativeButton("No", (dialog, which) -> {
+                            defaultItemAnimator.setSupportsChangeAnimations(true);
+                            notifyItemChanged(position, null);
+
+
+                        })
+                        .create().show();
 
             }
+
+
+            @Override
+            public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+                return .7f;
+            }
+
+            @Override
+            public float getSwipeEscapeVelocity(float defaultValue) {
+                return super.getSwipeEscapeVelocity(3f * defaultValue);
+            }
+
 
             @Override
             public boolean isLongPressDragEnabled() {
                 return false;
             }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
         });
+
 
     }
 
@@ -104,35 +146,50 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.participantSeedView.setText(String.valueOf(players.get(position).getSeed()));
         holder.participantNameView.setText(players.get(position).getName());
-
         holder.participantDragHandle.setOnTouchListener((v, event) -> {
 
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                //defaultitemanimator randomly breaks when scroll but setting this parameter to false seems to fix the issue
+                defaultItemAnimator.setSupportsChangeAnimations(false);
                 helper.startDrag(holder);
             }
-//            switch (event.getActionMasked()) {
-//
-//
-//                case (MotionEvent.ACTION_DOWN): {
-//                    holder.participantListItemLayout.requestDisallowInterceptTouchEvent(true);
-//                    helper.startDrag(holder);
-//                    break;
-//                }
-//                case (MotionEvent.ACTION_UP): {
-//                    holder.participantListItemLayout.requestDisallowInterceptTouchEvent(false);
-//                }
-//            }
+
             return false;
         });
 
 
+        holder.participantEditView.setOnClickListener(v -> {
+
+            EditText input = new EditText(mContext);
+            input.setText(players.get(position).getName());
+            input.setSelection(input.length());
+            builder.setView(input);
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                Participant player = players.get(holder.getAdapterPosition());
+
+                if (!player.getName().equals(input.getText().toString())) {
+                    holder.participantNameView.setText(input.getText().toString());
+                    player.setName(input.getText().toString());
+                    ParticipantSettings settings = new ParticipantSettings();
+                    settings.setName(player.getName());
+                    ChallongeRequests.sendRequest(response -> {
+                    }, ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
+                }
+            });
+            builder.show();
+
+
+        });
+
 
     }
+
 
     @Override
     public int getItemCount() {
         return players.size();
     }
+
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 
@@ -140,7 +197,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView participantSeedView;
         TextView participantNameView;
         ImageButton participantEditView;
-        ImageButton participantDeleteView;
         ConstraintLayout participantListItemLayout;
 
         public CustomViewHolder(View itemView) {
@@ -149,7 +205,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             participantSeedView = itemView.findViewById(R.id.participant_seed);
             participantNameView = itemView.findViewById(R.id.participants_list_name);
             participantEditView = itemView.findViewById(R.id.participant_edit);
-            participantDeleteView = itemView.findViewById(R.id.participant_delete);
             participantListItemLayout = itemView.findViewById(R.id.participant_parent_layout);
 
 

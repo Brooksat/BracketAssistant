@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -64,7 +63,7 @@ public class BracketFragment extends Fragment {
     String state;
     int numberOfParticipants;
 
-    private BracketListener listener;
+
 
     BracketView bv;
     LoadingView lv;
@@ -73,9 +72,7 @@ public class BracketFragment extends Fragment {
     LinearLayout bracketWinners;
     LinearLayout bracketLosers;
 
-    public interface BracketListener {
-        LinearLayout getStuff();
-    }
+
 
     @Nullable
     @Override
@@ -105,15 +102,15 @@ public class BracketFragment extends Fragment {
         numberOfParticipants = intent.getIntExtra("tournamentSize", 0);
 
 
-        getMatches(url);
+        ChallongeRequests.sendRequest(response -> getMatchInfo(response), ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url));
 
         return v;
     }
 
-    public void getMatches(String URL) {
+    public void getMatches(String URL, APIRequest request) {
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(URL),
+        StringRequest stringRequest = new StringRequest(request.getRequestMethodType(), request.getUrl(),
                 response -> {
                     Log.d("Response", response);
                     getMatchInfo(response);
@@ -663,23 +660,6 @@ public class BracketFragment extends Fragment {
     }
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof BracketListener) {
-            listener = (BracketListener) context;
-            listener.getStuff();
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement BracketListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
 
     public LinearLayout getRoundWinners() {
         return roundWinners;

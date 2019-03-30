@@ -159,5 +159,11 @@
         <item name="android:textColor">@color/menu_text</item>
     </style>
 
+    <style name="alert_dialog">
+        <item name="android:colorBackground">@color/menu_background</item>
+        <item name="android:textColor">@color/menu_text</item>
+
+    </style>
+
 
 </resources>

@@ -44,25 +44,20 @@ public class ParticipantsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_participants, container, false);
         CustomLinearLayoutManager linearLayoutManager = new CustomLinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
+        DefaultItemAnimator defaultItemAnimator = new DefaultItemAnimator();
+        defaultItemAnimator.setSupportsChangeAnimations(false);
 
-        adapter = new RecyclerViewAdapter(getContext(), players, linearLayoutManager);
+        adapter = new RecyclerViewAdapter(getContext(), players, linearLayoutManager, defaultItemAnimator);
 
-
-        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
-        ((DefaultItemAnimator) itemAnimator).setSupportsChangeAnimations(false);
-
-
-        // idk what getActivity gets
         recyclerView = v.findViewById(R.id.participant_list);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setItemAnimator(itemAnimator);
+        recyclerView.setItemAnimator(defaultItemAnimator);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
         adapter.getHelper().attachToRecyclerView(recyclerView);
 
-
         url = intent.getStringExtra("tournamentURL");
-        ChallongeRequests.sendGet(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
+        ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
         return v;
     }
 
@@ -82,6 +77,7 @@ public class ParticipantsFragment extends Fragment {
             player.setId(participantObject.get("id").getAsInt());
             player.setName(participantObject.get("name").getAsString());
             player.setSeed(participantObject.get("seed").getAsInt());
+            player.setTournamentID(participantObject.get("tournament_id").getAsString());
             players.add(player);
             playerSeeds.add(String.valueOf(player.getSeed()));
 

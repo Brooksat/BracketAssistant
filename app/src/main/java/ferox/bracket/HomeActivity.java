@@ -7,10 +7,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,10 +26,10 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Log.d("gettting tourneys", "here");
-        indexTournaments();
         tournamentList = new ArrayList<>();
         nameList = new ArrayList<>();
+        //TODO add in subdomain functionality
+        ChallongeRequests.sendRequest(response -> makeTournamentList(response), ChallongeRequests.tournamentsIndex(null));
 
     }
 
@@ -85,22 +81,6 @@ public class HomeActivity extends AppCompatActivity {
         listView.invalidate();
     }
 
-    public void indexTournaments() {
-        VolleyLog.DEBUG = true;
 
-        RequestQueue queue = RequestQueueSingleton.getInstance(getApplicationContext()).
-                getRequestQueue();
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, ChallongeRequests.tournamentsIndex(null),
-                response -> {
-                    Log.d("Response", response);
-                    makeTournamentList(response);
-                    Log.d("Request", " Request Received");
-                }, error -> Log.d("Response", String.valueOf(error)));
-
-        RequestQueueSingleton.getInstance(this).addToRequestQueue(stringRequest);
-
-    }
 
 }

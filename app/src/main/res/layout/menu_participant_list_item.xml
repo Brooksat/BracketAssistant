@@ -4,7 +4,7 @@
     android:id="@+id/participant_parent_layout"
     style="@style/menu_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="60dp"
     android:orientation="horizontal"
     android:padding="5dp">
 
@@ -32,6 +32,7 @@
         android:text="0"
         android:textColor="@color/menu_text"
         android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@id/participant_drag_handle"
         app:layout_constraintEnd_toStartOf="@id/participants_list_name"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/participant_drag_handle"
@@ -44,11 +45,15 @@
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:background="@color/menu_background"
-        android:text="Participant name"
+        android:gravity="center_vertical"
+        android:text="Ferox the Destroyer of Worlds"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         android:textColor="@color/menu_text"
-        android:textSize="25sp"
-        app:layout_constraintStart_toEndOf="@id/participant_seed"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/participant_drag_handle"
         app:layout_constraintEnd_toStartOf="@id/participant_edit"
+        app:layout_constraintStart_toEndOf="@id/participant_seed"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
@@ -58,17 +63,9 @@
         android:layout_height="40dp"
         android:layout_marginStart="5dp"
         android:src="@drawable/ic_edit_black_24dp"
-        app:layout_constraintStart_toEndOf="@id/participants_list_name"
-        app:layout_constraintEnd_toStartOf="@id/participant_delete"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/participant_delete"
-        style="@style/menu_button"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_delete_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/participant_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/participants_list_name"
         app:layout_constraintTop_toTopOf="parent" />
 
 

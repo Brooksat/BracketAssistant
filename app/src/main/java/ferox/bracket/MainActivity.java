@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         VolleyLog.DEBUG = true;
         ChallongeRequests.setApiKey("hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07");
+        ChallongeRequests.setApplicationContext(this.getApplicationContext());
 
     }
 
