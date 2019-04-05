@@ -1,24 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/menu_layout">
+    style="@style/menu_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/participants_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Shuffle"
-        android:textSize="35sp"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/menu_h1" />
+        android:id="@+id/players_header"
+        style="@style/menu_h1"
+        android:layout_width="0dp"
+        android:text="Players"
+        app:layout_constraintEnd_toStartOf="@id/menu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/menu"
+        style="@style/menu_image_button"
+        android:layout_width="40dp"
+        android:layout_height="45dp"
+        android:background="@color/menu_h1"
+        android:backgroundTint="@color/menu_h1"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/players_header"
+        app:layout_constraintTop_toTopOf="@id/players_header"
+        android:scaleType="fitXY" />
+
+    <!--<Spinner-->
+    <!--android:id="@+id/participants_fragment_options"-->
+    <!--style="@style/menu_spinner"-->
+    <!--android:layout_width="40dp"-->
+    <!--android:layout_height="45dp"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintStart_toEndOf="@id/menu"-->
+    <!--app:layout_constraintTop_toTopOf="@id/players_header"-->
+    <!--android:background="@drawable/ic_more_vert_black_24dp"-->
+    <!--/>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/participant_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/participants_header"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/players_header" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

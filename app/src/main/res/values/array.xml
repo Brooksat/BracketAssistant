@@ -17,5 +17,10 @@
         <item>Points Difference</item>
         <item>Custom</item>
     </string-array>
+    <string-array name="participants_spinner">
+        <item>Add</item>
+        <item>Shuffle Seeds</item>
+        <item>Refresh</item>
+    </string-array>
 
 </resources>

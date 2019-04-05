@@ -87,8 +87,24 @@ public class ChallongeRequests {
         return request;
     }
 
-    static public String participantUpdate(String url, String ID, int seed) {
-        return " ";
+    static public APIRequest participantDestroy(String tournamentURL, String ID) {
+        String url = API_URL;
+        url += "/" + tournamentURL;
+        url += PARTICIPANTS;
+        url += "/" + ID;
+        url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
+        APIRequest request = new APIRequest(url, Request.Method.DELETE);
+        return request;
+    }
+
+    static public APIRequest participantRandomize(String tournamentURL) {
+        String url = API_URL;
+        url += "/" + tournamentURL;
+        url += PARTICIPANTS;
+        url += "/randomize";
+        url += JSON_TAG + API_KEY_SEGMENT + apiKey;
+        APIRequest request = new APIRequest(url, Request.Method.POST);
+        return request;
     }
 
 

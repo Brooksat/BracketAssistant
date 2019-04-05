@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/participants_action_add"
+        android:title="Add"></item>
+    <item
+        android:id="@+id/participants_action_shuffle"
+        android:title="Shuffle"></item>
+    <item
+        android:id="@+id/participants_action_refresh"
+        android:title="Refresh"></item>
+
+</menu>

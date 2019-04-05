@@ -71,30 +71,41 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 
 
-                Participant player = players.get(viewHolder.getAdapterPosition());
-                //TODO handle time errors and add drag down to refresh list to make sure list is accurate
-                //TODO make it so that if a viewholder is picked up and droped in the same spot then no API request is sent
-                player.setSeed(viewHolder.getAdapterPosition() + 1);
-                ParticipantSettings settings = new ParticipantSettings();
-                settings.setSeed(player.getSeed());
-                ChallongeRequests.sendRequest(response -> {
-                }, ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
+                if (viewHolder.getAdapterPosition() > -1) {
+                    Participant player = players.get(viewHolder.getAdapterPosition());
+                    //TODO handle time errors and add drag down to refresh list to make sure list is accurate
 
+                    CustomViewHolder cvh = (CustomViewHolder) viewHolder;
 
+                    if (player.getSeed() != (cvh.initialListPos + 1)) {
+                        player.setSeed(viewHolder.getAdapterPosition() + 1);
+                        ParticipantSettings settings = new ParticipantSettings();
+                        settings.setSeed(player.getSeed());
+                        ChallongeRequests.sendRequest(response -> {
+                        }, ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
+                    }
+                }
             }
-
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
+                Participant player = players.get(position);
 //                players.remove(position);
 //                notifyItemRemoved(position);
 
                 new AlertDialog.Builder(viewHolder.itemView.getContext()).setMessage("Delete participant?")
                         .setPositiveButton("Yes", (dialog, which) -> {
+
+                            ChallongeRequests.sendRequest(response -> {
+                                    }
+                                    , ChallongeRequests.participantDestroy(String.valueOf(player.getTournamentID()), String.valueOf(player.getId())));
+
                             players.remove(position);
                             notifyItemRemoved(position);
                             //TODO add in delete functionality also a participant should not be delete if the tournament has started
+
+
                         })
                         .setNegativeButton("No", (dialog, which) -> {
                             defaultItemAnimator.setSupportsChangeAnimations(true);
@@ -150,6 +161,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 //defaultitemanimator randomly breaks when scroll but setting this parameter to false seems to fix the issue
+                holder.initialListPos = holder.getAdapterPosition();
                 defaultItemAnimator.setSupportsChangeAnimations(false);
                 helper.startDrag(holder);
             }
@@ -159,6 +171,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         holder.participantEditView.setOnClickListener(v -> {
+
 
             EditText input = new EditText(mContext);
             input.setText(players.get(position).getName());
@@ -198,6 +211,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView participantNameView;
         ImageButton participantEditView;
         ConstraintLayout participantListItemLayout;
+        int initialListPos;
 
         public CustomViewHolder(View itemView) {
             super(itemView);
@@ -209,7 +223,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         }
-
 
     }
 

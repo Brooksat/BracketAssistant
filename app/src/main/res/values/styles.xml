@@ -133,9 +133,14 @@
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="menu_button">
+    <style name="menu_image_button">
         <item name="android:tint">@color/menu_title</item>
         <item name="android:backgroundTint">@color/menu_background</item>
+    </style>
+
+    <style name="menu_button">
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:backgroundTint">@color/menu_title</item>
     </style>
 
     <style name="match">

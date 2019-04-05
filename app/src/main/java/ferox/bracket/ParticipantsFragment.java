@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -12,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,12 +32,12 @@ public class ParticipantsFragment extends Fragment {
 
     String url;
 
+    ImageButton participantsOptions;
 
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
     ArrayList<String> playerSeeds = new ArrayList<>();
     ArrayList<Participant> players = new ArrayList<>();
-
 
 
     @Nullable
@@ -44,6 +47,35 @@ public class ParticipantsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_participants, container, false);
         CustomLinearLayoutManager linearLayoutManager = new CustomLinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
+        participantsOptions = v.findViewById(R.id.menu);
+        participantsOptions.setOnClickListener(v1 -> {
+
+            PopupMenu popupMenu = new PopupMenu(getContext(), participantsOptions);
+            popupMenu.getMenuInflater().inflate(R.menu.participants_fragments_options, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getTitle().toString()) {
+                    case "Add": {
+
+                        break;
+                    }
+                    case "Shuffle": {
+                        ChallongeRequests.sendRequest(response -> {
+                        }, ChallongeRequests.participantRandomize(url));
+                        ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
+                        break;
+                    }
+                    case "Refresh": {
+                        ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
+                        break;
+                    }
+                }
+                return true;
+            });
+            popupMenu.show();
+        });
+
+
         DefaultItemAnimator defaultItemAnimator = new DefaultItemAnimator();
         defaultItemAnimator.setSupportsChangeAnimations(false);
 
@@ -52,7 +84,7 @@ public class ParticipantsFragment extends Fragment {
         recyclerView = v.findViewById(R.id.participant_list);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(defaultItemAnimator);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
         adapter.getHelper().attachToRecyclerView(recyclerView);
 
@@ -62,13 +94,14 @@ public class ParticipantsFragment extends Fragment {
     }
 
 
-
-
     public void initPlayerList(String jsonString) {
+
+        players.clear();
 
         JsonParser jsonParser = new JsonParser();
         JsonElement tournament = jsonParser.parse(jsonString);
         JsonArray participants = tournament.getAsJsonArray();
+
 
         for (JsonElement participant : participants) {
             Participant player = new Participant();
