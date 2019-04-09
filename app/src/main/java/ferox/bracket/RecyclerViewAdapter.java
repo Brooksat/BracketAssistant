@@ -103,15 +103,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                             players.remove(position);
                             notifyItemRemoved(position);
-                            //TODO add in delete functionality also a participant should not be delete if the tournament has started
-
-
                         })
                         .setNegativeButton("No", (dialog, which) -> {
                             defaultItemAnimator.setSupportsChangeAnimations(true);
                             notifyItemChanged(position, null);
-
-
                         })
                         .create().show();
 

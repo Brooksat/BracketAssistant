@@ -75,6 +75,15 @@ public class ChallongeRequests {
         return request;
     }
 
+    static public APIRequest participantCreate(String tournamentURL, Participant participant) {
+        String url = API_URL;
+        url += "/" + tournamentURL;
+        url += PARTICIPANTS + JSON_TAG + API_KEY_SEGMENT + apiKey;
+        url += participant.getSettings();
+        APIRequest request = new APIRequest(url, Request.Method.POST);
+        return request;
+    }
+
     static public APIRequest participantUpdate(String tournamentUrl, String id, ParticipantSettings settings) {
         String url = API_URL;
         url += "/" + tournamentUrl;

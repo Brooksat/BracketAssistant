@@ -1,6 +1,13 @@
 package ferox.bracket;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 public class Participant {
+
+    final static String NAME = "participant[name]=";
+    final static String SEED = "participant[seed]=";
 
     int id;
     private String name;
@@ -47,5 +54,22 @@ public class Participant {
 
     public void setTournamentID(String tournamentID) {
         this.tournamentID = tournamentID;
+    }
+
+    public String getSettings() {
+        String settings = "";
+        try {
+            if (getName() != null) {
+
+                settings += "&" + NAME + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
+            }
+            if (getSeed() > 0) {
+                settings += "&" + SEED + URLEncoder.encode(String.valueOf(getSeed()), StandardCharsets.UTF_8.toString());
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return settings;
     }
 }

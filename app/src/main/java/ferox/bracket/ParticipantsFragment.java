@@ -1,10 +1,12 @@
 package ferox.bracket;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
@@ -56,6 +58,28 @@ public class ParticipantsFragment extends Fragment {
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getTitle().toString()) {
                     case "Add": {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setIcon(R.mipmap.ic_launcher);
+                        builder.setTitle("Add Participant");
+                        View dialogueLayout = getLayoutInflater().inflate(R.layout.fragment_participant_edit_dialog, null);
+                        EditText nameText = dialogueLayout.findViewById(R.id.new_participant_name);
+                        EditText seedText = dialogueLayout.findViewById(R.id.new_participant_seed);
+                        builder.setView(dialogueLayout);
+                        builder.setPositiveButton("OK", (dialog, which) -> {
+                            Participant player = new Participant();
+                            player.setName(nameText.getText().toString());
+                            player.setSeed(Integer.parseInt(seedText.getText().toString()));
+                            ChallongeRequests.sendRequest(response -> {
+                            }, ChallongeRequests.participantCreate(url, player));
+                            //TODO this may not refresh consistently try setting the callback to make another challonge request in the event this is not consistent
+                            ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
+
+
+                        })
+                                .setNegativeButton("Cancel", (dialog, which) -> {
+                                })
+                                .create().show();
 
                         break;
                     }

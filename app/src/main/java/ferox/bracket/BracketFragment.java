@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -44,14 +43,14 @@ public class BracketFragment extends Fragment {
     TextView yposition;
     TextView bracketHeight;
     TextView screenHeight;
-    TextView oneParticipantMessage;
-    int postQualRound;
-    int qualifyRound;
-    int numOfLR1;
-    int mHeightUnit;
-    int mWidthUnit;
-    int numRoundsWinners;
-    int numRoundsLosers;
+    private TextView oneParticipantMessage;
+    private int postQualRound;
+    private int qualifyRound;
+    private int numOfLR1;
+    private int mHeightUnit;
+    private int mWidthUnit;
+    private int numRoundsWinners;
+    private int numRoundsLosers;
 
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
 
@@ -64,14 +63,12 @@ public class BracketFragment extends Fragment {
     int numberOfParticipants;
 
 
-
-    BracketView bv;
-    LoadingView lv;
-    LinearLayout roundWinners;
-    LinearLayout roundLosers;
-    LinearLayout bracketWinners;
-    LinearLayout bracketLosers;
-
+    private BracketView bv;
+    private LoadingView lv;
+    private LinearLayout roundWinners;
+    private LinearLayout roundLosers;
+    private LinearLayout bracketWinners;
+    private LinearLayout bracketLosers;
 
 
     @Nullable
@@ -88,7 +85,7 @@ public class BracketFragment extends Fragment {
         bracketLosers = v.findViewById(R.id.bracket_losers);
         lv = v.findViewById(R.id.loading_view);
 
-        mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height) / 2;
+        mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height);
         mWidthUnit = getResources().getDimensionPixelSize(R.dimen.match_width);
 
 
@@ -102,27 +99,13 @@ public class BracketFragment extends Fragment {
         numberOfParticipants = intent.getIntExtra("tournamentSize", 0);
 
 
-        ChallongeRequests.sendRequest(response -> getMatchInfo(response), ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url));
+        ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url));
 
         return v;
     }
 
-    public void getMatches(String URL, APIRequest request) {
 
-
-        StringRequest stringRequest = new StringRequest(request.getRequestMethodType(), request.getUrl(),
-                response -> {
-                    Log.d("Response", response);
-                    getMatchInfo(response);
-                    Log.d("Request", " Request Received");
-                }, error -> Log.d("Response", String.valueOf(error)));
-
-
-        RequestQueueSingleton.getInstance(this.getContext()).addToRequestQueue(stringRequest);
-
-    }
-
-    public void getMatchInfo(String jsonString) {
+    private void getTournamentInfo(String jsonString) {
         JsonParser jsonParser = new JsonParser();
         JsonElement tournament = jsonParser.parse(jsonString);
         JsonObject matchesByRound = tournament.getAsJsonObject().get("matches_by_round").getAsJsonObject();
@@ -209,133 +192,77 @@ public class BracketFragment extends Fragment {
         }
         Collections.sort(winnersRounds, (n1, n2) -> n1.getNumber() - n2.getNumber());
         Collections.sort(losersRounds, (n1, n2) -> n1.getNumber() - n2.getNumber());
+        //losers rounds are denoted with a negative number, Round -x is Loser's Round X
+        //Since the rounds have been sorted by number value they need to be reversed to be order by actual round
         Collections.reverse(losersRounds);
         init();
 
-        startBracketDisplay(1, 1, this.getContext());
+        startBracketDisplay();
 
     }
 
-    public void startBracketDisplay(int numRoundW, int numRoundL, Context context) {
+    /*
+    startBracketDisplay - if tournament has less than 2 members method will show a message stating
+    bracket will be shown when there are enough members
+     */
+    private void startBracketDisplay() {
         if (numberOfParticipants < 2) {
             oneParticipantMessage.setVisibility(View.VISIBLE);
         } else {
             oneParticipantMessage.setVisibility(View.GONE);
-            makeBracketDisplay(numRoundW, numRoundL, context);
+            makeBracketDisplay();
             lv.hide();
             //Log.d("sBDbracketSize", String.valueOf(bracketWinners.getChildCount()));
-            setMatchInfo(bracketWinners, winnersRounds);
-            setMatchInfo(bracketLosers, losersRounds);
+            //setMatchInfo(bracketWinners, winnersRounds);
+//            setMatchInfo(bracketLosers, losersRounds);
         }
 
     }
 
-    public void makeBracketDisplay(int numRoundW, int numRoundL,
-                                   Context context) {
+    /*
+    Once there are enough members in the tournament to make a bracket, this method will construct
+    the round headers and matches
+     */
+    private void makeBracketDisplay() {
 
-        Log.d("number rounds", String.valueOf(winnersRounds.size() + " " + losersRounds.size()));
 
-        //ConstraintLayout bracketRoot = findViewById(R.id.bracket_root);
-        LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
-        //LinearLayout bracketWinners = findViewById(R.id.bracket_winners);
-        // LinearLayout roundLosers = findViewById(R.id.round_losers);
-        LinearLayout bracketLosers = getView().findViewById(R.id.bracket_losers);
+        if (!type.equals(ROUND_ROBIN)) {
+            setRoundHeaders(8);
+        }
 
-        //empties the linear layouts. May not be needed
-//        for (int i = 0; i < bracketRoot.getChildCount(); i++) {
-//            ViewGroup child = (ViewGroup) bracketRoot.getChildAt(i);
-//            child.removeAllViews();
+        makeWinners();
+        makeLosers();
+
+
+        //The round of the bracket is initially constructed as if it is a "full" round, and then unused matches are set inivisible
+//        if (qualifyRound != 0) {
+////            setUnusedMatchesInvisible(bracketWinners, winnersRounds, UNUSED_WINNERS);
 //        }
-
-
-        //bracket winners
-        //adds winners rounds
-        Log.d("qualifyRound", String.valueOf(qualifyRound));
-        Log.d("postQual", String.valueOf(postQualRound));
-        Log.d("winnersRounds", String.valueOf(winnersRounds.size()));
-
-
-        setRoundHeaders(8);
-
-        //int numberRound = qualifyRound == 0 ? postQualRound : postQualRound * 2;
-        if (type.equals("single elimination")) {
-            for (int i = 0; i < winnersRounds.size(); i++) {
-                int numberRound = (i == 0 && qualifyRound != 0) ? postQualRound * 2 : winnersRounds.get(i).getMatchList().size();
-
-                makeRound(numberRound, i, bracketWinners, 0);
-                //the winners finals match doesnt have a connects after it, unless double elim
-                //which is handled in makeGrandFinals
-                if (i < winnersRounds.size() - 1) {
-                    makeBracketConnectors(numberRound, i, bracketWinners, 0);
-                }
-
-
-            }
-        } else if (type.equals("double elimination")) {
-            for (int i = 0; i < winnersRounds.size() - 1; i++) {
-                int numberRound = (i == 0 && qualifyRound != 0) ? postQualRound * 2 : winnersRounds.get(i).getMatchList().size();
-
-                makeRound(numberRound, i, bracketWinners, 0);
-
-                if (i < winnersRounds.size() - 2) {
-                    makeBracketConnectors(numberRound, i, bracketWinners, 0);
-                }
-
-                if (i == winnersRounds.size() - 2) {
-
-                    makeGrandFinals(i, bracketWinners);
-                }
-                //numberRound = numberRound / 2;
-
-            }
-        }
-        //losers round
-        //shift corrects space on losers bracket based on even or odd rounds
-        int shift = losersRounds.size() % 2;
-        for (int i = 0; i < losersRounds.size(); i++) {
-
-
-            //int numberRound =(i==0) ? postQualRound : losersRounds.get(i).getMatchList().size();
-            Log.d("int match result", String.valueOf((losersRounds.size() - i) / 2));
-            int numberRound = (int) Math.pow(2, ((losersRounds.size() - 1) - i) / 2);
-
-            makeRound(numberRound, (i + shift) / 2, bracketLosers, 0);
-            if (i < losersRounds.size() - 1) {
-                if (i == 0 && losersRounds.size() % 2 == 1) {
-                    makeBracketConnectors(numberRound, (i + shift) / 2, bracketLosers, 0);
-                } else if (losersRounds.get(i + 1).getMatchList().size() < losersRounds.get(i).getMatchList().size()) {
-                    makeBracketConnectors(numberRound, (i + shift) / 2, bracketLosers, 0);
-                } else {
-                    makeBracketConnectors(numberRound, (i + shift) / 2, bracketLosers, 4);
-                }
-            }
-
-        }
-
-
-        if (qualifyRound != 0) {
-            setUnusedMatchesInvisible(bracketWinners, winnersRounds, UNUSED_WINNERS);
-        }
-        Log.d("numPart", String.valueOf(numberOfParticipants));
-        if (losersRounds.size() > 2) {
-            if (losersRounds.size() % 2 == 1) {
-                setUnusedMatchesInvisible(bracketLosers, losersRounds, UNUSED_LOSERS_ODD);
-            } else {
-                setUnusedMatchesInvisible(bracketLosers, losersRounds, UNUSED_LOSERS_EVEN);
-            }
-        }
-
-
+//        Log.d("numPart", String.valueOf(numberOfParticipants));
+//        if (losersRounds.size() > 2) {
+//            if (losersRounds.size() % 2 == 1) {
+//                setUnusedMatchesInvisible(bracketLosers, losersRounds, UNUSED_LOSERS_ODD);
+//            } else {
+//                setUnusedMatchesInvisible(bracketLosers, losersRounds, UNUSED_LOSERS_EVEN);
+//            }
+//        }
+//
+//
     }
 
     /*
     Get list of all matches and set the bracket accordingly
      */
 
-    public void setMatchInfo(LinearLayout bracket, ArrayList<Round> roundList) {
+    private void setMatchInfo(LinearLayout bracket, ArrayList<Round> roundList) {
+
+        //TODO this shit gotta be remade
         Log.d("setMatchInfo", "This is being called");
 
         Log.d("bracketSize", String.valueOf(bracket.getChildCount()));
+        if (type.equals("round robin")) {
+            return;
+        }
 
         for (int i = 0; i < roundList.size(); i++) {
             LinearLayout round = (LinearLayout) bracket.getChildAt(2 * i);
@@ -393,7 +320,7 @@ public class BracketFragment extends Fragment {
         bv.invalidate();
     }
 
-    public void setMatchView(ConstraintLayout match, Match matchInfo) {
+    private void setMatchView(ConstraintLayout match, Match matchInfo) {
 
 
         TextView matchNumber = match.findViewById(R.id.matchNumber);
@@ -410,7 +337,7 @@ public class BracketFragment extends Fragment {
     }
 
 
-    //initializes values needed to make bracket dislay
+    //initializes values needed to make bracket display
     public void init() {
 
         numRoundsWinners = winnersRounds.size();
@@ -441,7 +368,7 @@ public class BracketFragment extends Fragment {
     }
 
 
-    public void makeGrandFinals(int multiplier, ViewGroup vg) {
+    private void makeGrandFinals(int multiplier, ViewGroup vg) {
 
         makeBracketConnectors(1, multiplier, vg, 1);
         makeRound(1, multiplier, vg, 1);
@@ -450,8 +377,13 @@ public class BracketFragment extends Fragment {
 
 
     }
+/*
+Method makeRound
+modifier -method to deal with grand finals
+TODO method could probably be refactored into two different methods to make it more elegant
+ */
 
-    public void makeRound(int numMatches, int multiplier, ViewGroup vg, int modifier) {
+    private void makeRound(int numMatches, int multiplier, ViewGroup vg, int modifier) {
 
         Log.d("makeRoundCalled", String.valueOf(modifier));
         LinearLayout matches = new LinearLayout(this.getContext());
@@ -497,8 +429,158 @@ public class BracketFragment extends Fragment {
 
     }
 
+    private void makeWinners() {
 
-    public void makeBracketConnectors(int numMatches, int multiplier, ViewGroup vg, int modifier) {
+        //total number of rounds minus grand finals which is constructed separately
+        int totalRounds = type.equals(DOUBLE_ELIM) ? winnersRounds.size() - 1 : winnersRounds.size();
+
+        if (type.equals(SINGLE_ELIM) || type.equals(DOUBLE_ELIM)) {
+            for (int i = 0; i < totalRounds; i++) {
+                //make a Linear Layout to hold each round
+                LinearLayout roundLayout = new LinearLayout(getContext());
+                LinearLayout bcvLayout = new LinearLayout(getContext());
+                roundLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                bcvLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                roundLayout.setOrientation(LinearLayout.VERTICAL);
+                bcvLayout.setOrientation(LinearLayout.VERTICAL);
+                //make space that goes before each round(2^(n-1)-1, n = round)
+                roundLayout.addView(makeSpaceComponent(((Math.pow(2, winnersRounds.get(i).getNumber() - 1)) - 1)));
+
+                //number of matches in "full" round, not all match slots will be used in which case they will be set invisible
+                int numMatches = (int) Math.pow(2, totalRounds - (i + 1));
+
+                for (int j = 0; j < numMatches; j++) {
+                    //make  match
+                    roundLayout.addView(makeMatchComponent());
+                    //then space((2^n)-1)
+                    if (j < numMatches - 1) {
+                        roundLayout.addView(makeSpaceComponent(Math.pow(2, i + 1) - 1));
+                    }
+                }
+
+
+                for (int j = 0; j < numMatches / 2; j++) {
+                    bcvLayout.addView(makeSpaceComponent(Math.pow(2, i) - 0.5));
+                    bcvLayout.addView(makeBCVComponent(i, bracketConnectorView.MODE_TOP));
+                    bcvLayout.addView(makeBCVComponent(i, bracketConnectorView.MODE_BOTTOM));
+                    bcvLayout.addView(makeSpaceComponent(Math.pow(2, i) - 0.5));
+                    bcvLayout.addView(makeSpaceComponent(1));
+                }
+
+
+                bracketWinners.addView(roundLayout);
+
+                if (bcvLayout.getChildCount() != 0) {
+                    bracketWinners.addView(bcvLayout);
+                }
+            }
+        } else if (type.equals(ROUND_ROBIN)) {
+            for (int i = 0; i < winnersRounds.size(); i++) {
+                bracketWinners.setOrientation(LinearLayout.VERTICAL);
+                LayoutInflater inflater = getLayoutInflater();
+                TextView round = (TextView) inflater.inflate(R.layout.menu_list_item, null);
+                round.setText("Round" + String.valueOf(i + 1));
+                LinearLayout roundLayout = new LinearLayout(getContext());
+                roundLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                for (int j = 0; j < winnersRounds.get(i).getMatchList().size(); j++) {
+                    roundLayout.addView(makeMatchComponent());
+                    Space space = makeSpaceComponent(1);
+                    space.getLayoutParams().width = mWidthUnit / 2;
+                    roundLayout.addView(space);
+                }
+                bracketWinners.addView(round);
+                bracketWinners.addView(roundLayout);
+            }
+        }
+
+
+    }
+
+    private void makeLosers() {
+        int totalRounds = losersRounds.size();
+
+        //This double is for helping keep track of the number of matches to add to each losers round
+        int shift = (totalRounds % 2);
+
+        for (int i = totalRounds; i > 0; i--) {
+            LinearLayout roundLayout = new LinearLayout(getContext());
+            roundLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            roundLayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout bcvLayout = new LinearLayout(getContext());
+            bcvLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            bcvLayout.setOrientation(LinearLayout.VERTICAL);
+            int preRoundSpaceSize = (i + shift - 1) / 2;
+
+            //makes space that offsets the height of subsequent rounds
+            roundLayout.addView(makeSpaceComponent(Math.pow(2, preRoundSpaceSize) - 1));
+
+
+            //number of matches in "full" round, not all match slots will be used in which case they will be set invisible
+            int numMatches = (int) Math.pow(2, (totalRounds - i) / 2);
+
+            for (int j = 0; j < numMatches; j++) {
+                roundLayout.addView(makeMatchComponent());
+                if (j < numMatches - 1) {
+                    roundLayout.addView(makeSpaceComponent(Math.pow(2, (i / 2) + shift) - 1));
+                }
+            }
+
+
+            if (i % 2 == 1) {
+                for (int j = 0; j < numMatches / 2; j++) {
+                    bcvLayout.addView(makeSpaceComponent(Math.pow(2, i / 2) - 0.5));
+                    bcvLayout.addView(makeBCVComponent(i / 2, bracketConnectorView.MODE_TOP));
+                    bcvLayout.addView(makeBCVComponent(i / 2, bracketConnectorView.MODE_BOTTOM));
+                    bcvLayout.addView(makeSpaceComponent(Math.pow(2, i / 2) - 0.5));
+                    bcvLayout.addView(makeSpaceComponent(1));
+                }
+            } else {
+                bcvLayout.addView(makeSpaceComponent(Math.pow(2, preRoundSpaceSize) - 1));
+                for (int j = 0; j < numMatches; j++) {
+                    bcvLayout.addView(makeBCVComponent(0, bracketConnectorView.MODE_MIDDLE));
+                    if (j < numMatches - 1) {
+                        bcvLayout.addView(makeSpaceComponent(Math.pow(2, (i / 2) + shift) - 1));
+                    }
+                }
+            }
+
+
+            if (bracketLosers.getChildCount() != 0) {
+                bracketLosers.addView(bcvLayout, 0);
+            }
+            bracketLosers.addView(roundLayout, 0);
+
+        }
+    }
+
+    // get match layout
+    private ConstraintLayout makeMatchComponent() {
+        LayoutInflater inflater = getLayoutInflater();
+        assert inflater != null;
+        ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
+        return match;
+    }
+
+    //get space
+    private Space makeSpaceComponent(double heightMultiplier) {
+        Space space = new Space(getContext());
+        space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                (int) (mHeightUnit * heightMultiplier)));
+        return space;
+    }
+
+    //get bracketConnectorView
+    private bracketConnectorView makeBCVComponent(int heightMultiplier, int mode) {
+        bracketConnectorView bcv = new bracketConnectorView(getContext(), null, mHeightUnit * (int) Math.pow(2, heightMultiplier), mode, null);
+        return bcv;
+    }
+
+    private void makeBracketConnectors(int numMatches, int multiplier, ViewGroup vg, int modifier) {
 
         Log.d("makeBCCalled", String.valueOf(modifier));
 
@@ -580,8 +662,9 @@ public class BracketFragment extends Fragment {
         vg.addView(bracketConnector);
     }
 
-
-    public void setRoundHeaders(int numRounds) {
+    //Constructs round headers
+    private void setRoundHeaders(int numRounds) {
+        //TODO needs to set names from the round names themselves(Semifinals, Grands Etc)
         LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
         LinearLayout roundLosers = getView().findViewById(R.id.round_losers);
 
@@ -599,7 +682,7 @@ public class BracketFragment extends Fragment {
             roundWinners.addView(roundNumber);
         }
         for (int i = 0; i < losersRounds.size(); i++) {
-            TextView roundNumber = new TextView(this.getContext());
+            TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
             roundNumber.setLayoutParams(roundHeaderLayoutParams);
             roundNumber.setGravity(Gravity.CENTER);
             roundNumber.setText(losersRounds.get(i).getName());
@@ -653,12 +736,15 @@ public class BracketFragment extends Fragment {
         }
     }
 
+    private void setUnusedMatchesInvisible2() {
+        
+    }
+
     public void setGrandsResetInvis() {
         if (type.equals(DOUBLE_ELIM)) {
             bracketWinners.getChildAt(bracketWinners.getChildCount() - 1).setVisibility(View.INVISIBLE);
         }
     }
-
 
 
     public LinearLayout getRoundWinners() {

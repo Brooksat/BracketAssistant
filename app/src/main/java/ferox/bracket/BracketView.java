@@ -24,12 +24,13 @@ public class BracketView extends ConstraintLayout {
     private float mLastTouchY;
     private ScaleGestureDetector mScaleDetector;
     private float mScaleFactor = 1f;
-    final static float mMinZoom = 0.5f;
-    final static float mMaxZoom = 5.0f;
+    final static float mMinZoom = 0.3f;
+    final static float mMaxZoom = 3.0f;
     int screenWidth;
     int screenHeight;
     int statusBarHeight;
     int navigationBarHeight;
+    int bracketFragmentToolbarHeight;
     Context mContext;
 
 
@@ -47,6 +48,7 @@ public class BracketView extends ConstraintLayout {
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        bracketFragmentToolbarHeight = (int) getResources().getDimension(R.dimen.tab_layout_height);
         init();
     }
 
@@ -63,6 +65,7 @@ public class BracketView extends ConstraintLayout {
             navigationBarHeight = getResources().getDimensionPixelSize(resourceId2);
             Log.d("navigationBarHeight", String.valueOf(navigationBarHeight));
         }
+
     }
 
 
@@ -88,7 +91,8 @@ public class BracketView extends ConstraintLayout {
 
 
         int desiredWSpec = MeasureSpec.makeMeasureSpec(childSumWidth, MeasureSpec.UNSPECIFIED);
-        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight + statusBarHeight, MeasureSpec.EXACTLY);
+        //statusbarheight, bracket activity toolbar height and navbar height are to make it so that a part of the bracket doesnt get cut off
+        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight + statusBarHeight + navigationBarHeight + (bracketFragmentToolbarHeight * 2), MeasureSpec.EXACTLY);
         setMeasuredDimension(desiredWSpec, desiredHSpec);
         super.onMeasure(desiredWSpec, desiredHSpec);
     }

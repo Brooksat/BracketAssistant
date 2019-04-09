@@ -6,12 +6,20 @@
     android:padding="5dp">
 
     <EditText
-        android:id="@+id/participant_name_dialogue"
+        android:id="@+id/new_participant_name"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_margin="0dp"
         android:hint="Participant name"
         style="@style/menu_edit_text" />
+
+    <EditText
+        android:id="@+id/new_participant_seed"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        style="@style/menu_edit_text"
+        android:layout_margin="0dp"
+        android:hint="Seed" />
 
 
 </LinearLayout>
