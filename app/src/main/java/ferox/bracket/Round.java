@@ -1,15 +1,19 @@
 package ferox.bracket;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 public class Round {
-    String name;
+    @SerializedName("name")
+    String title;
+    @SerializedName("number")
     int number;
     boolean isInWinners;
     ArrayList<Match> matchList;
 
-    public Round(String name, int number, boolean isInWinners, ArrayList<Match> matchList) {
-        this.name = name;
+    public Round(String title, int number, boolean isInWinners, ArrayList<Match> matchList) {
+        this.title = title;
         this.number = number;
         this.isInWinners = isInWinners;
         this.matchList = matchList;
@@ -17,18 +21,18 @@ public class Round {
 
 
     public Round() {
-        this.name = "";
+        this.title = "";
         this.number = 0;
         this.isInWinners = true;
         matchList = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public int getNumber() {

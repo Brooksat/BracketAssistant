@@ -6,6 +6,7 @@
         android:title="Double Elimination"></item>
     <item android:id="@+id/round_robin"
         android:title="Round Robin"></item>
-    <!--<item android:id="@+id/swiss"-->
-    <!--android:title="Swiss"></item>-->
+    <item
+        android:id="@+id/swiss"
+        android:title="Swiss"></item>
 </menu>

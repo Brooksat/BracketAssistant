@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/round_robin_view">
+    android:id="@+id/round_robin_format">
 
     <TextView
         android:layout_width="match_parent"

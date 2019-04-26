@@ -29,8 +29,7 @@ public class ChallongeRequests {
         if (subDomain != null) {
             url += makeAPIParameter("subdomain", subDomain);
         }
-        APIRequest request = new APIRequest(url, Request.Method.GET);
-        return request;
+        return new APIRequest(url, Request.Method.GET);
     }
 
     static public String tounamentCreate(String name, String URL, int type, String subdomain, String description, boolean thirdPlaceMatch
@@ -40,12 +39,12 @@ public class ChallongeRequests {
         return url;
     }
 
-    static public String tournamentShow(String name) {
-        String url = API_URL;
-        url += "/" + name;
-        url += JSON_TAG + API_KEY_SEGMENT + apiKey;
-        url += "&include_matches=1&include_participants=1";
-        return url;
+    static public APIRequest tournamentShow(String tournamentURL) {
+        String requestURL = API_URL;
+        requestURL += "/" + tournamentURL;
+        requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
+        requestURL += "&include_matches=1&include_participants=1";
+        return new APIRequest(requestURL, Request.Method.GET);
     }
 
     /*

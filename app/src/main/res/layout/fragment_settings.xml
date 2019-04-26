@@ -15,19 +15,13 @@
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
         android:orientation="vertical"
-        android:paddingBottom="50dp">
+        android:paddingBottom="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/basic_info_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!--<TextView-->
-            <!--android:id="@+id/newTourney"-->
-            <!--style="@style/menu_title"-->
-            <!--android:text="New Tournament"-->
-            <!--app:layout_constraintLeft_toLeftOf="parent"-->
-            <!--app:layout_constraintTop_toTopOf="parent" />-->
 
             <TextView
                 android:id="@+id/basicInfo"
@@ -36,24 +30,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/host"
-                style="@style/menu_edit_text"
-                android:layout_width="0dp"
-                android:hint="Subdomain"
-
-                app:layout_constraintBottom_toTopOf="@id/tournament_name_header"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/subdomain_menu"
-                app:layout_constraintTop_toBottomOf="@id/basicInfo" />
-
-            <Spinner
-                android:id="@+id/subdomain_menu"
-                style="@style/menu_spinner"
-                android:layout_width="wrap_content"
-                app:layout_constraintLeft_toRightOf="@id/host"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@id/host" />
 
             <TextView
                 android:id="@+id/tournament_name_header"
@@ -64,31 +40,7 @@
                 app:layout_constraintBottom_toTopOf="@id/url_header"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/tournament_name"
-                app:layout_constraintTop_toBottomOf="@id/host" />
-
-
-            <TextView
-                android:id="@+id/url_header"
-                style="@style/menu_h2"
-                android:layout_width="wrap_content"
-                android:ellipsize="marquee"
-                android:singleLine="true"
-                android:text="URL: challonge.com/"
-                app:layout_constraintBottom_toTopOf="@id/description_header"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/url"
-                app:layout_constraintTop_toBottomOf="@id/tournament_name_header"
-
-                />
-
-            <TextView
-                android:id="@+id/description_header"
-                style="@style/menu_h2"
-                android:layout_width="match_parent"
-                android:text="Description"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/url_header" />
-
+                app:layout_constraintTop_toBottomOf="@id/basicInfo" />
 
             <EditText
                 android:id="@+id/tournament_name"
@@ -99,6 +51,21 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tournament_name_header" />
 
+
+            <TextView
+                android:id="@+id/url_header"
+                style="@style/menu_h2"
+                android:layout_width="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="URL: challonge.com/"
+                app:layout_constraintBottom_toTopOf="@id/subdomain_header"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/url"
+                app:layout_constraintTop_toBottomOf="@id/tournament_name_header"
+
+                />
+
             <EditText
                 android:id="@+id/url"
                 style="@style/menu_edit_text"
@@ -106,6 +73,32 @@
                 app:layout_constraintLeft_toRightOf="@id/url_header"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/url_header" />
+
+            <TextView
+                android:id="@+id/subdomain_header"
+                style="@style/menu_h2"
+                android:layout_width="wrap_content"
+                android:text="SubDomain"
+                app:layout_constraintBottom_toTopOf="@id/description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/url_header" />
+
+            <EditText
+                android:id="@+id/subdomain"
+                style="@style/menu_edit_text"
+                android:layout_width="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/subdomain_header"
+                app:layout_constraintTop_toTopOf="@id/subdomain_header" />
+
+            <TextView
+                android:id="@+id/description_header"
+                style="@style/menu_h2"
+                android:layout_width="match_parent"
+                android:text="Description"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subdomain_header" />
+
 
             <EditText
                 android:id="@+id/description"
@@ -165,7 +158,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/single_elim_view"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:visibility="gone">
 
                     <CheckBox
                         android:id="@+id/third_place_match_checkbox"
@@ -217,10 +211,9 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/round_robin_view"
+                    android:id="@+id/round_robin_format"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone">
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:id="@+id/ranked_by"
@@ -245,7 +238,7 @@
                         android:id="@+id/round_robin_custom_parameters"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/ranked_by">
 
@@ -253,6 +246,7 @@
                             android:id="@+id/points_per_match_win"
                             style="@style/menu_edit_text"
                             android:layout_width="60dp"
+                            android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -268,6 +262,7 @@
                             android:id="@+id/points_per_match_tie"
                             style="@style/menu_edit_text"
                             android:layout_width="60dp"
+                            android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/points_per_match_win" />
 
@@ -283,6 +278,7 @@
                             android:id="@+id/points_per_gameset_win"
                             style="@style/menu_edit_text"
                             android:layout_width="60dp"
+                            android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/points_per_match_tie" />
 
@@ -298,6 +294,7 @@
                             android:id="@+id/points_per_gameset_tie"
                             style="@style/menu_edit_text"
                             android:layout_width="60dp"
+                            android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/points_per_gameset_win" />
 
@@ -307,6 +304,30 @@
                             android:text="Points per match tie"
                             app:layout_constraintLeft_toRightOf="@id/points_per_gameset_tie"
                             app:layout_constraintTop_toTopOf="@id/points_per_gameset_tie" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/swiss_points_per_bye_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/points_per_gameset_tie">
+
+                            <EditText
+                                android:id="@+id/points_per_bye"
+                                style="@style/menu_edit_text"
+                                android:inputType="numberDecimal"
+                                android:layout_width="60dp"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                style="@style/menu_h2"
+                                android:layout_width="wrap_content"
+                                android:text="Points per bye"
+                                app:layout_constraintLeft_toRightOf="@id/points_per_bye"
+                                app:layout_constraintTop_toTopOf="@id/points_per_bye" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -330,62 +351,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/registration_header"
-                style="@style/menu_h2"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:text="Registration"
-                app:layout_constraintBottom_toTopOf="@id/participants_checkbox_team_register"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/registration_layout_header" />
-
-
-            <RadioGroup
-
-                android:id="@+id/registration_radio"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                app:layout_constraintLeft_toRightOf="@id/registration_header"
-                app:layout_constraintTop_toBottomOf="@id/registration_layout_header">
-
-                <RadioButton
-                    style="@style/menu_text_radio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Provide a list of participants" />
-
-                <RadioButton
-                    style="@style/menu_text_radio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Host a sign-up page" />
-            </RadioGroup>
-
-            <!--<TextView-->
-            <!--android:id="@+id/participants_header"-->
-            <!--style="@style/menu_h2"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="80dp"-->
-            <!--android:text="Participants"-->
-            <!--app:layout_constraintLeft_toLeftOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@id/registration_radio"-->
-            <!--app:layout_constraintBottom_toTopOf="@id/start_time_header"/>-->
-
-
-            <CheckBox
-                android:id="@+id/participants_checkbox_team_register"
-                style="@style/menu_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:text="Require participants to register as a team"
-                app:layout_constraintBottom_toTopOf="@id/start_time_header"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/registration_radio" />
-
 
             <TextView
                 android:id="@+id/start_time_header"
@@ -394,7 +359,7 @@
                 android:text="Start Time"
                 app:layout_constraintBottom_toTopOf="@id/check_in_duration_header"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/participants_checkbox_team_register" />
+                app:layout_constraintTop_toBottomOf="@id/registration_layout_header" />
 
 
             <TextView
@@ -428,6 +393,7 @@
                 android:id="@+id/check_in_duration"
                 style="@style/menu_edit_text"
                 android:layout_width="42dp"
+                android:inputType="number"
                 android:text="0"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/check_in_duration_header" />
@@ -438,14 +404,14 @@
                 style="@style/menu_h2"
                 android:layout_width="wrap_content"
                 android:text="Maximum number of Participants"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/check_in_duration_header" />
 
             <EditText
                 android:id="@+id/max_number_participants"
                 style="@style/menu_edit_text"
                 android:layout_width="42dp"
+                android:inputType="number"
                 android:text="256"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/max_number_participants_header" />
@@ -474,36 +440,42 @@
                 app:layout_constraintTop_toBottomOf="@+id/advanced_options_header">
 
                 <CheckBox
+                    android:id="@+id/show_rounds_checkbox"
                     style="@style/menu_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Show Rounds" />
 
                 <CheckBox
+                    android:id="@+id/tournament_private_checkbox"
                     style="@style/menu_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Private" />
 
                 <CheckBox
+                    android:id="@+id/notify_match_open_checkbox"
                     style="@style/menu_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Notify users when match is open" />
 
                 <CheckBox
+                    android:id="@+id/notify_tournament_over_checkbox"
                     style="@style/menu_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Notify users when tournament is over" />
 
                 <CheckBox
+                    android:id="@+id/traditional_seeding_checkbox"
                     style="@style/menu_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Traditional Seeding" />
 
                 <CheckBox
+                    android:id="@+id/allow_attachments_checkbox"
                     style="@style/menu_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -514,6 +486,19 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/apply_settings"
+                style="@style/menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update" />
+        </LinearLayout>
 
     </LinearLayout>
 

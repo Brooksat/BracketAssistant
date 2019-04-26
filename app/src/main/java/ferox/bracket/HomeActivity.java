@@ -7,14 +7,14 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -49,8 +49,8 @@ public class HomeActivity extends AppCompatActivity {
         for (int i = 0; i < tournaments.size(); i++) {
 
             Tournament tournament = gson.fromJson(tournaments.get(i).getAsJsonObject().get("tournament"), Tournament.class);
-            tournament.setTournamentType(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("tournament_type").getAsString());
-            tournament.setSize(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("participants_count").getAsInt());
+            tournament.setType(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("tournament_type").getAsString());
+            tournament.setParticipantCount(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("participants_count").getAsInt());
             tournamentList.add(0, tournament);
         }
 
@@ -66,12 +66,14 @@ public class HomeActivity extends AppCompatActivity {
         listView.setAdapter(listViewAdapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
+            Log.i("TAG", tournamentList.get(position).toString());
             Intent intent = new Intent(view.getContext(), Bracket.class);
+            //TODO only need url , anything else can be set using that
             intent.putExtra("tournamentName", tournamentList.get(position).getName());
             intent.putExtra("tournamentURL", tournamentList.get(position).getUrl());
-            intent.putExtra("tournamentType", tournamentList.get(position).getTournamentType());
+            intent.putExtra("tournamentType", tournamentList.get(position).getType());
             intent.putExtra("tournamentState", tournamentList.get(position).getState());
-            intent.putExtra("tournamentSize", tournamentList.get(position).getSize());
+            intent.putExtra("tournamentSize", tournamentList.get(position).getParticipantCount());
             startActivity(intent);
             Log.d("TournamentName", String.valueOf(tournamentList.get(position).getName()));
 
