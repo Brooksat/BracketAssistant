@@ -1,5 +1,7 @@
 package ferox.bracket;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -9,19 +11,37 @@ public class Participant {
     final static String NAME = "participant[name]=";
     final static String SEED = "participant[seed]=";
 
+    @SerializedName("id")
     int id;
-    private String name;
+    @SerializedName("seed")
     private int seed;
+    @SerializedName("display_name")
+    private String name;
     private String tournamentID;
 
     public Participant() {
-
+        name = "";
+        tournamentID = "";
     }
 
 
     public Participant(String name, int seed) {
         this.name = name;
         this.seed = seed;
+    }
+
+
+    /**
+     * When deserializing JSON sets any JsonNull fields to their default values, therefore settings
+     * string to null, this methods changes String fields to ""
+     */
+    public void undoJsonShenanigans() {
+        if (name == null) {
+            name = "";
+        }
+        if (tournamentID == null) {
+            tournamentID = "";
+        }
     }
 
     public int getId() {

@@ -2,6 +2,7 @@ package ferox.bracket;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
@@ -26,12 +26,11 @@ import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 public class BracketFragment extends Fragment {
 
-    final static int UNUSED_WINNERS = 0;
-    final static int UNUSED_LOSERS_ODD = 1;
-    final static int UNUSED_LOSERS_EVEN = 2;
+
     final static String SINGLE_ELIM = "single elimination";
     final static String DOUBLE_ELIM = "double elimination";
     final static String ROUND_ROBIN = "round robin";
@@ -40,6 +39,9 @@ public class BracketFragment extends Fragment {
     final static String UNDERWAY = "underway";
     final static String PENDING = "pending";
     final static String COMPLETE = "complete";
+    final static String GRANDS_DEFAULT = "";
+    final static String GRANDS_SINGLE_MATCH = "single match";
+    final static String GRANDS_SKIP = "skip";
 
     TextView width;
     TextView height;
@@ -62,10 +64,12 @@ public class BracketFragment extends Fragment {
     private int numRoundsLosers;
 
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
-    Tournament currentTournament;
+
 
     ArrayList<Round> winnersRounds;
     ArrayList<Round> losersRounds;
+    ArrayList<Round> roundLabelsW;
+    ArrayList<Round> roundLabelsL;
 
     String url;
     String type;
@@ -80,7 +84,7 @@ public class BracketFragment extends Fragment {
     private LinearLayout bracketWinners;
     private LinearLayout bracketLosers;
 
-    private NestedScrollView nestedScrollView;
+    private Tournament tournament;
 
 
     @Nullable
@@ -90,7 +94,7 @@ public class BracketFragment extends Fragment {
 
         Intent intent = getActivity().getIntent();
         View v = inflater.inflate(R.layout.fragment_bracket, container, false);
-        currentTournament = new Tournament();
+
 
         zoomLayout = v.findViewById(R.id.bracket_zoom_layout);
 //
@@ -116,12 +120,17 @@ public class BracketFragment extends Fragment {
 
         winnersRounds = new ArrayList<>();
         losersRounds = new ArrayList<>();
+        roundLabelsW = new ArrayList<>();
+        roundLabelsL = new ArrayList<>();
 
         oneParticipantMessage = v.findViewById(R.id.one_participant_message);
 
-        url = intent.getStringExtra("tournamentURL");
-        type = intent.getStringExtra("tournamentType");
-        numberOfParticipants = intent.getIntExtra("tournamentSize", 0);
+        //TODO if you've changed something after getting to this page, going back to "Your Tournaments" and reselect this tournament, the changes will not be shown
+        tournament = Objects.requireNonNull(intent.getExtras()).getParcelable("tournament");
+        assert tournament != null;
+        url = tournament.getUrl();
+        type = tournament.getType();
+        numberOfParticipants = tournament.getParticipantCount();
 
 
         ChallongeRequests.sendRequest(response -> getTournamentRoundInfo(response), ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url));
@@ -158,12 +167,30 @@ public class BracketFragment extends Fragment {
     }
 
     private void getTournamentRoundInfo(String jsonString) {
+        Gson gson = new Gson();
         JsonParser jsonParser = new JsonParser();
-        JsonElement tournament = jsonParser.parse(jsonString);
-        JsonObject matchesByRound = tournament.getAsJsonObject().get("matches_by_round").getAsJsonObject();
+        JsonElement tournamentField = jsonParser.parse(jsonString);
+
+
+        JsonObject matchesByRound = tournamentField.getAsJsonObject().get("matches_by_round").getAsJsonObject();
+        JsonArray rounds = tournamentField.getAsJsonObject().get("rounds").getAsJsonArray();
+
+        for (JsonElement round : rounds) {
+            JsonObject roundField = round.getAsJsonObject();
+            Round roundTmp = gson.fromJson(roundField, Round.class);
+            if (roundTmp.getNumber() > 0) {
+                roundLabelsW.add(roundTmp);
+            } else roundLabelsL.add(roundTmp);
+
+        }
+        Collections.sort(roundLabelsW, (n1, n2) -> n1.getNumber() - n2.getNumber());
+        Collections.sort(roundLabelsL, (n1, n2) -> n1.getNumber() - n2.getNumber());
+        //losers rounds are denoted with a negative number, Round -x is Loser's Round X
+        //Since the rounds have been sorted by number value they need to be reversed to be order by actual round
+        Collections.reverse(roundLabelsL);
+
 
         //The entryset is not in order so this is to make a list of jsonobjects in some kind legitimate order
-
         ArrayList<StringJsonArrayPair> holder = new ArrayList<>();
 
 
@@ -191,57 +218,85 @@ public class BracketFragment extends Fragment {
             for (JsonElement match : round) {
                 Participant player1 = new Participant();
                 Participant player2 = new Participant();
-                Match matchTmp = new Match();
+                Match matchTmp = gson.fromJson(match.getAsJsonObject(), Match.class);
+                matchTmp.undoJsonShenanigans();
                 if (!match.getAsJsonObject().get("player1").isJsonNull()) {
-                    JsonObject p1 = match.getAsJsonObject().get("player1").getAsJsonObject();
-                    player1.setId(p1.get("id").getAsInt());
-                    player1.setName(p1.get("display_name").getAsString());
-                    player1.setSeed(p1.get("seed").getAsInt());
-                    matchTmp.setP1Decided(true);
+                    player1 = gson.fromJson(match.getAsJsonObject().get("player1").getAsJsonObject(), Participant.class);
                     matchTmp.setP1Seed(player1.getSeed());
-
+                    player1.undoJsonShenanigans();
 
                 } else {
                     matchTmp.setP1Decided(false);
-                    if (!match.getAsJsonObject().get("player1_placeholder_text").isJsonNull()) {
-                        player1.setName(match.getAsJsonObject().get("player1_placeholder_text").getAsString());
-                        matchTmp.setP1PrereqText(match.getAsJsonObject().get("player1_placeholder_text").getAsString());
+                    if (matchTmp.getP1PrereqText() != null) {
+                        player1.setName(matchTmp.getP1PrereqText());
                     }
+                    //TODO set previous match if needed
 //                    if(match.getAsJsonObject().get("player1_prereq_identifier")!=null){
 //                        //sets corresponding match as previous match
 //                    }
                 }
                 if (!match.getAsJsonObject().get("player2").isJsonNull()) {
-                    JsonObject p2 = match.getAsJsonObject().get("player2").getAsJsonObject();
-                    player2.setId(p2.get("id").getAsInt());
-                    player2.setName(p2.get("display_name").getAsString());
-                    player2.setSeed(p2.get("seed").getAsInt());
-                    matchTmp.setP2Decided(true);
+                    player2 = gson.fromJson(match.getAsJsonObject().get("player2").getAsJsonObject(), Participant.class);
                     matchTmp.setP2Seed(player2.getSeed());
+                    player2.undoJsonShenanigans();
 
                 } else {
                     matchTmp.setP2Decided(false);
-                    if (!match.getAsJsonObject().get("player2_placeholder_text").isJsonNull()) {
-                        player2.setName(match.getAsJsonObject().get("player2_placeholder_text").getAsString());
-                        matchTmp.setP2PrereqText(match.getAsJsonObject().get("player2_placeholder_text").getAsString());
+                    if (matchTmp.getP2PrereqText() != null) {
+                        player2.setName(matchTmp.getP2PrereqText());
                     }
                 }
-                if (!match.getAsJsonObject().get("player1_prereq_identifier").isJsonNull()) {
-                    matchTmp.setP1PreviousIdentifier(match.getAsJsonObject().get("player1_prereq_identifier").getAsInt());
-                }
-                if (!match.getAsJsonObject().get("player2_prereq_identifier").isJsonNull()) {
-                    matchTmp.setP2PreviousIdentifier(match.getAsJsonObject().get("player2_prereq_identifier").getAsInt());
-                }
+
                 matchTmp.setP1(player1);
                 matchTmp.setP2(player2);
-                matchTmp.setNumber(match.getAsJsonObject().get("identifier").getAsInt());
+
 
                 roundTmp.getMatchList().add(matchTmp);
-
             }
+        }
+
+        if (type.equals(SINGLE_ELIM) && tournament.isHoldThirdPlaceMatch()) {
+            JsonObject thirdPlaceMatch = tournamentField.getAsJsonObject().get("third_place_match").getAsJsonObject();
+            Match thirdPlace = gson.fromJson(thirdPlaceMatch, Match.class);
+            thirdPlace.undoJsonShenanigans();
+            winnersRounds.get(winnersRounds.size() - 1).getMatchList().add(thirdPlace);
+            Participant player1 = new Participant();
+            Participant player2 = new Participant();
+
+            if (!thirdPlaceMatch.getAsJsonObject().get("player1").isJsonNull()) {
+                player1 = gson.fromJson(thirdPlaceMatch.getAsJsonObject().get("player1").getAsJsonObject(), Participant.class);
+                thirdPlace.setP1Seed(player1.getSeed());
+                player1.undoJsonShenanigans();
+
+            } else {
+                thirdPlace.setP1Decided(false);
+                if (thirdPlace.getP1PrereqText() != null) {
+                    player1.setName(thirdPlace.getP1PrereqText());
+                }
+                //TODO set previous match if needed
+//                    if(match.getAsJsonObject().get("player1_prereq_identifier")!=null){
+//                        //sets corresponding match as previous match
+//                    }
+            }
+            if (!thirdPlaceMatch.getAsJsonObject().get("player2").isJsonNull()) {
+                player2 = gson.fromJson(thirdPlaceMatch.getAsJsonObject().get("player2").getAsJsonObject(), Participant.class);
+                thirdPlace.setP2Seed(player2.getSeed());
+                player2.undoJsonShenanigans();
+
+            } else {
+                thirdPlace.setP2Decided(false);
+                if (thirdPlace.getP2PrereqText() != null) {
+                    player2.setName(thirdPlace.getP2PrereqText());
+                }
+            }
+
+            thirdPlace.setP1(player1);
+            thirdPlace.setP2(player2);
 
 
         }
+
+
         Collections.sort(winnersRounds, (n1, n2) -> n1.getNumber() - n2.getNumber());
         Collections.sort(losersRounds, (n1, n2) -> n1.getNumber() - n2.getNumber());
         //losers rounds are denoted with a negative number, Round -x is Loser's Round X
@@ -275,8 +330,8 @@ public class BracketFragment extends Fragment {
      */
     private void makeBracketDisplay() {
 
-        if (!type.equals(ROUND_ROBIN)) {
-            setRoundHeaders(8);
+        if (!type.equals(ROUND_ROBIN) && !type.equals(SWISS)) {
+            setRoundHeaders();
         }
         makeWinners();
         makeLosers();
@@ -285,6 +340,8 @@ public class BracketFragment extends Fragment {
 
     }
 
+    //TODO needs to account for SE & DE grand finals variations, thirdplacematch is listed separate from the rest of the matches in the json
+    //todo works with SE third place, bugged with DE 1 match
     private void setMatchInfo() {
         //double/single elim matches
         if (type.equals(DOUBLE_ELIM) || type.equals(SINGLE_ELIM)) {
@@ -305,17 +362,23 @@ public class BracketFragment extends Fragment {
                 }
             }
 
+            //sets thirdPlaceMatch in single elim if applicable
+
+
             //sets grand finals in double elim
             //magic numbers are to get the specific location of the grand finals matches in the layout
             // an iterating method could be used just to eliminate use of magic numbers but these locations
             //should be constant across any double elim bracket constructed with this program
-            if (type.equals(DOUBLE_ELIM)) {
+            if (type.equals(DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(GRANDS_SKIP)) {
                 LinearLayout GF1 = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 3);
-                LinearLayout GF2 = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 1);
                 ConstraintLayout GF1Match = (ConstraintLayout) GF1.getChildAt(1);
-                ConstraintLayout GF2Match = (ConstraintLayout) GF2.getChildAt(1);
                 setMatchView(GF1Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(0));
-                setMatchView(GF2Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(1));
+
+                if (tournament.getGrandFinalsModifier().equals(GRANDS_DEFAULT)) {
+                    LinearLayout GF2 = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 1);
+                    ConstraintLayout GF2Match = (ConstraintLayout) GF2.getChildAt(1);
+                    setMatchView(GF2Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(1));
+                }
             }
 
             //set losers match info
@@ -357,7 +420,7 @@ public class BracketFragment extends Fragment {
 
         matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), matchNumber.getText(), Toast.LENGTH_SHORT).show());
 
-        matchNumber.setText(String.valueOf(matchInfo.getNumber()));
+        matchNumber.setText(String.valueOf(matchInfo.getIdentifier()));
         TextView P1Seed = match.findViewById(R.id.seed1);
         P1Seed.setText(String.valueOf(matchInfo.getP1Seed()));
         TextView P2Seed = match.findViewById(R.id.seed2);
@@ -406,39 +469,56 @@ public class BracketFragment extends Fragment {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
+        //init GF match 1
         LinearLayout BCV1 = new LinearLayout(getContext());
         BCV1.setLayoutParams(layoutParams);
         BCV1.setOrientation(LinearLayout.VERTICAL);
         LinearLayout grandFinals = new LinearLayout(getContext());
         grandFinals.setLayoutParams(layoutParams);
         grandFinals.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout BCV2 = new LinearLayout(getContext());
-        BCV2.setLayoutParams(layoutParams);
-        BCV2.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout grandFinalsReset = new LinearLayout(getContext());
-        grandFinalsReset.setLayoutParams(layoutParams);
-        grandFinalsReset.setOrientation(LinearLayout.VERTICAL);
-
         BCV1.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2) - 0.5));
         grandFinals.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
-        BCV2.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
-        grandFinalsReset.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
-
         BCV1.addView(makeBCVComponent(0, bracketConnectorView.MODE_TOP));
         grandFinals.addView(makeMatchComponent());
-        BCV2.addView(makeBCVComponent(0, bracketConnectorView.MODE_MIDDLE));
-        grandFinalsReset.addView(makeMatchComponent());
-
         bracketWinners.addView(BCV1);
         bracketWinners.addView(grandFinals);
-        bracketWinners.addView(BCV2);
-        bracketWinners.addView(grandFinalsReset);
+
+        if (tournament.getGrandFinalsModifier().equals(GRANDS_DEFAULT)) {
+            //init GF reset
+            LinearLayout BCV2 = new LinearLayout(getContext());
+            BCV2.setLayoutParams(layoutParams);
+            BCV2.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout grandFinalsReset = new LinearLayout(getContext());
+            grandFinalsReset.setLayoutParams(layoutParams);
+            grandFinalsReset.setOrientation(LinearLayout.VERTICAL);
+            BCV2.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
+            grandFinalsReset.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
+            BCV2.addView(makeBCVComponent(0, bracketConnectorView.MODE_MIDDLE));
+            grandFinalsReset.addView(makeMatchComponent());
+            bracketWinners.addView(BCV2);
+            bracketWinners.addView(grandFinalsReset);
+        }
+    }
+
+    private void makeThirdPlaceMatch() {
+        LinearLayout finalRound = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 1);
+        Space space = makeSpaceComponent(2);
+        ConstraintLayout thirdPlaceMatch = makeMatchComponent();
+        finalRound.addView(space);
+        finalRound.addView(thirdPlaceMatch);
     }
 
     private void makeWinners() {
 
         //total number of rounds minus grand finals which is constructed separately
-        int totalRounds = type.equals(DOUBLE_ELIM) ? winnersRounds.size() - 1 : winnersRounds.size();
+        int totalRounds;
+        Log.d("Checking", String.valueOf(type) + " " + String.valueOf(tournament.getGrandFinalsModifier()));
+        if (type.equals(DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(GRANDS_SKIP)) {
+            totalRounds = winnersRounds.size() - 1;
+        } else {
+            totalRounds = winnersRounds.size();
+        }
+
 
         if (type.equals(SINGLE_ELIM) || type.equals(DOUBLE_ELIM)) {
             for (int i = 0; i < totalRounds; i++) {
@@ -483,10 +563,11 @@ public class BracketFragment extends Fragment {
                 }
             }
             //double elimination grand finals
-
-            if (type.equals(DOUBLE_ELIM)) {
-
+            if (type.equals(DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(GRANDS_SKIP)) {
                 makeGrandFinals();
+            }
+            if (type.equals(SINGLE_ELIM) && tournament.isHoldThirdPlaceMatch() && tournament.getParticipantCount() > 3) {
+                makeThirdPlaceMatch();
             }
 
         } else if (type.equals(ROUND_ROBIN) || type.equals(SWISS)) {
@@ -591,7 +672,7 @@ public class BracketFragment extends Fragment {
         return space;
     }
 
-    //TODO this takes in an int multiplier whereas the other two take a double of absolute height
+    //TODO this takes in an int multiplier whereas makeSpaceComponent takes in a double, should probably be the same for consistency
     //get bracketConnectorView
     private bracketConnectorView makeBCVComponent(int heightMultiplier, int mode) {
         bracketConnectorView bcv = new bracketConnectorView(getContext(), null, mHeightUnit * (int) Math.pow(2, heightMultiplier), mode, null);
@@ -680,7 +761,7 @@ public class BracketFragment extends Fragment {
     }
 
     //Constructs round headers
-    private void setRoundHeaders(int numRounds) {
+    private void setRoundHeaders() {
         //TODO needs to set names from the round names themselves(Semifinals, Grands Etc)
         LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
         LinearLayout roundLosers = getView().findViewById(R.id.round_losers);
@@ -691,18 +772,18 @@ public class BracketFragment extends Fragment {
 
 
         //adds round headers
-        for (int i = 0; i < winnersRounds.size(); i++) {
+        for (int i = 0; i < roundLabelsW.size(); i++) {
             TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
             roundNumber.setLayoutParams(roundHeaderLayoutParams);
             roundNumber.setGravity(Gravity.CENTER);
-            roundNumber.setText(winnersRounds.get(i).getTitle());
+            roundNumber.setText(roundLabelsW.get(i).getTitle());
             roundWinners.addView(roundNumber);
         }
-        for (int i = 0; i < losersRounds.size(); i++) {
+        for (int i = 0; i < roundLabelsL.size(); i++) {
             TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
             roundNumber.setLayoutParams(roundHeaderLayoutParams);
             roundNumber.setGravity(Gravity.CENTER);
-            roundNumber.setText(losersRounds.get(i).getTitle());
+            roundNumber.setText(roundLabelsL.get(i).getTitle());
             roundLosers.addView(roundNumber);
         }
 
@@ -712,6 +793,7 @@ public class BracketFragment extends Fragment {
     private void setUnusedMatchesInvisible() {
 
 
+        //TODO This breaks in double elimination when grand finals modfier is set to skip, presumably needs to be fixed to 'single match' and likely also single elim when add third place match is checked
         //winners
         if ((type.equals(DOUBLE_ELIM) || type.equals(SINGLE_ELIM)) && winnersRounds.size() > 1) {
             LinearLayout firstRoundLayout = (LinearLayout) bracketWinners.getChildAt(0);

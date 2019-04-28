@@ -16,6 +16,8 @@ import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 
+
+//TODO New Tournament button needs to put in bottom/right corner, edittext for subdomain put in old spot
 public class HomeActivity extends AppCompatActivity {
 
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
@@ -49,8 +51,7 @@ public class HomeActivity extends AppCompatActivity {
         for (int i = 0; i < tournaments.size(); i++) {
 
             Tournament tournament = gson.fromJson(tournaments.get(i).getAsJsonObject().get("tournament"), Tournament.class);
-            tournament.setType(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("tournament_type").getAsString());
-            tournament.setParticipantCount(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("participants_count").getAsInt());
+            tournament.undoJsonShenanigans();
             tournamentList.add(0, tournament);
         }
 
@@ -68,12 +69,8 @@ public class HomeActivity extends AppCompatActivity {
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Log.i("TAG", tournamentList.get(position).toString());
             Intent intent = new Intent(view.getContext(), Bracket.class);
-            //TODO only need url , anything else can be set using that
-            intent.putExtra("tournamentName", tournamentList.get(position).getName());
-            intent.putExtra("tournamentURL", tournamentList.get(position).getUrl());
-            intent.putExtra("tournamentType", tournamentList.get(position).getType());
-            intent.putExtra("tournamentState", tournamentList.get(position).getState());
-            intent.putExtra("tournamentSize", tournamentList.get(position).getParticipantCount());
+            intent.putExtra("tournament", tournamentList.get(position));
+
             startActivity(intent);
             Log.d("TournamentName", String.valueOf(tournamentList.get(position).getName()));
 
@@ -82,7 +79,6 @@ public class HomeActivity extends AppCompatActivity {
 
         listView.invalidate();
     }
-
 
 
 }

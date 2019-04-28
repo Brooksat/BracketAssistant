@@ -1,11 +1,20 @@
 package ferox.bracket;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Match {
-    private int id;
-    private int number;
+    @SerializedName("id")
+    private String id;
+    @SerializedName("tournament_id")
+    private String tournamentID;
+    @SerializedName("identifier")
+    private int identifier;
+
     private int p1Seed;
     private int p2Seed;
+    @SerializedName("player1_prereq_identifier")
     private int p1PreviousIdentifier;
+    @SerializedName("player2_prereq_identifier")
     private int p2PreviousIdentifier;
     private Participant p1;
     private Participant p2;
@@ -13,16 +22,22 @@ public class Match {
     private Match p2PreviousMatch;
     private boolean P1Decided;
     private boolean P2Decided;
+    @SerializedName("player1_placeholder_text")
     private String p1PrereqText;
+    @SerializedName("player2_placeholder_text")
     private String p2PrereqText;
+    @SerializedName("winner_id")
+    private String winnerID;
+    @SerializedName("loser_id")
+    private String loserID;
 
 
-    public Match(int id, int number, int p1Seed, int p2Seed, Participant p1, Participant p2,
+    public Match(String id, int number, int p1Seed, int p2Seed, Participant p1, Participant p2,
                  Match p1PreviousMatch, Match p2PreviousMatch, boolean P1Decided, boolean P2Decided,
                  String p1PrereqText, String p2PrereqText) {
         super();
         this.id = id;
-        this.number = number;
+        this.identifier = number;
         this.p1Seed = p1Seed;
         this.p2Seed = p2Seed;
         this.p1 = p1;
@@ -37,8 +52,9 @@ public class Match {
     }
 
     public Match() {
-        id = 0;
-        number = 0;
+        id = "";
+        tournamentID = "";
+        identifier = 0;
         p1Seed = 0;
         p2Seed = 0;
         p1PreviousIdentifier = 0;
@@ -51,16 +67,51 @@ public class Match {
         P2Decided = false;
         p1PrereqText = "";
         p2PrereqText = "";
+        winnerID = "";
+        loserID = "";
 
     }
 
+    /**
+     * When deserializing JSON sets any JsonNull fields to their default values, therefore settings
+     * string to null, this methods changes String fields to ""
+     */
+    public void undoJsonShenanigans() {
+        if (id == null) {
+            id = "";
+        }
+        if (tournamentID == null) {
+            tournamentID = "";
+        }
+        if (p1PrereqText == null) {
+            p1PrereqText = "";
+        }
+        if (p2PrereqText == null) {
+            p2PrereqText = "";
+        }
+        if (winnerID == null) {
+            winnerID = "";
+        }
+        if (loserID == null) {
+            loserID = "";
+        }
+    }
 
-    public int getId() {
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTournamentID() {
+        return tournamentID;
+    }
+
+    public void setTournamentID(String tournamentID) {
+        this.tournamentID = tournamentID;
     }
 
     public int getP1PreviousIdentifier() {
@@ -79,12 +130,12 @@ public class Match {
         this.p2PreviousIdentifier = p2PreviousIdentifier;
     }
 
-    public int getNumber() {
-        return number;
+    public int getIdentifier() {
+        return identifier;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setIdentifier(int identifier) {
+        this.identifier = identifier;
     }
 
     public int getP1Seed() {

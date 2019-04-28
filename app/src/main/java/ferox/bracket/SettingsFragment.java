@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,6 +29,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.apache.commons.text.WordUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -45,12 +50,19 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     final static String POINTS_DIFF = "Points Difference";
     final static String CUSTOM = "Custom";
 
+    /**
+     * Winner's bracket winner must lose twice to be eliminated
+     */
+    final static String GRANDS_DEFAULT = "";
+    final static String GRANDS_SINGLE_MATCH = "single match";
+    final static String GRANDS_SKIP_ = "skip";
+
 
     int setYear;
     int setMonth;
     int setDay;
     int setHour;
-    String setMinute;
+    int setMinute;
     int ampm;
 
     Tournament tournament;
@@ -97,6 +109,8 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         tournamentURL = intent.getStringExtra("tournamentURL");
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+
+        tournament = new Tournament();
         name = view.findViewById(R.id.tournament_name);
         url = view.findViewById(R.id.url);
         subDomain = view.findViewById(R.id.subdomain);
@@ -109,7 +123,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         ptsPerGameTie = view.findViewById(R.id.points_per_gameset_tie);
         ptsPerBye = view.findViewById(R.id.points_per_bye);
 
-        //TODO need to accomodate for round robin points
         checkInDuration = view.findViewById(R.id.check_in_duration);
         maxParticipants = view.findViewById(R.id.max_number_participants);
         showRounds = view.findViewById(R.id.show_rounds_checkbox);
@@ -126,21 +139,16 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         setYear = calendar.get(Calendar.YEAR);
         setMonth = calendar.get(Calendar.MONTH);
         setDay = calendar.get(Calendar.DAY_OF_MONTH);
-        setHour = calendar.get(Calendar.HOUR);
-        setMinute = String.format(Locale.ENGLISH, "%02d", calendar.get(Calendar.MINUTE));
-        ampm = calendar.get(Calendar.AM_PM);
+        setHour = calendar.get(Calendar.HOUR_OF_DAY);
+        setMinute = calendar.get(Calendar.MINUTE);
+
 
 
         if (getContext() instanceof NewTournamentActivity) {
             applySettings.setText("Create");
         }
 
-        String defDate = setYear + "/" + (setMonth + 1) + "/" + setDay;
-        dateDay.setText(defDate);
 
-
-        String time = setHour + ":" + setMinute + " " + (ampm == Calendar.AM ? "AM" : "PM");
-        dateTime.setText(time);
 
         dateDay.setOnClickListener(v -> {
 
@@ -152,38 +160,27 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         dateTime.setOnClickListener(v -> {
 
 
-            TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnTimeSetListener, setHour, Integer.valueOf(setMinute), false);
+            TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnTimeSetListener, setHour, setMinute, true);
             timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             timePickerDialog.show();
         });
 
         mOnDateSetListener = (view1, year, month, dayOfMonth) -> {
 
-            String date = year + "/" + (month + 1) + "/" + dayOfMonth;
-            dateDay.setText(date);
-
             setYear = year;
             setMonth = month;
             setDay = dayOfMonth;
+
+            setDay(year, month, dayOfMonth);
         };
 
-        mOnTimeSetListener = (view12, hourOfDay, minute) -> {
-            String minuteTmp = String.format(Locale.ENGLISH, "%02d", minute);
-
-            Log.d("minute", minuteTmp);
-            String AM_PM = hourOfDay < 12 ? "AM" : "PM";
-            if (hourOfDay > 12) {
-                hourOfDay = hourOfDay - 12;
-            } else if (hourOfDay == 0) {
-                hourOfDay = 12;
-            }
-
-
-            String time1 = hourOfDay + ":" + minuteTmp + " " + AM_PM;
-            dateTime.setText(time1);
+        mOnTimeSetListener = (view1, hourOfDay, minute) -> {
 
             setHour = hourOfDay;
-            setMinute = minuteTmp;
+            setMinute = minute;
+
+            setTime(hourOfDay, minute);
+
         };
 
 
@@ -199,7 +196,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         rankedByMenuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         rankedByMenu.setAdapter(rankedByMenuAdapter);
 
-
+        //Cannot not scroll from area in description box if focus
         description.setOnTouchListener((v, event) -> {
             if (v.getId() == R.id.description) {
                 if (v.hasFocus()) {
@@ -214,7 +211,9 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             return false;
         });
 
-        ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.tournamentShow(tournamentURL));
+        if (tournamentURL != null) {
+            ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.tournamentShow(tournamentURL));
+        }
         Log.d("onCreateView", "iscalled");
         return view;
     }
@@ -230,31 +229,56 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         name.setText(tournament.getName());
         url.setText(tournament.getUrl());
         subDomain.setText(tournament.getSubdomain());
-        //TODO may have to process it first
-        description.setText(tournament.getDescription());
+        //handles formatting
+        description.setText(Html.fromHtml(tournament.getDescription()));
 
-        //TODO value from json dooesnt match in  onItemSelected
-        formatMenu.setSelection(formatMenuAdapter.getPosition(tournament.getType()), true);
+        formatMenu.setSelection(formatMenuAdapter.getPosition(WordUtils.capitalize(tournament.getType())), true);
         Log.d("fragmentSettings", tournament.getType());
 
 
         holdThirdPlace.setChecked(tournament.isHoldThirdPlaceMatch());
-        //TODO set radio for grand finals modifier
+        setGrandsModifier();
 
-        //TODO probably should change all tournament values to strings
-        ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
-        ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
-        ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
-        ptsPerGameTie.setText(String.valueOf(tournament.getSwissPtsForGameTie()));
-        ptsPerBye.setText(String.valueOf(tournament.getSwissPtsForBye()));
 
         ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
         ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
         ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
         ptsPerGameTie.setText(String.valueOf(tournament.getSwissPtsForGameTie()));
         ptsPerBye.setText(String.valueOf(tournament.getSwissPtsForBye()));
+
+        if (tournament.getType() == SWISS.toLowerCase()) {
+            ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
+            ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
+            ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
+            ptsPerGameTie.setText(String.valueOf(tournament.getSwissPtsForGameTie()));
+            ptsPerBye.setText(String.valueOf(tournament.getSwissPtsForBye()));
+        } else {
+            ptsPerMatchWin.setText(String.valueOf(tournament.getRrPtsForMatchWin()));
+            ptsPerMatchTie.setText(String.valueOf(tournament.getRrPtsForMatchTie()));
+            ptsPerGameWin.setText(String.valueOf(tournament.getRrPtsForGameWin()));
+            ptsPerGameTie.setText(String.valueOf(tournament.getRrPtsForGameTie()));
+        }
+
 
         checkInDuration.setText(String.valueOf(tournament.getCheckInDuration()));
+
+        //TODO probably should navigate to java.time
+        if (tournament.getStartAt() != null) {
+            try {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(simpleDateFormat.parse(tournament.getStartAt()));
+                setDay(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                setTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+                Log.d("theDate", tournament.getStartAt() + " -> " + cal.getTime());
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+
+            }
+        }
+
+
         maxParticipants.setText(String.valueOf(tournament.getSignUpCap()));
         showRounds.setChecked(tournament.isShowRounds());
         isTournamentPrivate.setChecked(tournament.isPrivate());
@@ -264,6 +288,16 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         allowAttachments.setChecked(tournament.isAcceptAttachments());
 
 
+    }
+
+    private void setDay(int year, int month, int day) {
+        String date = year + "/" + padLeadingZeros(month + 1, 2) + "/" + padLeadingZeros(day, 2);
+        dateDay.setText(date);
+    }
+
+    private void setTime(int hour, int minute) {
+        String time1 = padLeadingZeros(hour, 2) + ":" + padLeadingZeros(minute, 2);
+        dateTime.setText(time1);
     }
 
     @Override
@@ -293,6 +327,14 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                     getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
                     getView().findViewById(R.id.round_robin_format).setVisibility(View.VISIBLE);
                     getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.GONE);
+
+                    //handle situation when switching between RR and Swiss format
+                    ptsPerMatchWin.setText(String.valueOf(tournament.getRrPtsForMatchWin()));
+                    ptsPerMatchTie.setText(String.valueOf(tournament.getRrPtsForMatchTie()));
+                    ptsPerGameWin.setText(String.valueOf(tournament.getRrPtsForGameWin()));
+                    ptsPerGameTie.setText(String.valueOf(tournament.getRrPtsForGameTie()));
+
+
                     break;
                 }
                 case SWISS: {
@@ -300,6 +342,14 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                     getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
                     getView().findViewById(R.id.round_robin_format).setVisibility(View.VISIBLE);
                     getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.VISIBLE);
+                    //handle situation when switching between RR and Swiss format
+                    ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
+                    ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
+                    ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
+                    ptsPerGameTie.setText(String.valueOf(tournament.getSwissPtsForGameTie()));
+                    ptsPerBye.setText(String.valueOf(tournament.getSwissPtsForBye()));
+
+
                     break;
                 }
 
@@ -323,6 +373,46 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    /**
+     * @param number    int that is to be formatted
+     * @param padAmount pad length
+     * @return if padAmount > 0 then {@code String} that's been padded the specified amount
+     * else returns String.valueOf(number)
+     */
+    private String padLeadingZeros(int number, int padAmount) {
+        if (padAmount > 0) {
+            return String.format(Locale.US, "%0" + 2 + "d", number);
+        }
+
+        return String.valueOf(number);
+    }
+
+    private void setGrandsModifier() {
+        if (tournament.getGrandFinalsModifier() != null) {
+
+
+            switch (tournament.getGrandFinalsModifier()) {
+                case GRANDS_DEFAULT: {
+                    grandFinalsModifier.check(R.id.grand_finals_default);
+                    break;
+                }
+                case GRANDS_SINGLE_MATCH: {
+                    grandFinalsModifier.check(R.id.grand_finals_single_match);
+                    break;
+                }
+                case GRANDS_SKIP_: {
+                    grandFinalsModifier.check(R.id.grand_finals_skip);
+                    break;
+                }
+                default: {
+                    grandFinalsModifier.check(R.id.grand_finals_default);
+                }
+            }
+        } else {
+            grandFinalsModifier.check(R.id.grand_finals_default);
+        }
     }
 
     private void applySettings() {

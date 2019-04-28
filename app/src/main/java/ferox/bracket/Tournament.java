@@ -1,12 +1,16 @@
 package ferox.bracket;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
-public class Tournament {
+public class Tournament implements Parcelable {
 
     private static final String SINGLE_ELIM = "single elimination";
     private static final String DOUBLE_ELIM = "double elimination";
@@ -119,7 +123,7 @@ public class Tournament {
     @SerializedName("participants_count")
     private int participantCount;
 
-    //TODO UMM GOTTA WORK OUT CONSTRUCTORS
+
 
     public Tournament() {
         name = "";
@@ -162,6 +166,122 @@ public class Tournament {
         this.participantCount = participants_count;
     }
 
+    /**
+     * When deserializing JSON sets any JsonNull fields to their default values, therefore settings
+     * string to null, this methods changes String fields to ""
+     */
+    public void undoJsonShenanigans() {
+        if (name == null) {
+            name = "";
+        }
+        if (type == null) {
+            type = "";
+        }
+        if (url == null) {
+            url = "";
+        }
+        if (subdomain == null) {
+            subdomain = "";
+        }
+        if (description == null) {
+            description = "";
+        }
+        if (startAt == null) {
+            startAt = "";
+        }
+        if (grandFinalsModifier == null) {
+            grandFinalsModifier = DEFAULT_GRANDS;
+        }
+    }
+
+    protected Tournament(Parcel in) {
+        name = in.readString();
+        type = in.readString();
+        url = in.readString();
+        subdomain = in.readString();
+        description = in.readString();
+        openSignUp = in.readByte() != 0;
+        holdThirdPlaceMatch = in.readByte() != 0;
+        swissPtsForMatchWin = in.readFloat();
+        swissPtsForMatchTie = in.readFloat();
+        swissPtsForGameWin = in.readFloat();
+        swissPtsForGameTie = in.readFloat();
+        swissPtsForBye = in.readFloat();
+        swissRounds = in.readInt();
+        isSwissRoundSet = in.readByte() != 0;
+        rankedBy = in.readString();
+        rrPtsForMatchWin = in.readFloat();
+        rrPtsForMatchTie = in.readFloat();
+        rrPtsForGameWin = in.readFloat();
+        rrPtsForGameTie = in.readFloat();
+        acceptAttachments = in.readByte() != 0;
+        showRounds = in.readByte() != 0;
+        isPrivate = in.readByte() != 0;
+        notifyUsersMatchesOpens = in.readByte() != 0;
+        notifyUsersTourneyOver = in.readByte() != 0;
+        sequentialPairings = in.readByte() != 0;
+        signUpCap = in.readInt();
+        startAt = in.readString();
+        checkInDuration = in.readInt();
+        grandFinalsModifier = in.readString();
+        state = in.readString();
+        participantCount = in.readInt();
+    }
+
+    public static final Creator<Tournament> CREATOR = new Creator<Tournament>() {
+        @Override
+        public Tournament createFromParcel(Parcel in) {
+            return new Tournament(in);
+        }
+
+        @Override
+        public Tournament[] newArray(int size) {
+            return new Tournament[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(type);
+        dest.writeString(url);
+        dest.writeString(subdomain);
+        dest.writeString(description);
+        dest.writeByte((byte) (openSignUp ? 1 : 0));
+        dest.writeByte((byte) (holdThirdPlaceMatch ? 1 : 0));
+        dest.writeFloat(swissPtsForMatchWin);
+        dest.writeFloat(swissPtsForMatchTie);
+        dest.writeFloat(swissPtsForGameWin);
+        dest.writeFloat(swissPtsForGameTie);
+        dest.writeFloat(swissPtsForBye);
+        dest.writeInt(swissRounds);
+        dest.writeByte((byte) (isSwissRoundSet ? 1 : 0));
+        dest.writeString(rankedBy);
+        dest.writeFloat(rrPtsForMatchWin);
+        dest.writeFloat(rrPtsForMatchTie);
+        dest.writeFloat(rrPtsForGameWin);
+        dest.writeFloat(rrPtsForGameTie);
+        dest.writeByte((byte) (acceptAttachments ? 1 : 0));
+        dest.writeByte((byte) (showRounds ? 1 : 0));
+        dest.writeByte((byte) (isPrivate ? 1 : 0));
+        dest.writeByte((byte) (notifyUsersMatchesOpens ? 1 : 0));
+        dest.writeByte((byte) (notifyUsersTourneyOver ? 1 : 0));
+        dest.writeByte((byte) (sequentialPairings ? 1 : 0));
+        dest.writeInt(signUpCap);
+        dest.writeString(startAt);
+        dest.writeInt(checkInDuration);
+        dest.writeString(grandFinalsModifier);
+        dest.writeString(state);
+        dest.writeInt(participantCount);
+    }
+
+
+    //TODO make all variables call the encode method
     public String getSettings() {
         String settings = "";
 
@@ -222,6 +342,49 @@ public class Tournament {
             e.printStackTrace();
         }
         return encodedString;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tournament that = (Tournament) o;
+        return openSignUp == that.openSignUp &&
+                holdThirdPlaceMatch == that.holdThirdPlaceMatch &&
+                Float.compare(that.swissPtsForMatchWin, swissPtsForMatchWin) == 0 &&
+                Float.compare(that.swissPtsForMatchTie, swissPtsForMatchTie) == 0 &&
+                Float.compare(that.swissPtsForGameWin, swissPtsForGameWin) == 0 &&
+                Float.compare(that.swissPtsForGameTie, swissPtsForGameTie) == 0 &&
+                Float.compare(that.swissPtsForBye, swissPtsForBye) == 0 &&
+                swissRounds == that.swissRounds &&
+                isSwissRoundSet == that.isSwissRoundSet &&
+                Float.compare(that.rrPtsForMatchWin, rrPtsForMatchWin) == 0 &&
+                Float.compare(that.rrPtsForMatchTie, rrPtsForMatchTie) == 0 &&
+                Float.compare(that.rrPtsForGameWin, rrPtsForGameWin) == 0 &&
+                Float.compare(that.rrPtsForGameTie, rrPtsForGameTie) == 0 &&
+                acceptAttachments == that.acceptAttachments &&
+                showRounds == that.showRounds &&
+                isPrivate == that.isPrivate &&
+                notifyUsersMatchesOpens == that.notifyUsersMatchesOpens &&
+                notifyUsersTourneyOver == that.notifyUsersTourneyOver &&
+                sequentialPairings == that.sequentialPairings &&
+                signUpCap == that.signUpCap &&
+                checkInDuration == that.checkInDuration &&
+                participantCount == that.participantCount &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(url, that.url) &&
+                Objects.equals(subdomain, that.subdomain) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(rankedBy, that.rankedBy) &&
+                Objects.equals(startAt, that.startAt) &&
+                Objects.equals(grandFinalsModifier, that.grandFinalsModifier) &&
+                Objects.equals(state, that.state);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type, url, subdomain, description, openSignUp, holdThirdPlaceMatch, swissPtsForMatchWin, swissPtsForMatchTie, swissPtsForGameWin, swissPtsForGameTie, swissPtsForBye, swissRounds, isSwissRoundSet, rankedBy, rrPtsForMatchWin, rrPtsForMatchTie, rrPtsForGameWin, rrPtsForGameTie, acceptAttachments, showRounds, isPrivate, notifyUsersMatchesOpens, notifyUsersTourneyOver, sequentialPairings, signUpCap, startAt, checkInDuration, grandFinalsModifier, state, participantCount);
     }
 
     @Override
@@ -502,3 +665,5 @@ public class Tournament {
         this.participantCount = participantCount;
     }
 }
+
+

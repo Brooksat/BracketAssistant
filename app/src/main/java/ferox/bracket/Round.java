@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 public class Round {
-    @SerializedName("name")
+    @SerializedName("title")
     String title;
     @SerializedName("number")
     int number;
@@ -25,6 +25,16 @@ public class Round {
         this.number = 0;
         this.isInWinners = true;
         matchList = new ArrayList<>();
+    }
+
+    /**
+     * When deserializing JSON sets any JsonNull fields to their default values, therefore settings
+     * string to null, this methods changes String fields to ""
+     */
+    public void undoJsonShenanigans() {
+        if (title == null) {
+            title = "";
+        }
     }
 
     public String getTitle() {
