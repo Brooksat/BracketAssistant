@@ -12,15 +12,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.CustomViewHolder> {
@@ -81,8 +81,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         player.setSeed(viewHolder.getAdapterPosition() + 1);
                         ParticipantSettings settings = new ParticipantSettings();
                         settings.setSeed(player.getSeed());
-                        ChallongeRequests.sendRequest(response -> {
-                        }, ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
+                        ChallongeRequests.sendRequest(new VolleyCallback() {
+                                                          @Override
+                                                          public void onSuccess(String response) {
+
+                                                          }
+
+                                                          @Override
+                                                          public void onErrorResponse(ArrayList errorResponse) {
+
+                                                          }
+                                                      },
+                                ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
                     }
                 }
             }
@@ -97,9 +107,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 new AlertDialog.Builder(viewHolder.itemView.getContext()).setMessage("Delete participant?")
                         .setPositiveButton("Yes", (dialog, which) -> {
 
-                            ChallongeRequests.sendRequest(response -> {
-                                    }
-                                    , ChallongeRequests.participantDestroy(String.valueOf(player.getTournamentID()), String.valueOf(player.getId())));
+                            ChallongeRequests.sendRequest(new VolleyCallback() {
+                                                              @Override
+                                                              public void onSuccess(String response) {
+
+                                                              }
+
+                                                              @Override
+                                                              public void onErrorResponse(ArrayList errorResponse) {
+
+                                                              }
+                                                          },
+                                    ChallongeRequests.participantDestroy(String.valueOf(player.getTournamentID()), String.valueOf(player.getId())));
 
                             players.remove(position);
                             notifyItemRemoved(position);
@@ -180,7 +199,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     player.setName(input.getText().toString());
                     ParticipantSettings settings = new ParticipantSettings();
                     settings.setName(player.getName());
-                    ChallongeRequests.sendRequest(response -> {
+                    ChallongeRequests.sendRequest(new VolleyCallback() {
+                        @Override
+                        public void onSuccess(String response) {
+
+                        }
+
+                        @Override
+                        public void onErrorResponse(ArrayList errorResponse) {
+
+                        }
                     }, ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
                 }
             });

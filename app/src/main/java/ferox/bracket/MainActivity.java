@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.android.volley.VolleyLog;
-
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.VolleyLog;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
         ChallongeRequests.setApiKey("hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07");
         ChallongeRequests.setApplicationContext(this.getApplicationContext());
 
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 
     public void goToSecondActivity(View view) {

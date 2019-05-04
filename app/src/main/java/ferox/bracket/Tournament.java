@@ -49,7 +49,7 @@ public class Tournament implements Parcelable {
     private static final String TOURNAMENT_ACCEPT_ATTACHMENTS = "&tournament[accept_attachments]=";
     private static final String TOURNAMENT_SHOW_ROUNDS = "&tournament[show_rounds]=";
     private static final String TOURNAMENT_PRIVATE = "&tournament[private]=";
-    private static final String TOURNAMENT_NOTIFY_MATCH_OPEN = "&tournament[notify_users_when_matches_opens]=";
+    private static final String TOURNAMENT_NOTIFY_MATCH_OPEN = "&tournament[notify_users_when_matches_open]=";
     private static final String TOURNAMENT_NOTIFY_TOURNAMENT_ENDS = "&tournament[notify_users_when_the_tournament_ends]=";
     private static final String TOURNAMENT_SEQUENTIAL_PAIRINGS = "&tournament[sequential_pairings]=";
     private static final String TOURNAMENT_SIGNUP_CAP = "&tournament[signup_cap]=";
@@ -104,7 +104,7 @@ public class Tournament implements Parcelable {
     private boolean showRounds;
     @SerializedName("private")
     private boolean isPrivate;
-    @SerializedName("notify_users_when_matches_opens")
+    @SerializedName("notify_users_when_matches_open")
     private boolean notifyUsersMatchesOpens;
     @SerializedName("notify_users_when_the_tournament_ends")
     private boolean notifyUsersTourneyOver;
@@ -153,7 +153,7 @@ public class Tournament implements Parcelable {
         sequentialPairings = false;
         signUpCap = 256;
         startAt = "";
-        checkInDuration = 0;
+        checkInDuration = 5;
         grandFinalsModifier = DEFAULT_GRANDS;
 
     }
@@ -287,23 +287,24 @@ public class Tournament implements Parcelable {
 
         try {
 
-            if (getName() != null) {
+            if (!getName().isEmpty()) {
                 settings += TOURNAMENT_NAME + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
             }
-            if (getType() != null) {
-                settings += TOURNAMENT_TYPE + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
+            if (!getType().isEmpty()) {
+                settings += TOURNAMENT_TYPE + URLEncoder.encode(getType(), StandardCharsets.UTF_8.toString());
             }
-            if (getUrl() != null) {
-                settings += TOURNAMENT_URL + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
+            if (!getUrl().isEmpty()) {
+
+                settings += TOURNAMENT_URL + getUrl();
             }
-            if (getSubdomain() != null) {
-                settings += TOURNAMENT_SUBDOMAIN + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
+            if (!subdomain.isEmpty()) {
+                settings += TOURNAMENT_SUBDOMAIN + URLEncoder.encode(getSubdomain(), StandardCharsets.UTF_8.toString());
             }
-            if (getDescription() != null) {
-                settings += TOURNAMENT_DESCRIPTION + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
+            if (!getDescription().isEmpty()) {
+                settings += TOURNAMENT_DESCRIPTION + URLEncoder.encode(getDescription(), StandardCharsets.UTF_8.toString());
             }
 
-            settings += TOURNAMENT_DESCRIPTION + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
+
             settings += TOURNAMENT_THIRD_PLACE + URLEncoder.encode(String.valueOf(isHoldThirdPlaceMatch()), StandardCharsets.UTF_8.toString());
             settings += TOURNAMENT_SWISS_MATCH_WIN + URLEncoder.encode(String.valueOf(getSwissPtsForMatchWin()), StandardCharsets.UTF_8.toString());
             settings += TOURNAMENT_SWISS_MATCH_TIE + URLEncoder.encode(String.valueOf(getSwissPtsForMatchTie()), StandardCharsets.UTF_8.toString());
@@ -333,6 +334,7 @@ public class Tournament implements Parcelable {
 
         return settings;
     }
+
 
     public String encode(Object object) {
         String encodedString = "";

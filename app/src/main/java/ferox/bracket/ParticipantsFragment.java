@@ -3,20 +3,15 @@ package ferox.bracket;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import java.util.ArrayList;
-import java.util.Objects;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +20,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class ParticipantsFragment extends Fragment {
@@ -35,6 +38,7 @@ public class ParticipantsFragment extends Fragment {
     String url;
 
     ImageButton participantsOptions;
+    Tournament tournament;
 
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
@@ -46,6 +50,13 @@ public class ParticipantsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Intent intent = getActivity().getIntent();
+        tournament = Objects.requireNonNull(intent.getExtras()).getParcelable("tournament");
+        assert tournament != null;
+        if (!TextUtils.isEmpty(tournament.getSubdomain())) {
+            url = tournament.getSubdomain() + "-" + tournament.getUrl();
+        } else {
+            url = tournament.getUrl();
+        }
         View v = inflater.inflate(R.layout.fragment_participants, container, false);
         CustomLinearLayoutManager linearLayoutManager = new CustomLinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
@@ -59,38 +70,28 @@ public class ParticipantsFragment extends Fragment {
                 switch (item.getTitle().toString()) {
                     case "Add": {
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setIcon(R.mipmap.ic_launcher);
-                        builder.setTitle("Add Participant");
-                        View dialogueLayout = getLayoutInflater().inflate(R.layout.fragment_participant_edit_dialog, null);
-                        EditText nameText = dialogueLayout.findViewById(R.id.new_participant_name);
-                        EditText seedText = dialogueLayout.findViewById(R.id.new_participant_seed);
-                        builder.setView(dialogueLayout);
-                        builder.setPositiveButton("OK", (dialog, which) -> {
-                            Participant player = new Participant();
-                            player.setName(nameText.getText().toString());
-                            player.setSeed(Integer.parseInt(seedText.getText().toString()));
-                            ChallongeRequests.sendRequest(response -> {
-                            }, ChallongeRequests.participantCreate(url, player));
-                            //TODO this may not refresh consistently try setting the callback to make another challonge request in the event this is not consistent
-                            ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
-
-
-                        })
-                                .setNegativeButton("Cancel", (dialog, which) -> {
-                                })
-                                .create().show();
+                        makeAddParticipantDialog();
 
                         break;
                     }
                     case "Shuffle": {
-                        ChallongeRequests.sendRequest(response -> {
-                        }, ChallongeRequests.participantRandomize(url));
-                        ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
+                        makeShuffleDialog();
+
+
                         break;
                     }
                     case "Refresh": {
-                        ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
+                        ChallongeRequests.sendRequest(new VolleyCallback() {
+                            @Override
+                            public void onSuccess(String response) {
+                                initPlayerList(response);
+                            }
+
+                            @Override
+                            public void onErrorResponse(ArrayList errorResponse) {
+                                Log.d("RequestError", errorResponse.toString());
+                            }
+                        }, ChallongeRequests.participantIndex(url));
                         break;
                     }
                 }
@@ -112,8 +113,18 @@ public class ParticipantsFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         adapter.getHelper().attachToRecyclerView(recyclerView);
 
-        url = intent.getStringExtra("tournamentURL");
-        ChallongeRequests.sendRequest(response -> initPlayerList(response), ChallongeRequests.participantIndex(url));
+
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                initPlayerList(response);
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorResponse) {
+                Log.d("RequestError", errorResponse.toString());
+            }
+        }, ChallongeRequests.participantIndex(url));
         return v;
     }
 
@@ -142,6 +153,95 @@ public class ParticipantsFragment extends Fragment {
 
 
         adapter.notifyDataSetChanged();
+    }
+
+    //TODO If players puts in a seed out of bounds than seed field should be removed
+    private void makeAddParticipantDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("Add Participant");
+        View dialogueLayout = getLayoutInflater().inflate(R.layout.fragment_participant_edit_dialog, null);
+        EditText nameText = dialogueLayout.findViewById(R.id.new_participant_name);
+        EditText seedText = dialogueLayout.findViewById(R.id.new_participant_seed);
+        builder.setView(dialogueLayout);
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            Participant player = new Participant();
+            player.setName(nameText.getText().toString());
+            try {
+                player.setSeed(Integer.parseInt(seedText.getText().toString()));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Not an Integer", Toast.LENGTH_SHORT).show();
+            }
+
+
+            ChallongeRequests.sendRequest(new VolleyCallback() {
+                @Override
+                public void onSuccess(String response) {
+
+                }
+
+                @Override
+                public void onErrorResponse(ArrayList errorResponse) {
+                    for (int i = 0; i < errorResponse.size(); i++) {
+                        Log.d("participantAdd", errorResponse.get(i).toString());
+                    }
+                }
+            }, ChallongeRequests.participantCreate(url, player));
+
+
+            ChallongeRequests.sendRequest(new VolleyCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    initPlayerList(response);
+                }
+
+                @Override
+                public void onErrorResponse(ArrayList errorResponse) {
+
+                }
+            }, ChallongeRequests.participantIndex(url));
+
+
+        })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                })
+                .create().show();
+    }
+
+    private void makeShuffleDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("Shuffle Participants");
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            ChallongeRequests.sendRequest(new VolleyCallback() {
+                @Override
+                public void onSuccess(String response) {
+
+                }
+
+                @Override
+                public void onErrorResponse(ArrayList errorResponse) {
+
+                }
+            }, ChallongeRequests.participantRandomize(url));
+
+
+            ChallongeRequests.sendRequest(new VolleyCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    initPlayerList(response);
+                }
+
+                @Override
+                public void onErrorResponse(ArrayList errorResponse) {
+                    Log.d("RequestError", errorResponse.toString());
+                }
+            }, ChallongeRequests.participantIndex(url));
+        })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                })
+                .create().show();
     }
 
 

@@ -1,10 +1,24 @@
 package ferox.bracket;
 
 import android.content.Context;
-import android.util.Log;
+import android.text.TextUtils;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class ChallongeRequests {
 
@@ -26,17 +40,18 @@ public class ChallongeRequests {
         String url = API_URL;
         url += JSON_TAG;
         url += API_KEY_SEGMENT + apiKey;
-        if (subDomain != null) {
+        if (!TextUtils.isEmpty(subDomain.trim())) {
             url += makeAPIParameter("subdomain", subDomain);
         }
         return new APIRequest(url, Request.Method.GET);
     }
 
-    static public String tounamentCreate(String name, String URL, int type, String subdomain, String description, boolean thirdPlaceMatch
-    ) {
+    static public APIRequest tounamentCreate(Tournament tournament) {
         String url = API_URL;
-        url += JSON_TAG + API_KEY_SEGMENT + apiKey;
-        return url;
+        url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
+        url += tournament.getSettings();
+        APIRequest request = new APIRequest(url, Request.Method.POST);
+        return request;
     }
 
     static public APIRequest tournamentShow(String tournamentURL) {
@@ -56,12 +71,20 @@ public class ChallongeRequests {
     moment of serendipity that made me privy to this information because this will make developing
     this app much more convenient.
      */
-    static public APIRequest jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(String url) {
-        String s = "https://challonge.com/";
-        s += url + ".json";
+    static public APIRequest jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(String url, String subdomain) {
 
-        APIRequest request = new APIRequest(s, Request.Method.GET);
-        return request;
+        if (!TextUtils.isEmpty(subdomain)) {
+            String s = "https://" + subdomain + ".challonge.com/";
+            s += url + ".json";
+            APIRequest request = new APIRequest(s, Request.Method.GET);
+            return request;
+        } else {
+            String s = "https://challonge.com/";
+            s += url + ".json";
+
+            APIRequest request = new APIRequest(s, Request.Method.GET);
+            return request;
+        }
     }
 
 
@@ -121,11 +144,43 @@ public class ChallongeRequests {
 
         StringRequest stringRequest = new StringRequest(request.getRequestMethodType(), request.getUrl(),
                 response -> callback.onSuccess(response),
-                error -> Log.d("Response", String.valueOf(error)));
+                error -> onErrorResponse(error, callback));
 
         RequestQueueSingleton.getInstance(applicationContext).addToRequestQueue(stringRequest);
 
 
+    }
+
+
+    public static void onErrorResponse(VolleyError error, VolleyCallback callback) {
+
+        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+            Toast.makeText(getApplicationContext(), "Timeout Error", Toast.LENGTH_SHORT).show();
+        } else if (error instanceof AuthFailureError) {
+            Toast.makeText(getApplicationContext(), "Auth Failure", Toast.LENGTH_SHORT).show();
+        } else if (error instanceof ServerError) {
+            Toast.makeText(getApplicationContext(), "Server error", Toast.LENGTH_SHORT).show();
+
+            String responseBody = null;
+            try {
+                responseBody = new String(error.networkResponse.data, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            JsonParser parser = new JsonParser();
+            assert responseBody != null;
+            JsonArray errorsArray = parser.parse(responseBody).getAsJsonObject().get("errors").getAsJsonArray();
+            ArrayList errorsList = new Gson().fromJson(errorsArray, ArrayList.class);
+
+            callback.onErrorResponse(errorsList);
+
+
+        } else if (error instanceof NetworkError) {
+            Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_SHORT).show();
+        } else if (error instanceof ParseError) {
+            Toast.makeText(getApplicationContext(), "Parse Error", Toast.LENGTH_SHORT).show();
+        }
     }
 
     static String respond(String response) {
@@ -153,4 +208,5 @@ public class ChallongeRequests {
     public static void setApiKey(String apiKey) {
         ChallongeRequests.apiKey = apiKey;
     }
+
 }

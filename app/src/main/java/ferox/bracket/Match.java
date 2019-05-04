@@ -30,6 +30,7 @@ public class Match {
     private String winnerID;
     @SerializedName("loser_id")
     private String loserID;
+    private boolean isWinners;
 
 
     public Match(String id, int number, int p1Seed, int p2Seed, Participant p1, Participant p2,
@@ -216,5 +217,29 @@ public class Match {
 
     public void setP2PrereqText(String p2PrereqText) {
         this.p2PrereqText = p2PrereqText;
+    }
+
+    public String getWinnerID() {
+        return winnerID;
+    }
+
+    public void setWinnerID(String winnerID) {
+        this.winnerID = winnerID;
+    }
+
+    public String getLoserID() {
+        return loserID;
+    }
+
+    public void setLoserID(String loserID) {
+        this.loserID = loserID;
+    }
+
+    public boolean isWinners() {
+        return isWinners;
+    }
+
+    public void setIsWinners(boolean winners) {
+        isWinners = winners;
     }
 }

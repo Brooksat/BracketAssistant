@@ -142,8 +142,8 @@ public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.On
 
             dx = Math.min(Math.max(dx, minDx), 0);
             dy = Math.min(Math.max(dy, minDy), 0);
-            Log.i(TAG, "ZoomWidth: " + this.getWidth() + ", ChildWidth: " + child().getWidth() + ", ZoomHeight " + this.getHeight()
-                    + ", ChildHeight: " + child().getHeight());
+//            Log.i(TAG, "ZoomWidth: " + this.getWidth() + ", ChildWidth: " + child().getWidth() + ", ZoomHeight " + this.getHeight()
+//                    + ", ChildHeight: " + child().getHeight());
             applyScaleAndTranslation(child());
 
 

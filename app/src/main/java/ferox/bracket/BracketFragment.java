@@ -35,9 +35,21 @@ public class BracketFragment extends Fragment {
     final static String DOUBLE_ELIM = "double elimination";
     final static String ROUND_ROBIN = "round robin";
     final static String SWISS = "swiss";
+    /**
+     * All the tournaments matches have been completed and is now ready to be ended
+     */
     final static String AWAITING_REVIEW = "awaiting_review";
+    /**
+     * Tournament has begun but still has pending matches
+     */
     final static String UNDERWAY = "underway";
+    /**
+     * Tournament has not begun yet
+     */
     final static String PENDING = "pending";
+    /**
+     * Tournament has been ended
+     */
     final static String COMPLETE = "complete";
     final static String GRANDS_DEFAULT = "";
     final static String GRANDS_SINGLE_MATCH = "single match";
@@ -72,6 +84,7 @@ public class BracketFragment extends Fragment {
     ArrayList<Round> roundLabelsL;
 
     String url;
+    String subdomain;
     String type;
     String state;
     int numberOfParticipants;
@@ -128,12 +141,25 @@ public class BracketFragment extends Fragment {
         //TODO if you've changed something after getting to this page, going back to "Your Tournaments" and reselect this tournament, the changes will not be shown
         tournament = Objects.requireNonNull(intent.getExtras()).getParcelable("tournament");
         assert tournament != null;
+
         url = tournament.getUrl();
+        subdomain = tournament.getSubdomain();
         type = tournament.getType();
         numberOfParticipants = tournament.getParticipantCount();
 
 
-        ChallongeRequests.sendRequest(response -> getTournamentRoundInfo(response), ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url));
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                getTournamentRoundInfo(response);
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorResponse) {
+
+            }
+        }, ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url, subdomain));
+
 
 
 //        int delay = 100; //milliseconds
@@ -159,12 +185,7 @@ public class BracketFragment extends Fragment {
     }
 
 
-    private void getTournamentInfo2(String jsonString) {
-        Gson gson = new Gson();
-        JsonParser jsonParser = new JsonParser();
-        JsonElement tournamentInfo = jsonParser.parse(jsonString);
 
-    }
 
     private void getTournamentRoundInfo(String jsonString) {
         Gson gson = new Gson();
@@ -210,8 +231,9 @@ public class BracketFragment extends Fragment {
             roundTmp.setNumber(Integer.parseInt(name));
             if (roundTmp.getNumber() < 0) {
                 losersRounds.add(roundTmp);
-                roundTmp.isInWinners = false;
+                roundTmp.isGrandFinals = false;
             } else {
+                roundTmp.setIsWinners(true);
                 winnersRounds.add(roundTmp);
             }
 
@@ -250,10 +272,13 @@ public class BracketFragment extends Fragment {
                 matchTmp.setP1(player1);
                 matchTmp.setP2(player2);
 
-
+                if (roundTmp.isWinners) {
+                    matchTmp.setIsWinners(true);
+                }
                 roundTmp.getMatchList().add(matchTmp);
             }
         }
+        //The third place match is not listed with the other rounds in the json so it has to be manually extracted
 
         if (type.equals(SINGLE_ELIM) && tournament.isHoldThirdPlaceMatch()) {
             JsonObject thirdPlaceMatch = tournamentField.getAsJsonObject().get("third_place_match").getAsJsonObject();
@@ -302,7 +327,7 @@ public class BracketFragment extends Fragment {
         //losers rounds are denoted with a negative number, Round -x is Loser's Round X
         //Since the rounds have been sorted by number value they need to be reversed to be order by actual round
         Collections.reverse(losersRounds);
-        init();
+
 
         startBracketDisplay();
 
@@ -314,8 +339,10 @@ public class BracketFragment extends Fragment {
      */
     private void startBracketDisplay() {
         if (numberOfParticipants < 2) {
+            lv.setVisibility(View.GONE);
             oneParticipantMessage.setVisibility(View.VISIBLE);
         } else {
+            init();
             oneParticipantMessage.setVisibility(View.GONE);
             makeBracketDisplay();
             lv.hide();
@@ -340,8 +367,7 @@ public class BracketFragment extends Fragment {
 
     }
 
-    //TODO needs to account for SE & DE grand finals variations, thirdplacematch is listed separate from the rest of the matches in the json
-    //todo works with SE third place, bugged with DE 1 match
+
     private void setMatchInfo() {
         //double/single elim matches
         if (type.equals(DOUBLE_ELIM) || type.equals(SINGLE_ELIM)) {
@@ -362,24 +388,32 @@ public class BracketFragment extends Fragment {
                 }
             }
 
-            //sets thirdPlaceMatch in single elim if applicable
 
 
             //sets grand finals in double elim
-            //magic numbers are to get the specific location of the grand finals matches in the layout
             // an iterating method could be used just to eliminate use of magic numbers but these locations
             //should be constant across any double elim bracket constructed with this program
+            int grandFinalsIndex = (winnersRounds.size() - 1)*2;
+
             if (type.equals(DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(GRANDS_SKIP)) {
-                LinearLayout GF1 = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 3);
+
+
+                LinearLayout GF1 = (LinearLayout) bracketWinners.getChildAt(grandFinalsIndex);
                 ConstraintLayout GF1Match = (ConstraintLayout) GF1.getChildAt(1);
                 setMatchView(GF1Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(0));
 
-                if (tournament.getGrandFinalsModifier().equals(GRANDS_DEFAULT)) {
-                    LinearLayout GF2 = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 1);
+
+                if (tournament.getGrandFinalsModifier().equals(GRANDS_DEFAULT) && winnersRounds.get(winnersRounds.size() - 1).getMatchList().size() > 1) {
+                    LinearLayout GF2 = (LinearLayout) bracketWinners.getChildAt(grandFinalsIndex +2);
                     ConstraintLayout GF2Match = (ConstraintLayout) GF2.getChildAt(1);
                     setMatchView(GF2Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(1));
+                } else {
+                    bracketWinners.getChildAt(grandFinalsIndex + 1).setVisibility(View.GONE);
+                    bracketWinners.getChildAt(grandFinalsIndex + 2).setVisibility(View.GONE);
                 }
             }
+
+
 
             //set losers match info
             for (int i = 0; i < losersRounds.size(); i++) {
@@ -389,6 +423,7 @@ public class BracketFragment extends Fragment {
                 for (int j = 0; j < round.getChildCount(); j++) {
                     //must only set info for the visible constraintlayout/ignore unused matches
                     if (round.getChildAt(j) instanceof ConstraintLayout && round.getChildAt(j).getVisibility() == View.VISIBLE) {
+
                         setMatchView((ConstraintLayout) round.getChildAt(j), matches.get(iterator));
                         iterator++;
                     }
@@ -418,7 +453,7 @@ public class BracketFragment extends Fragment {
 
         TextView matchNumber = match.findViewById(R.id.matchNumber);
 
-        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), matchNumber.getText(), Toast.LENGTH_SHORT).show());
+        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), String.valueOf(matchInfo.getP1PreviousIdentifier()) + "-" + matchInfo.getP2PreviousIdentifier(), Toast.LENGTH_SHORT).show());
 
         matchNumber.setText(String.valueOf(matchInfo.getIdentifier()));
         TextView P1Seed = match.findViewById(R.id.seed1);
@@ -762,7 +797,6 @@ public class BracketFragment extends Fragment {
 
     //Constructs round headers
     private void setRoundHeaders() {
-        //TODO needs to set names from the round names themselves(Semifinals, Grands Etc)
         LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
         LinearLayout roundLosers = getView().findViewById(R.id.round_losers);
 
@@ -793,7 +827,7 @@ public class BracketFragment extends Fragment {
     private void setUnusedMatchesInvisible() {
 
 
-        //TODO This breaks in double elimination when grand finals modfier is set to skip, presumably needs to be fixed to 'single match' and likely also single elim when add third place match is checked
+
         //winners
         if ((type.equals(DOUBLE_ELIM) || type.equals(SINGLE_ELIM)) && winnersRounds.size() > 1) {
             LinearLayout firstRoundLayout = (LinearLayout) bracketWinners.getChildAt(0);
@@ -821,28 +855,34 @@ public class BracketFragment extends Fragment {
         }
 
         //losers
-        if ((!type.equals(ROUND_ROBIN)) && losersRounds.size() > 1) {
+        if (type.equals(DOUBLE_ELIM) && losersRounds.size() > 1) {
             LinearLayout firstRoundLayout = (LinearLayout) bracketLosers.getChildAt(0);
             LinearLayout firstRoundBC = (LinearLayout) bracketLosers.getChildAt(1);
             LinearLayout secondRoundLayout = (LinearLayout) bracketLosers.getChildAt(2);
+            int numFirstRoundLosersMatches = losersRounds.get(0).getMatchList().size();
             Round secondRound = losersRounds.get(1);
             ArrayList<Match> secondRoundMatches = secondRound.getMatchList();
 
-
+            Log.d("SetInvisLoopLosers", String.valueOf(firstRoundLayout.getChildCount()));
+            Log.d("SetInvisLoopLosers", String.valueOf(secondRoundLayout.getChildCount()));
+            Log.d("SetInvisQual", String.valueOf(qualifyRound));
             //handles two scenarios where if first round match capacity is larger than second round
             if (firstRoundLayout.getChildCount() > secondRoundLayout.getChildCount()) {
                 for (int i = 0; i < secondRoundMatches.size(); i++) {
 
                     //if a round 2 losers match has prereq text then it means that the the players comes froms winners
                     //therefore the unused match slot in LR1 should bet set invisible
-                    if (!secondRoundMatches.get(i).getP1PrereqText().equals("")) {
+                    if (secondRoundMatches.get(i).getP1PreviousIdentifier() <= qualifyRound + postQualRound) {
+                        Log.d("SetInvis", String.valueOf(secondRoundMatches.get(i).getP1PreviousIdentifier()));
+                        Log.d("SetInvis", String.valueOf(secondRoundMatches.get(i).getP2PreviousIdentifier()));
+                        Log.d("SetInvis", String.valueOf(qualifyRound));
                         //index of of matchLayout and BCV corresponding to current second round index
                         int matchLayoutIndex = (4 * i) + 1;
                         int bcvIndex = (5 * i) + 1;
                         firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
                         firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
                     }
-                    if (!secondRoundMatches.get(i).getP2PrereqText().equals("")) {
+                    if (secondRoundMatches.get(i).getP2PreviousIdentifier() <= qualifyRound + postQualRound) {
                         int matchLayoutIndex = (4 * i) + 3;
                         int bcvIndex = (5 * i) + 2;
                         firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
@@ -855,8 +895,9 @@ public class BracketFragment extends Fragment {
                     //if a round 2 losers match has prereq text then it means that the the players comes froms winners
                     //therefore the unused match slot in LR1 should bet set invisible
 
-
-                    if (!secondRoundMatches.get(i).getP2PrereqText().equals("")) {
+                    //numbering of matches
+                    int p2previd = secondRoundMatches.get(i).getP2PreviousIdentifier();
+                    if (p2previd <= qualifyRound || p2previd > qualifyRound + numFirstRoundLosersMatches) {
                         int matchLayoutIndex = (2 * i) + 1;
                         int bcvIndex = (2 * i) + 1;
                         firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);

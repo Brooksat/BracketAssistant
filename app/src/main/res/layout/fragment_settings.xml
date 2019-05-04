@@ -9,7 +9,7 @@
 
 
     <LinearLayout
-        android:id="@+id/new_tourney_linear_layout1"
+        android:id="@+id/new_tourney_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="beforeDescendants"
@@ -156,10 +156,10 @@
                 app:layout_constraintTop_toBottomOf="@id/format_header">
 
                 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/single_elim_view"
+                    android:id="@+id/single_elim_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <CheckBox
                         android:id="@+id/third_place_match_checkbox"
@@ -173,10 +173,10 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/double_elim_view"
+                    android:id="@+id/double_elim_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <RadioGroup
                         android:id="@+id/grand_finals_radio_group"
@@ -191,7 +191,8 @@
                             style="@style/menu_text_radio"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1-2 matches - winner's bracket finalist must lose twice" />
+                            android:text="1-2 matches - winner's bracket finalist must lose twice"
+                            android:checked="true" />
 
                         <RadioButton
                             android:id="@+id/grand_finals_single_match"
@@ -211,9 +212,10 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/round_robin_format"
+                    android:id="@+id/round_robin_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:visibility="visible">
 
                     <TextView
                         android:id="@+id/ranked_by"
@@ -246,6 +248,7 @@
                             android:id="@+id/points_per_match_win"
                             style="@style/menu_edit_text"
                             android:layout_width="60dp"
+                            android:text="1.0"
                             android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -262,6 +265,7 @@
                             android:id="@+id/points_per_match_tie"
                             style="@style/menu_edit_text"
                             android:layout_width="60dp"
+                            android:text="0.5"
                             android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/points_per_match_win" />
@@ -277,6 +281,7 @@
                         <EditText
                             android:id="@+id/points_per_gameset_win"
                             style="@style/menu_edit_text"
+                            android:text="0.0"
                             android:layout_width="60dp"
                             android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -285,7 +290,7 @@
                         <TextView
                             style="@style/menu_h2"
                             android:layout_width="wrap_content"
-                            android:text="Points per match tie"
+                            android:text="Points per game win"
                             app:layout_constraintLeft_toRightOf="@id/points_per_gameset_win"
                             app:layout_constraintTop_toTopOf="@id/points_per_gameset_win" />
 
@@ -294,6 +299,7 @@
                             android:id="@+id/points_per_gameset_tie"
                             style="@style/menu_edit_text"
                             android:layout_width="60dp"
+                            android:text="0.0"
                             android:inputType="numberDecimal"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/points_per_gameset_win" />
@@ -301,7 +307,7 @@
                         <TextView
                             style="@style/menu_h2"
                             android:layout_width="wrap_content"
-                            android:text="Points per match tie"
+                            android:text="Points per game tie"
                             app:layout_constraintLeft_toRightOf="@id/points_per_gameset_tie"
                             app:layout_constraintTop_toTopOf="@id/points_per_gameset_tie" />
 
@@ -318,6 +324,7 @@
                                 style="@style/menu_edit_text"
                                 android:inputType="numberDecimal"
                                 android:layout_width="60dp"
+                                android:text="1.0"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -499,6 +506,12 @@
                 android:layout_height="wrap_content"
                 android:text="Update" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tournament_errors_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
 
     </LinearLayout>
 

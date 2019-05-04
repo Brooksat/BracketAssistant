@@ -9,13 +9,14 @@ public class Round {
     String title;
     @SerializedName("number")
     int number;
-    boolean isInWinners;
+    boolean isGrandFinals;
+    boolean isWinners;
     ArrayList<Match> matchList;
 
-    public Round(String title, int number, boolean isInWinners, ArrayList<Match> matchList) {
+    public Round(String title, int number, boolean isGrandFinals, ArrayList<Match> matchList) {
         this.title = title;
         this.number = number;
-        this.isInWinners = isInWinners;
+        this.isGrandFinals = isGrandFinals;
         this.matchList = matchList;
     }
 
@@ -23,7 +24,7 @@ public class Round {
     public Round() {
         this.title = "";
         this.number = 0;
-        this.isInWinners = true;
+        this.isGrandFinals = true;
         matchList = new ArrayList<>();
     }
 
@@ -59,5 +60,21 @@ public class Round {
 
     public void setMatchList(ArrayList<Match> matchList) {
         this.matchList = matchList;
+    }
+
+    public boolean isGrandFinals() {
+        return isGrandFinals;
+    }
+
+    public void setGrandFinals(boolean grandFinals) {
+        isGrandFinals = grandFinals;
+    }
+
+    public boolean isWinners() {
+        return isWinners;
+    }
+
+    public void setIsWinners(boolean winners) {
+        isWinners = winners;
     }
 }

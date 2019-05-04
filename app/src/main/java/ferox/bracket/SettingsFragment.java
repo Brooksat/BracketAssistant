@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,24 +18,25 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
 import org.apache.commons.text.WordUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.TimeZone;
 
 public class SettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
@@ -63,9 +65,10 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     int setDay;
     int setHour;
     int setMinute;
-    int ampm;
+    String tournamentStartDate;
 
     Tournament tournament;
+    Tournament updatedTournament;
 
 
     Calendar calendar;
@@ -76,6 +79,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     Spinner rankedByMenu;
     ArrayAdapter<CharSequence> rankedByMenuAdapter;
 
+    LinearLayout errorsLayout;
     EditText name;
     EditText url;
     EditText subDomain;
@@ -105,12 +109,23 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Intent intent = getActivity().getIntent();
-        tournamentURL = intent.getStringExtra("tournamentURL");
+        Intent intent = Objects.requireNonNull(getActivity()).getIntent();
+
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        tournament = Objects.requireNonNull(intent.getExtras()).getParcelable("tournament");
+        updatedTournament = new Tournament();
+        assert tournament != null;
+        if (!TextUtils.isEmpty(tournament.getSubdomain())) {
+            tournamentURL = tournament.getSubdomain() + "-" + tournament.getUrl();
+        } else {
+            tournamentURL = tournament.getUrl();
+        }
 
-        tournament = new Tournament();
+        Log.d("bleh", tournamentURL);
+
+
+        errorsLayout = view.findViewById(R.id.tournament_errors_linear_layout);
         name = view.findViewById(R.id.tournament_name);
         url = view.findViewById(R.id.url);
         subDomain = view.findViewById(R.id.subdomain);
@@ -143,11 +158,9 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         setMinute = calendar.get(Calendar.MINUTE);
 
 
-
         if (getContext() instanceof NewTournamentActivity) {
             applySettings.setText("Create");
         }
-
 
 
         dateDay.setOnClickListener(v -> {
@@ -172,6 +185,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             setDay = dayOfMonth;
 
             setDay(year, month, dayOfMonth);
+            Log.d("startAt", String.valueOf(getDate()));
         };
 
         mOnTimeSetListener = (view1, hourOfDay, minute) -> {
@@ -180,6 +194,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             setMinute = minute;
 
             setTime(hourOfDay, minute);
+            Log.d("startAt", String.valueOf(getDate()));
 
         };
 
@@ -212,19 +227,98 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         });
 
         if (tournamentURL != null) {
-            ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.tournamentShow(tournamentURL));
+            //ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.tournamentShow(tournamentURL));
+            getTournamentInfo("holdthisstringrealfast");
+        } else {
+
         }
         Log.d("onCreateView", "iscalled");
+
+        applySettings.setOnClickListener(v -> {
+            setTournamentInfo();
+            if (getContext() instanceof NewTournamentActivity) {
+                ChallongeRequests.sendRequest(new VolleyCallback() {
+                    @Override
+                    public void onSuccess(String response) {
+                        Toast.makeText(getContext(), "Tournamnet Created", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onErrorResponse(ArrayList errorList) {
+                        errorsLayout.removeAllViews();
+                        if (errorList != null) {
+                            for (int i = 0; i < errorList.size(); i++) {
+                                TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                                error.setText(String.valueOf(errorList.get(i)));
+                                errorsLayout.addView(error);
+                            }
+                        }
+                    }
+                }, ChallongeRequests.tounamentCreate(updatedTournament));
+            }
+        });
         return view;
     }
 
+    public void setTournamentInfo() {
+        updatedTournament.setName(name.getText().toString());
+        updatedTournament.setUrl(url.getText().toString());
+        updatedTournament.setSubdomain(subDomain.getText().toString());
+        updatedTournament.setDescription(description.getText().toString());
+        Log.d("tourneyType", formatMenu.getSelectedItem().toString().toLowerCase());
+        updatedTournament.setType(formatMenu.getSelectedItem().toString().toLowerCase());
+        updatedTournament.setHoldThirdPlaceMatch(holdThirdPlace.isChecked());
+
+        //TODO sets both regardless of tournament format
+
+        try {
+            if (formatMenu.getSelectedItem().toString().equals(SWISS)) {
+                updatedTournament.setSwissPtsForMatchWin(Float.valueOf(ptsPerMatchWin.getText().toString()));
+                updatedTournament.setSwissPtsForMatchTie(Float.valueOf(ptsPerMatchTie.getText().toString()));
+                updatedTournament.setSwissPtsForGameWin(Float.valueOf(ptsPerGameWin.getText().toString()));
+                updatedTournament.setSwissPtsForGameTie(Float.valueOf(ptsPerGameTie.getText().toString()));
+                updatedTournament.setSwissPtsForBye(Float.valueOf(ptsPerBye.getText().toString()));
+            } else if (formatMenu.getSelectedItem().toString().equals(ROUND_ROBIN)) {
+                updatedTournament.setRrPtsForMatchWin(Float.valueOf(ptsPerMatchWin.getText().toString()));
+                updatedTournament.setRrPtsForMatchTie(Float.valueOf(ptsPerMatchTie.getText().toString()));
+                updatedTournament.setRrPtsForGameWin(Float.valueOf(ptsPerGameWin.getText().toString()));
+                updatedTournament.setRrPtsForGameTie(Float.valueOf(ptsPerGameTie.getText().toString()));
+            }
+
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "RoundRobin/Swiss parameter must be number", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        try {
+            updatedTournament.setCheckInDuration(Integer.valueOf(checkInDuration.getText().toString()));
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Check in duration must be number", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        try {
+            updatedTournament.setSignUpCap(Integer.parseInt(maxParticipants.getText().toString()));
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Max participants must be number", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+
+        updatedTournament.setStartAt(getDate());
+        Log.d("startAt", String.valueOf(getDate()));
+
+        updatedTournament.setShowRounds(showRounds.isChecked());
+        updatedTournament.setPrivate(isTournamentPrivate.isChecked());
+        updatedTournament.setNotifyUsersMatchesOpens(notifyMatchOpen.isChecked());
+        updatedTournament.setNotifyUsersTourneyOver(notifyTournamentOver.isChecked());
+        updatedTournament.setSequentialPairings(!traditionalSeeding.isChecked());
+        updatedTournament.setAcceptAttachments(allowAttachments.isChecked());
+
+        Log.d("applySettings", updatedTournament.toString());
+
+
+    }
+
     private void getTournamentInfo(String response) {
-        Log.d("getTournamentInfo", "isCalled");
-        Gson gson = new Gson();
-        JsonParser jsonParser = new JsonParser();
-        JsonElement tournamentInfo = jsonParser.parse(response);
-        tournament = gson.fromJson(tournamentInfo.getAsJsonObject().get("tournament"), Tournament.class);
-        Log.d("getTournamentInfo2", tournament.getName());
+
 
         name.setText(tournament.getName());
         url.setText(tournament.getUrl());
@@ -233,20 +327,12 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         description.setText(Html.fromHtml(tournament.getDescription()));
 
         formatMenu.setSelection(formatMenuAdapter.getPosition(WordUtils.capitalize(tournament.getType())), true);
-        Log.d("fragmentSettings", tournament.getType());
-
 
         holdThirdPlace.setChecked(tournament.isHoldThirdPlaceMatch());
         setGrandsModifier();
 
 
-        ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
-        ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
-        ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
-        ptsPerGameTie.setText(String.valueOf(tournament.getSwissPtsForGameTie()));
-        ptsPerBye.setText(String.valueOf(tournament.getSwissPtsForBye()));
-
-        if (tournament.getType() == SWISS.toLowerCase()) {
+        if (tournament.getType().equals(SWISS.toLowerCase())) {
             ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
             ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
             ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
@@ -258,7 +344,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             ptsPerGameWin.setText(String.valueOf(tournament.getRrPtsForGameWin()));
             ptsPerGameTie.setText(String.valueOf(tournament.getRrPtsForGameTie()));
         }
-
 
         checkInDuration.setText(String.valueOf(tournament.getCheckInDuration()));
 
@@ -274,10 +359,10 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
             } catch (ParseException e) {
                 e.printStackTrace();
+                Toast.makeText(getContext(), "Couldn't parse calendar", Toast.LENGTH_SHORT).show();
 
             }
         }
-
 
         maxParticipants.setText(String.valueOf(tournament.getSignUpCap()));
         showRounds.setChecked(tournament.isShowRounds());
@@ -288,6 +373,15 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         allowAttachments.setChecked(tournament.isAcceptAttachments());
 
 
+    }
+
+
+    private String getDate() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
+        Calendar cal = Calendar.getInstance();
+        cal.set(setYear, setMonth, setDay, setHour, setMinute);
+        cal.setTimeZone(TimeZone.getTimeZone("EST"));
+        return simpleDateFormat.format(cal.getTime());
     }
 
     private void setDay(int year, int month, int day) {
@@ -311,21 +405,21 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         if (parent == getView().findViewById(R.id.format_menu)) {
             switch (item) {
                 case SINGLE_ELIMINATION: {
-                    getView().findViewById(R.id.single_elim_view).setVisibility(View.VISIBLE);
-                    getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
-                    getView().findViewById(R.id.round_robin_format).setVisibility(View.GONE);
+                    getView().findViewById(R.id.single_elim_layout).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.double_elim_layout).setVisibility(View.GONE);
+                    getView().findViewById(R.id.round_robin_layout).setVisibility(View.GONE);
                     break;
                 }
                 case DOUBLE_ELIMINATION: {
-                    getView().findViewById(R.id.single_elim_view).setVisibility(View.GONE);
-                    getView().findViewById(R.id.double_elim_view).setVisibility(View.VISIBLE);
-                    getView().findViewById(R.id.round_robin_format).setVisibility(View.GONE);
+                    getView().findViewById(R.id.single_elim_layout).setVisibility(View.GONE);
+                    getView().findViewById(R.id.double_elim_layout).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.round_robin_layout).setVisibility(View.GONE);
                     break;
                 }
                 case ROUND_ROBIN: {
-                    getView().findViewById(R.id.single_elim_view).setVisibility(View.GONE);
-                    getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
-                    getView().findViewById(R.id.round_robin_format).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.single_elim_layout).setVisibility(View.GONE);
+                    getView().findViewById(R.id.double_elim_layout).setVisibility(View.GONE);
+                    getView().findViewById(R.id.round_robin_layout).setVisibility(View.VISIBLE);
                     getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.GONE);
 
                     //handle situation when switching between RR and Swiss format
@@ -338,9 +432,9 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                     break;
                 }
                 case SWISS: {
-                    getView().findViewById(R.id.single_elim_view).setVisibility(View.GONE);
-                    getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
-                    getView().findViewById(R.id.round_robin_format).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.single_elim_layout).setVisibility(View.GONE);
+                    getView().findViewById(R.id.double_elim_layout).setVisibility(View.GONE);
+                    getView().findViewById(R.id.round_robin_layout).setVisibility(View.VISIBLE);
                     getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.VISIBLE);
                     //handle situation when switching between RR and Swiss format
                     ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
