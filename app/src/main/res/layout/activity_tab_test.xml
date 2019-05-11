@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TabTestActivity">
+    tools:context=".Activity.TabTestActivity">
 
     <!--<android.support.design.widget.BottomNavigationView-->
     <!--android:id="@+id/bracket_navigation"-->

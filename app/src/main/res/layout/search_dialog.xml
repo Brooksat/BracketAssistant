@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_height="40dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_margin="0dp">
+
+        <TextView
+            style="@style/menu_h2"
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:text="challonge.com/" />
+
+        <EditText
+            android:id="@+id/main_search_dialog_url"
+            style="@style/menu_h2"
+            android:layout_width="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_weight="1"
+            android:hint="url"
+            android:background="@color/menu_background_light"
+            android:textColorHint="@color/menu_hint" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/main_search_dialog_subdomain"
+            style="@style/menu_edit_text"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="2dp"
+            android:hint="subdomain"
+            android:background="@color/menu_background_light" />
+
+        <TextView
+            style="@style/menu_h2"
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:text=".challonge.com/" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/main_search_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+
+</LinearLayout>

@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/menu_background_dark"
-    tools:context=".HomeActivity">
+    tools:context=".Activity.HomeActivity">
 
 
     <TextView
@@ -31,7 +31,7 @@
         android:id="@+id/home_menu_options"
         android:layout_width="55dp"
         android:layout_height="55dp"
-        android:tint="@color/menu_h1"
+        android:tint="@color/menu_background"
         android:background="@color/menu_background"
         android:backgroundTint="@color/menu_title"
         android:src="@drawable/ic_more_vert_black_24dp"

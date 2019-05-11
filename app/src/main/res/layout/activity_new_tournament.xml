@@ -5,7 +5,7 @@
     style="@style/menu_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewTournamentActivity">
+    tools:context=".Activity.NewTournamentActivity">
 
     <FrameLayout
         android:id="@+id/new_tournament_container"

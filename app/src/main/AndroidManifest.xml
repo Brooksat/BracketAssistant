@@ -11,9 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TabTestActivity" />
+        <activity android:name=".Activity.TabTestActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity.MainActivity"
             android:label="Sign In">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,15 +22,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeActivity"
+            android:name=".Activity.HomeActivity"
             android:label="Second_Activity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".Activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ferox.bracket.MainActivity" />
+                android:value="ferox.bracket.Activity.MainActivity" />
         </activity>
-        <activity android:name=".NewTournamentActivity" />
-        <activity android:name=".Bracket" />
+        <activity android:name=".Activity.NewTournamentActivity" />
+        <activity android:name=".Activity.BracketActivity" />
     </application>
 
 </manifest>

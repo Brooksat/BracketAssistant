@@ -101,10 +101,11 @@
     <style name="menu_checkbox">
         <item name="android:background">@color/menu_background</item>
         <item name="android:textColor">@color/menu_text</item>
+        <item name="android:layout_height">35dp</item>
         <item name="android:textSize">18sp</item>
         <item name="android:buttonTint">@color/menu_title</item>
         <item name="android:checkMarkTint">@color/menu_title</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
 
