@@ -174,7 +174,7 @@ public class ChallongeRequests {
             //TODO above^ when you do check make sure to send a request to get the current name of the tournament in case it changes and you do have access to avoid changing it to an outdated value
             Toast.makeText(getApplicationContext(), "Auth Failure", Toast.LENGTH_SHORT).show();
 
-
+            ArrayList errorsList = new ArrayList();
             String responseBody = null;
             try {
                 responseBody = new String(error.networkResponse.data, "utf-8");
@@ -186,27 +186,22 @@ public class ChallongeRequests {
             assert responseBody != null;
             try {
                 JsonArray errorsArray = parser.parse(responseBody).getAsJsonObject().get("errors").getAsJsonArray();
-                ArrayList errorsList = new Gson().fromJson(errorsArray, ArrayList.class);
-                callback.onErrorResponse(errorsList);
+                errorsList = new Gson().fromJson(errorsArray, ArrayList.class);
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
                 try {
                     JsonArray errorsArray = parser.parse(responseBody).getAsJsonObject().get("error").getAsJsonArray();
-                    ArrayList errorsList = new Gson().fromJson(errorsArray, ArrayList.class);
-                    callback.onErrorResponse(errorsList);
+                    errorsList = new Gson().fromJson(errorsArray, ArrayList.class);
                 } catch (JsonSyntaxException e1) {
                     e1.printStackTrace();
                 }
             } catch (NullPointerException n) {
                 n.printStackTrace();
                 String errorString = parser.parse(responseBody).getAsJsonObject().get("error").getAsString();
-                ArrayList errorsList = new ArrayList();
+                errorsList = new ArrayList();
                 errorsList.add(errorString);
-                callback.onErrorResponse(errorsList);
-            } finally {
-                ArrayList errorsList = new ArrayList();
-                callback.onErrorResponse(errorsList);
             }
+            callback.onErrorResponse(errorsList);
 
         } else if (error instanceof ServerError) {
             Toast.makeText(getApplicationContext(), "Server error", Toast.LENGTH_SHORT).show();

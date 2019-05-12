@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         JsonParser jsonParser = new JsonParser();
                         JsonElement jsonElement = jsonParser.parse(response);
                         Tournament searchedTournament = gson.fromJson(jsonElement.getAsJsonObject().get("tournament"), Tournament.class);
+                        searchedTournament.undoJsonShenanigans();
                         searchedTournament.setSearched(true);
                         searchedTournament.setUrl(searchURL.getText().toString());
                         searchedTournament.setSubdomain(searchSubdomain.getText().toString());

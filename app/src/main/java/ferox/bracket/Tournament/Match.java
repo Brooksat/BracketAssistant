@@ -13,9 +13,13 @@ public class Match {
     private int p1Seed;
     private int p2Seed;
     @SerializedName("player1_prereq_identifier")
-    private int p1PreviousIdentifier;
+    private int p1PrereqIdentifier;
     @SerializedName("player2_prereq_identifier")
-    private int p2PreviousIdentifier;
+    private int p2PrereqIdentifier;
+    @SerializedName("player1_is_prereq_match_loser")
+    private boolean p1IsPrereqLoser;
+    @SerializedName("player2_is_prereq_match_loser")
+    private boolean p2IsPrereqLoser;
     private Participant p1;
     private Participant p2;
     private Match p1PreviousMatch;
@@ -58,8 +62,8 @@ public class Match {
         identifier = 0;
         p1Seed = 0;
         p2Seed = 0;
-        p1PreviousIdentifier = 0;
-        p2PreviousIdentifier = 0;
+        p1PrereqIdentifier = 0;
+        p2PrereqIdentifier = 0;
         p1 = null;
         p2 = null;
         p1PreviousMatch = null;
@@ -115,20 +119,36 @@ public class Match {
         this.tournamentID = tournamentID;
     }
 
-    public int getP1PreviousIdentifier() {
-        return p1PreviousIdentifier;
+    public int getP1PrereqIdentifier() {
+        return p1PrereqIdentifier;
     }
 
-    public void setP1PreviousIdentifier(int p1PreviousIdentifier) {
-        this.p1PreviousIdentifier = p1PreviousIdentifier;
+    public void setP1PrereqIdentifier(int p1PrereqIdentifier) {
+        this.p1PrereqIdentifier = p1PrereqIdentifier;
     }
 
-    public int getP2PreviousIdentifier() {
-        return p2PreviousIdentifier;
+    public int getP2PrereqIdentifier() {
+        return p2PrereqIdentifier;
     }
 
-    public void setP2PreviousIdentifier(int p2PreviousIdentifier) {
-        this.p2PreviousIdentifier = p2PreviousIdentifier;
+    public void setP2PrereqIdentifier(int p2PrereqIdentifier) {
+        this.p2PrereqIdentifier = p2PrereqIdentifier;
+    }
+
+    public boolean isP1IsPrereqLoser() {
+        return p1IsPrereqLoser;
+    }
+
+    public void setP1IsPrereqLoser(boolean p1IsPrereqLoser) {
+        this.p1IsPrereqLoser = p1IsPrereqLoser;
+    }
+
+    public boolean isP2IsPrereqLoser() {
+        return p2IsPrereqLoser;
+    }
+
+    public void setP2IsPrereqLoser(boolean p2IsPrereqLoser) {
+        this.p2IsPrereqLoser = p2IsPrereqLoser;
     }
 
     public int getIdentifier() {

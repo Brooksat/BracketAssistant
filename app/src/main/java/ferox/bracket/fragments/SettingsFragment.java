@@ -285,7 +285,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                     ChallongeRequests.sendRequest(new VolleyCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            Toast.makeText(getContext(), "Tournamnet Created", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Tournament Created", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
@@ -332,6 +332,10 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                 }
             }
         });
+
+        if (tournament.isSearched()) {
+            applySettings.setClickable(false);
+        }
         return view;
     }
 

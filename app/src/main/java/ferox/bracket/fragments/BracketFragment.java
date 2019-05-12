@@ -72,10 +72,10 @@ public class BracketFragment extends Fragment {
     /**
      * Tournament check-ins have been processed
      */
-    final static String CHECKED_IN = "checked_in";
-    final static String GRANDS_DEFAULT = "";
-    final static String GRANDS_SINGLE_MATCH = "single match";
-    final static String GRANDS_SKIP = "skip";
+    private final static String CHECKED_IN = "checked_in";
+    private final static String GRANDS_DEFAULT = "";
+    private final static String GRANDS_SINGLE_MATCH = "single match";
+    private final static String GRANDS_SKIP = "skip";
 
 //    TextView width;
 //    TextView height;
@@ -92,13 +92,10 @@ public class BracketFragment extends Fragment {
     private TextView oneParticipantMessage;
     private Button actionButton;
     private ImageButton refreshButton;
-    private int postQualRound;
-    private int qualifyRound;
+
     private int numOfLR1;
     private int mHeightUnit;
     private int mWidthUnit;
-    private int numRoundsWinners;
-    private int numRoundsLosers;
     private int countedParticipants;
     /**
      * When refreshing a tournament if format and # of participants is the same then only update<br>
@@ -168,17 +165,14 @@ public class BracketFragment extends Fragment {
 //        dy = v.findViewById(R.id.bracket_dy);
 //        scale = v.findViewById(R.id.bracket_scale);
 
-
         roundWinners = v.findViewById(R.id.round_winners);
         bracketWinners = v.findViewById(R.id.bracket_winners);
         roundLosers = v.findViewById(R.id.round_losers);
         bracketLosers = v.findViewById(R.id.bracket_losers);
         lv = v.findViewById(R.id.loading_view);
 
-
         mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height);
         mWidthUnit = getResources().getDimensionPixelSize(R.dimen.match_width);
-
 
         winnersRounds = new ArrayList<>();
         losersRounds = new ArrayList<>();
@@ -188,24 +182,24 @@ public class BracketFragment extends Fragment {
         oneParticipantMessage = v.findViewById(R.id.one_participant_message);
         actionButton = v.findViewById(R.id.bracket_action_button);
         refreshButton = v.findViewById(R.id.bracket_refresh);
-        refreshButton.setOnClickListener(v1 -> refresh());
+        refreshButton.setOnClickListener(v1 -> sendTournamentRequest());
 
 
         tournament = Objects.requireNonNull(intent.getExtras()).getParcelable("tournament");
         assert tournament != null;
+        if (tournament.isSearched()) {
+            actionButton.setVisibility(View.GONE);
+        }
+
+        oldType = "default";
+
 
         //url = tournament.getUrl();
         //subdomain = tournament.getSubdomain();
         //tournament.getType() = tournament.getType();
 
-        if (tournament.isSearched()) {
-            setSearchTournamentValues();
-        }
-        setOldValues();
-
 
         sendTournamentRequest();
-
 
 //        int delay = 100; //milliseconds
 //
@@ -228,6 +222,10 @@ public class BracketFragment extends Fragment {
         return v;
     }
 
+    private void initializeTournament() {
+
+    }
+
 
     private void setOldValues() {
         oldType = tournament.getType();
@@ -237,6 +235,8 @@ public class BracketFragment extends Fragment {
     }
 
     private void sendTournamentRequest() {
+
+
         if (!tournament.isSearched()) {
             ChallongeRequests.sendRequest(new VolleyCallback() {
                 @Override
@@ -244,17 +244,34 @@ public class BracketFragment extends Fragment {
                     tournament = new Gson().fromJson(new JsonParser().parse(response).getAsJsonObject().get("tournament"), Tournament.class);
                     tournament.undoJsonShenanigans();
                     System.out.println(tournament.toString());
-                    //subdomain = tournament.getSubdomain();
-                    //tournament.getType() = tournament.getType();
-                    //participantCount = tournament.getParticipantCount();
                     setActionButton();
 
 
                     ChallongeRequests.sendRequest(new VolleyCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            getTournamentRoundInfo(response);
-                            startBracketDisplay();
+
+                            if (tournament.getParticipantCount() < 2) {
+                                lv.setVisibility(View.GONE);
+                                oneParticipantMessage.setVisibility(View.VISIBLE);
+                            } else {
+                                oneParticipantMessage.setVisibility(View.GONE);
+                                lv.hide();
+
+                                Log.d("grMod", tournament.getGrandFinalsModifier() + "-" + oldGrandsModifier);
+                                if (!tournament.getType().equals(oldType) || tournament.getParticipantCount() != oldParticipantCount || tournament.isHoldThirdPlaceMatch() != oldHoldThirdPlace || !tournament.getGrandFinalsModifier().equals(oldGrandsModifier)) {
+                                    reset();
+                                    getTournamentRoundInfo(response);
+                                    makeBracketDisplay();
+
+                                } else {
+                                    resetRounds();
+                                    getTournamentRoundInfo(response);
+                                    setMatchInfo();
+                                }
+
+                                setOldValues();
+                            }
                         }
 
                         @Override
@@ -273,10 +290,8 @@ public class BracketFragment extends Fragment {
             ChallongeRequests.sendRequest(new VolleyCallback() {
                 @Override
                 public void onSuccess(String response) {
-                    getTournamentRoundInfo(response);
-                    setSearchTournamentValues();
-                    startBracketDisplay();
-
+                    reset();
+                    refresh();
                 }
 
                 @Override
@@ -296,10 +311,10 @@ public class BracketFragment extends Fragment {
         for (int i = 0; i < roundsToCheck; i++) {
             ArrayList<Match> matchList = winnersRounds.get(i).getMatchList();
             for (int j = 0; j < matchList.size(); j++) {
-                if (matchList.get(j).getP1PreviousIdentifier() == 0) {
+                if (matchList.get(j).getP1PrereqIdentifier() == 0) {
                     countedParticipants = countedParticipants + 1;
                 }
-                if (matchList.get(j).getP2PreviousIdentifier() == 0) {
+                if (matchList.get(j).getP2PrereqIdentifier() == 0) {
                     countedParticipants = countedParticipants + 1;
                 }
             }
@@ -308,65 +323,33 @@ public class BracketFragment extends Fragment {
     }
 
 
-    private void refreshSearchTournament() {
-
-    }
-
     private void refresh() {
+
         ChallongeRequests.sendRequest(new VolleyCallback() {
             @Override
             public void onSuccess(String response) {
-                tournament = new Gson().fromJson(new JsonParser().parse(response).getAsJsonObject().get("tournament"), Tournament.class);
+                Gson gson = new Gson();
+                JsonParser jsonParser = new JsonParser();
+                JsonElement jsonElement = jsonParser.parse(response);
+                String urlTmp = tournament.getUrl();
+                String subdomainTmp = tournament.getSubdomain();
+                tournament = gson.fromJson(jsonElement.getAsJsonObject().get("tournament"), Tournament.class);
                 tournament.undoJsonShenanigans();
-                System.out.println(tournament.toString());
-                //subdomain = tournament.getSubdomain();
-                //tournament.getType() = tournament.getType();
-                // participantCount = tournament.getParticipantCount();
-                setActionButton();
-
-
-                ChallongeRequests.sendRequest(new VolleyCallback() {
-                    @Override
-                    public void onSuccess(String response) {
-
-                        if (tournament.getParticipantCount() < 2) {
-                            lv.setVisibility(View.GONE);
-                            oneParticipantMessage.setVisibility(View.VISIBLE);
-                        } else {
-                            init();
-                            oneParticipantMessage.setVisibility(View.GONE);
-                            lv.hide();
-
-                            Log.d("grMod", tournament.getGrandFinalsModifier() + "-" + oldGrandsModifier);
-                            if (!tournament.getType().equals(oldType) || tournament.getParticipantCount() != oldParticipantCount || tournament.isHoldThirdPlaceMatch() != oldHoldThirdPlace || !tournament.getGrandFinalsModifier().equals(oldGrandsModifier)) {
-                                reset();
-                                getTournamentRoundInfo(response);
-                                makeBracketDisplay();
-
-                            } else {
-                                resetRounds();
-                                getTournamentRoundInfo(response);
-                                setMatchInfo();
-                            }
-
-
-                            setOldValues();
-
-                        }
-                    }
-
-                    @Override
-                    public void onErrorResponse(ArrayList errorResponse) {
-
-                    }
-                }, ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(tournament.getUrl(), tournament.getSubdomain()));
+                tournament.setUrl(urlTmp);
+                tournament.setSubdomain(subdomainTmp);
+                tournament.setSearched(true);
+                getTournamentRoundInfo(response);
+                setSearchTournamentValues();
+                startBracketDisplay();
             }
 
             @Override
-            public void onErrorResponse(ArrayList errorList) {
+            public void onErrorResponse(ArrayList errorResponse) {
 
             }
-        }, ChallongeRequests.tournamentShow(tournament.getId()));
+        }, ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(tournament.getUrl(), tournament.getSubdomain()));
+
+
     }
 
 
@@ -502,7 +485,8 @@ public class BracketFragment extends Fragment {
         }
         //The third place match is not listed with the other rounds in the json so it has to be manually extracted
 
-        if (tournament.getType().equals(SINGLE_ELIM) && tournament.isHoldThirdPlaceMatch() && !tournamentField.getAsJsonObject().get("third_place_match").isJsonNull()) {
+        if (tournament.getType().equals(SINGLE_ELIM) && !tournamentField.getAsJsonObject().get("third_place_match").isJsonNull()) {
+            tournament.setHoldThirdPlaceMatch(true);
             JsonObject thirdPlaceMatch = tournamentField.getAsJsonObject().get("third_place_match").getAsJsonObject();
             Match thirdPlace = gson.fromJson(thirdPlaceMatch, Match.class);
             thirdPlace.undoJsonShenanigans();
@@ -541,6 +525,8 @@ public class BracketFragment extends Fragment {
             thirdPlace.setP2(player2);
 
 
+        } else if (tournamentField.getAsJsonObject().get("third_place_match").isJsonNull()) {
+            tournament.setHoldThirdPlaceMatch(false);
         }
 
 
@@ -562,7 +548,7 @@ public class BracketFragment extends Fragment {
             lv.setVisibility(View.GONE);
             oneParticipantMessage.setVisibility(View.VISIBLE);
         } else {
-            init();
+
             oneParticipantMessage.setVisibility(View.GONE);
             makeBracketDisplay();
             lv.hide();
@@ -674,7 +660,7 @@ public class BracketFragment extends Fragment {
 
         TextView matchNumber = match.findViewById(R.id.matchNumber);
 
-        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), String.valueOf(matchInfo.getP1PreviousIdentifier()) + "-" + matchInfo.getP2PreviousIdentifier(), Toast.LENGTH_SHORT).show());
+        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), String.valueOf(matchInfo.getP1PrereqIdentifier()) + "-" + matchInfo.getP2PrereqIdentifier(), Toast.LENGTH_SHORT).show());
 
         matchNumber.setText(String.valueOf(matchInfo.getIdentifier()));
         TextView P1Seed = match.findViewById(R.id.seed1);
@@ -685,37 +671,6 @@ public class BracketFragment extends Fragment {
         P1Name.setText(matchInfo.getP1().getName());
         TextView P2Name = match.findViewById(R.id.participant2);
         P2Name.setText(matchInfo.getP2().getName());
-
-    }
-
-
-    //initializes values needed to make bracket display
-    public void init() {
-
-        numRoundsWinners = winnersRounds.size();
-        numRoundsLosers = losersRounds.size();
-
-        if (tournament.getType().equals("single elimination")) {
-            if (winnersRounds.size() == 1) {
-                postQualRound = 1;
-            } else {
-                if (winnersRounds.get(0).getMatchList().get(0).getP1Seed() != 1) {
-                    qualifyRound = winnersRounds.get(0).getMatchList().size();
-                    postQualRound = winnersRounds.get(1).getMatchList().size();
-
-                } else {
-                    postQualRound = winnersRounds.get(0).getMatchList().size();
-                }
-            }
-        } else if (tournament.getType().equals("double elimination")) {
-            if (winnersRounds.get(0).getMatchList().get(0).getP1Seed() != 1) {
-                qualifyRound = winnersRounds.get(0).getMatchList().size();
-                postQualRound = winnersRounds.get(1).getMatchList().size();
-            } else {
-                postQualRound = winnersRounds.get(0).getMatchList().size();
-            }
-        }
-
 
     }
 
@@ -777,6 +732,7 @@ public class BracketFragment extends Fragment {
 
 
         if (tournament.getType().equals(SINGLE_ELIM) || tournament.getType().equals(DOUBLE_ELIM)) {
+            bracketWinners.setOrientation(LinearLayout.HORIZONTAL);
             for (int i = 0; i < totalRounds; i++) {
                 //make a Linear Layout to hold each round
                 LinearLayout roundLayout = new LinearLayout(getContext());
@@ -1058,14 +1014,14 @@ public class BracketFragment extends Fragment {
 
                 //TODO Possible change so that the match will go through the layout until its gotten to the i matchLayout, gets rid of magic number but loses out on random access
                 //Or just refactor these numbers to static final ints
-                if (secondRoundMatches.get(i).getP1PreviousIdentifier() == 0) {
+                if (secondRoundMatches.get(i).getP1PrereqIdentifier() == 0) {
                     //index of of matchLayout and BCV corresponding to current second round index
                     int matchLayoutIndex = (4 * i) + 1;
                     int bcvIndex = (5 * i) + 1;
                     firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
                     firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
                 }
-                if (secondRoundMatches.get(i).getP2PreviousIdentifier() == 0) {
+                if (secondRoundMatches.get(i).getP2PrereqIdentifier() == 0) {
                     int matchLayoutIndex = (4 * i) + 3;
                     int bcvIndex = (5 * i) + 2;
                     firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
@@ -1079,30 +1035,23 @@ public class BracketFragment extends Fragment {
             LinearLayout firstRoundLayout = (LinearLayout) bracketLosers.getChildAt(0);
             LinearLayout firstRoundBC = (LinearLayout) bracketLosers.getChildAt(1);
             LinearLayout secondRoundLayout = (LinearLayout) bracketLosers.getChildAt(2);
-            int numFirstRoundLosersMatches = losersRounds.get(0).getMatchList().size();
             Round secondRound = losersRounds.get(1);
             ArrayList<Match> secondRoundMatches = secondRound.getMatchList();
 
-            Log.d("SetInvisLoopLosers", String.valueOf(firstRoundLayout.getChildCount()));
-            Log.d("SetInvisLoopLosers", String.valueOf(secondRoundLayout.getChildCount()));
-            Log.d("SetInvisQual", String.valueOf(qualifyRound));
             //handles two scenarios where if first round match capacity is larger than second round
             if (firstRoundLayout.getChildCount() > secondRoundLayout.getChildCount()) {
                 for (int i = 0; i < secondRoundMatches.size(); i++) {
 
-                    //if a round 2 losers match has prereq text then it means that the the players comes froms winners
-                    //therefore the unused match slot in LR1 should bet set invisible
-                    if (secondRoundMatches.get(i).getP1PreviousIdentifier() <= qualifyRound + postQualRound) {
-                        Log.d("SetInvis", String.valueOf(secondRoundMatches.get(i).getP1PreviousIdentifier()));
-                        Log.d("SetInvis", String.valueOf(secondRoundMatches.get(i).getP2PreviousIdentifier()));
-                        Log.d("SetInvis", String.valueOf(qualifyRound));
+                    //TODO i dont think using qualifyRound/postQualRound is needed anymore
+
+                    if (secondRoundMatches.get(i).isP1IsPrereqLoser()) {
                         //index of of matchLayout and BCV corresponding to current second round index
                         int matchLayoutIndex = (4 * i) + 1;
                         int bcvIndex = (5 * i) + 1;
                         firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
                         firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
                     }
-                    if (secondRoundMatches.get(i).getP2PreviousIdentifier() <= qualifyRound + postQualRound) {
+                    if (secondRoundMatches.get(i).isP2IsPrereqLoser()) {
                         int matchLayoutIndex = (4 * i) + 3;
                         int bcvIndex = (5 * i) + 2;
                         firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
@@ -1112,12 +1061,8 @@ public class BracketFragment extends Fragment {
 
             } else {
                 for (int i = 0; i < secondRoundMatches.size(); i++) {
-                    //if a round 2 losers match has prereq text then it means that the the players comes froms winners
-                    //therefore the unused match slot in LR1 should bet set invisible
 
-                    //numbering of matches
-                    int p2previd = secondRoundMatches.get(i).getP2PreviousIdentifier();
-                    if (p2previd <= qualifyRound || p2previd > qualifyRound + numFirstRoundLosersMatches) {
+                    if ((secondRoundMatches.get(i).isP2IsPrereqLoser())) {
                         int matchLayoutIndex = (2 * i) + 1;
                         int bcvIndex = (2 * i) + 1;
                         firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);

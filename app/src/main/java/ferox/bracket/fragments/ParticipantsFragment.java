@@ -128,6 +128,8 @@ public class ParticipantsFragment extends Fragment {
 
         if (!tournament.isSearched()) {
             sendParticipantRequest();
+        } else {
+            participantsOptions.setClickable(false);
         }
         return v;
     }
