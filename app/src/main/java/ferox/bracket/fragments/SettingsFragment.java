@@ -73,51 +73,51 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     final static String GRANDS_SKIP_ = "skip";
 
 
-    int setYear;
-    int setMonth;
-    int setDay;
-    int setHour;
-    int setMinute;
-    String tournamentStartDate;
+    private int setYear;
+    private int setMonth;
+    private int setDay;
+    private int setHour;
+    private int setMinute;
+    private String tournamentStartDate;
 
-    Tournament tournament;
-    Tournament updatedTournament;
+    private Tournament tournament;
+    private Tournament updatedTournament;
 
-    ArrayList<String> formatErrors;
+    private ArrayList<String> formatErrors;
 
-    Calendar calendar;
-    DatePickerDialog.OnDateSetListener mOnDateSetListener;
-    TimePickerDialog.OnTimeSetListener mOnTimeSetListener;
-    Spinner formatMenu;
-    ArrayAdapter<CharSequence> formatMenuAdapter;
-    Spinner rankedByMenu;
-    ArrayAdapter<CharSequence> rankedByMenuAdapter;
+    private Calendar calendar;
+    private DatePickerDialog.OnDateSetListener mOnDateSetListener;
+    private TimePickerDialog.OnTimeSetListener mOnTimeSetListener;
+    private Spinner formatMenu;
+    private ArrayAdapter<CharSequence> formatMenuAdapter;
+    private Spinner rankedByMenu;
+    private ArrayAdapter<CharSequence> rankedByMenuAdapter;
 
-    LinearLayout errorsLayout;
-    EditText name;
-    EditText url;
-    EditText subDomain;
-    EditText description;
-    CheckBox holdThirdPlace;
-    RadioGroup grandFinalsModifier;
-    EditText ptsPerMatchWin;
-    EditText ptsPerMatchTie;
-    EditText ptsPerGameWin;
-    EditText ptsPerGameTie;
-    EditText ptsPerBye;
-    CheckBox startAt;
-    TextView dateDay;
-    TextView dateTime;
-    TextView dateTimezone;
-    EditText checkInDuration;
-    EditText maxParticipants;
-    CheckBox showRounds;
-    CheckBox isTournamentPrivate;
-    CheckBox notifyMatchOpen;
-    CheckBox notifyTournamentOver;
-    CheckBox traditionalSeeding;
-    CheckBox allowAttachments;
-    Button applySettings;
+    private LinearLayout errorsLayout;
+    private EditText name;
+    private EditText url;
+    private EditText subDomain;
+    private EditText description;
+    private CheckBox holdThirdPlace;
+    private RadioGroup grandFinalsModifier;
+    private EditText ptsPerMatchWin;
+    private EditText ptsPerMatchTie;
+    private EditText ptsPerGameWin;
+    private EditText ptsPerGameTie;
+    private EditText ptsPerBye;
+    private CheckBox startAt;
+    private TextView dateDay;
+    private TextView dateTime;
+    private TextView dateTimezone;
+    private EditText checkInDuration;
+    private EditText maxParticipants;
+    private CheckBox showRounds;
+    private CheckBox isTournamentPrivate;
+    private CheckBox notifyMatchOpen;
+    private CheckBox notifyTournamentOver;
+    private CheckBox traditionalSeeding;
+    private CheckBox allowAttachments;
+    private Button applySettings;
 
     String tournamentURL;
 
@@ -146,7 +146,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
             }
         }, ChallongeRequests.tournamentShow(tournament.getId()));
-
 
 
         assert tournament != null;
@@ -467,7 +466,21 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     }
 
     //TODO doesnt set/update the DE dropdowns, check RR, SWISS AS WELL, also set RR/SWISS rank by
-    private void updateGFModifier() {
+    private void setGFModifier() {
+        int selectIndex = grandFinalsModifier.getCheckedRadioButtonId();
+        switch (selectIndex) {
+            case R.id.grand_finals_default:
+                updatedTournament.setGrandFinalsModifier(GRANDS_DEFAULT);
+                break;
+            case R.id.grand_finals_single_match:
+                updatedTournament.setGrandFinalsModifier(GRANDS_SINGLE_MATCH);
+                break;
+            case R.id.grand_finals_skip:
+                updatedTournament.setGrandFinalsModifier(GRANDS_SKIP_);
+                break;
+            default:
+                updatedTournament.setGrandFinalsModifier(GRANDS_DEFAULT);
+        }
 
     }
 
@@ -483,8 +496,8 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         updatedTournament.setHoldThirdPlaceMatch(holdThirdPlace.isChecked());
 
 
-        updateGFModifier();
-
+        setGFModifier();
+        setRankedBy();
         setCustomPointsSetting();
 
         //TODO make timezone default to UTC-5
@@ -531,9 +544,11 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         description.setText(Html.fromHtml(tournament.getDescription()));
 
         formatMenu.setSelection(formatMenuAdapter.getPosition(WordUtils.capitalize(tournament.getType())), true);
+        //TODO set ranked by menu
 
         holdThirdPlace.setChecked(tournament.isHoldThirdPlaceMatch());
-        setGrandsModifier();
+        getGrandsModifier();
+        getRankedBy();
 
 
         if (tournament.getType().equals(SWISS.toLowerCase())) {
@@ -579,6 +594,27 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
     }
 
+    private void setRankedBy() {
+        String rankedBy = rankedByMenu.getSelectedItem().toString();
+        switch (rankedBy) {
+            case MATCH_WIN:
+                updatedTournament.setRankedBy(Tournament.MATCH_WINS);
+                break;
+            case GAME_SET_WINS:
+                updatedTournament.setRankedBy(Tournament.GAME_WINS);
+                break;
+            case POINTS_SCORED:
+                updatedTournament.setRankedBy(Tournament.POINTS_SCORED);
+                break;
+            case POINTS_DIFF:
+                updatedTournament.setRankedBy(Tournament.POINTS_DIFFERENCE);
+                break;
+            case CUSTOM:
+                updatedTournament.setRankedBy(Tournament.CUSTOM);
+                break;
+
+        }
+    }
 
     private String getDate() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
@@ -625,6 +661,14 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                     getView().findViewById(R.id.double_elim_layout).setVisibility(View.GONE);
                     getView().findViewById(R.id.round_robin_layout).setVisibility(View.VISIBLE);
                     getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.GONE);
+                    getView().findViewById(R.id.ranked_by).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.ranked_by_menu).setVisibility(View.VISIBLE);
+
+                    rankedByMenu.getOnItemSelectedListener().onItemSelected(
+                            rankedByMenu,
+                            rankedByMenu.getSelectedView(),
+                            rankedByMenuAdapter.getPosition(rankedByMenu.getSelectedItem().toString()),
+                            rankedByMenu.getSelectedItemId());
 
                     //handle situation when switching between RR and Swiss format
                     ptsPerMatchWin.setText(String.valueOf(tournament.getRrPtsForMatchWin()));
@@ -640,6 +684,9 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                     getView().findViewById(R.id.double_elim_layout).setVisibility(View.GONE);
                     getView().findViewById(R.id.round_robin_layout).setVisibility(View.VISIBLE);
                     getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.rr_swiss_custom_parameters).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.ranked_by).setVisibility(View.GONE);
+                    getView().findViewById(R.id.ranked_by_menu).setVisibility(View.GONE);
                     //handle situation when switching between RR and Swiss format
                     ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
                     ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
@@ -657,11 +704,11 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
             switch (item) {
                 case CUSTOM: {
-                    getView().findViewById(R.id.round_robin_custom_parameters).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.rr_swiss_custom_parameters).setVisibility(View.VISIBLE);
                     break;
                 }
                 default: {
-                    getView().findViewById(R.id.round_robin_custom_parameters).setVisibility(View.GONE);
+                    getView().findViewById(R.id.rr_swiss_custom_parameters).setVisibility(View.GONE);
                     break;
                 }
             }
@@ -687,7 +734,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         return String.valueOf(number);
     }
 
-    private void setGrandsModifier() {
+    private void getGrandsModifier() {
         if (tournament.getGrandFinalsModifier() != null) {
 
 
@@ -706,6 +753,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                 }
                 default: {
                     grandFinalsModifier.check(R.id.grand_finals_default);
+                    break;
                 }
             }
         } else {
@@ -713,8 +761,25 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         }
     }
 
-    private void applySettings() {
-
+    private void getRankedBy() {
+        switch (tournament.getRankedBy()) {
+            //formatMenu.setSelection(formatMenuAdapter.getPosition(WordUtils.capitalize(tournament.getType())), true);
+            case Tournament.MATCH_WINS:
+                rankedByMenu.setSelection(rankedByMenuAdapter.getPosition(MATCH_WIN));
+                break;
+            case Tournament.GAME_WINS:
+                rankedByMenu.setSelection(rankedByMenuAdapter.getPosition(GAME_SET_WINS));
+                break;
+            case Tournament.POINTS_SCORED:
+                rankedByMenu.setSelection(rankedByMenuAdapter.getPosition(POINTS_SCORED));
+                break;
+            case Tournament.POINTS_DIFFERENCE:
+                rankedByMenu.setSelection(rankedByMenuAdapter.getPosition(POINTS_DIFF));
+                break;
+            case Tournament.CUSTOM:
+                rankedByMenu.setSelection(rankedByMenuAdapter.getPosition(CUSTOM));
+                break;
+        }
     }
 
 

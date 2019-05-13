@@ -12,21 +12,21 @@ import java.util.Objects;
 
 public class Tournament implements Parcelable {
 
-    private static final String SINGLE_ELIM = "single elimination";
-    private static final String DOUBLE_ELIM = "double elimination";
-    private static final String ROUND_ROBIN = "round robin";
-    private static final String AWAITING_REVIEW = "awaiting_review";
-    private static final String UNDERWAY = "underway";
-    private static final String PENDING = "pending";
-    private static final String COMPLETE = "complete";
-    private static final String MATCH_WINS = "match wins";
-    private static final String GAME_WINS = "game wins";
-    private static final String POINTS_SCORED = "points scored";
-    private static final String POINTS_DIFFERENCE = "points difference";
-    private static final String CUSTOM = "custom";
-    private static final String DEFAULT_GRANDS = "";
-    private static final String SINGLE_MATCH = "single match";
-    private static final String SKIP = "skip";
+    public static final String SINGLE_ELIM = "single elimination";
+    public static final String DOUBLE_ELIM = "double elimination";
+    public static final String ROUND_ROBIN = "round robin";
+    public static final String AWAITING_REVIEW = "awaiting_review";
+    public static final String UNDERWAY = "underway";
+    public static final String PENDING = "pending";
+    public static final String COMPLETE = "complete";
+    public static final String MATCH_WINS = "match wins";
+    public static final String GAME_WINS = "game wins";
+    public static final String POINTS_SCORED = "points scored";
+    public static final String POINTS_DIFFERENCE = "points difference";
+    public static final String CUSTOM = "custom";
+    public static final String DEFAULT_GRANDS = "";
+    public static final String SINGLE_MATCH = "single match";
+    public static final String SKIP = "skip";
 
     private static final String TOURNAMENT_NAME = "&tournament[name]=";
     private static final String TOURNAMENT_TYPE = "&tournament[tournament_type]=";
