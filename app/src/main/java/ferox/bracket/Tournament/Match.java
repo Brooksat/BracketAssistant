@@ -1,24 +1,34 @@
 package ferox.bracket.Tournament;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 
 public class Match {
     @SerializedName("id")
+    @Expose
     private String id;
     @SerializedName("tournament_id")
+    @Expose
     private String tournamentID;
     @SerializedName("identifier")
+    @Expose
     private int identifier;
 
     private int p1Seed;
     private int p2Seed;
     @SerializedName("player1_prereq_identifier")
+    @Expose
     private int p1PrereqIdentifier;
     @SerializedName("player2_prereq_identifier")
+    @Expose
     private int p2PrereqIdentifier;
     @SerializedName("player1_is_prereq_match_loser")
+    @Expose
     private boolean p1IsPrereqLoser;
     @SerializedName("player2_is_prereq_match_loser")
+    @Expose
     private boolean p2IsPrereqLoser;
     private Participant p1;
     private Participant p2;
@@ -27,14 +37,28 @@ public class Match {
     private boolean P1Decided;
     private boolean P2Decided;
     @SerializedName("player1_placeholder_text")
+    @Expose
     private String p1PrereqText;
     @SerializedName("player2_placeholder_text")
+    @Expose
     private String p2PrereqText;
     @SerializedName("winner_id")
+    @Expose
     private String winnerID;
     @SerializedName("loser_id")
+    @Expose
     private String loserID;
+    @SerializedName("state")
+    @Expose
+    private String state;
+    @SerializedName("scores_csv")
+    @Expose
+    private String scoresCSV;
     private boolean isWinners;
+    private ArrayList<String> games;
+    private String score;
+    private String p1Score;
+    private String p2Score;
 
 
     public Match(String id, int number, int p1Seed, int p2Seed, Participant p1, Participant p2,
@@ -99,6 +123,12 @@ public class Match {
         }
         if (loserID == null) {
             loserID = "";
+        }
+        if (p1Score == null) {
+            p1Score = "-";
+        }
+        if (p2Score == null) {
+            p2Score = "-";
         }
     }
 
@@ -261,5 +291,57 @@ public class Match {
 
     public void setIsWinners(boolean winners) {
         isWinners = winners;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getScoresCSV() {
+        return scoresCSV;
+    }
+
+    public void setScoresCSV(String scoresCSV) {
+        this.scoresCSV = scoresCSV;
+    }
+
+    public void setWinners(boolean winners) {
+        isWinners = winners;
+    }
+
+    public ArrayList<String> getGames() {
+        return games;
+    }
+
+    public void setGames(ArrayList<String> games) {
+        this.games = games;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
+    }
+
+    public String getP1Score() {
+        return p1Score;
+    }
+
+    public void setP1Score(String p1Score) {
+        this.p1Score = p1Score;
+    }
+
+    public String getP2Score() {
+        return p2Score;
+    }
+
+    public void setP2Score(String p2Score) {
+        this.p2Score = p2Score;
     }
 }

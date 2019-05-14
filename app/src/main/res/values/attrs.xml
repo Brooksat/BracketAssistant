@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="matchView" >
+    <declare-styleable name="MatchView">
         <attr name="matchNumber" format="string"/>
         <attr name="player1Seed" format="string"/>
         <attr name="player2Seed" format="string"/>

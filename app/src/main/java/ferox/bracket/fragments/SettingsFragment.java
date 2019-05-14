@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -51,6 +50,7 @@ import ferox.bracket.R;
 import ferox.bracket.Tournament.Tournament;
 
 public class SettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+    Intent intent;
 
     final static String NAN = "NAN";
 
@@ -125,38 +125,19 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Intent intent = Objects.requireNonNull(getActivity()).getIntent();
 
+        Log.d("OnCreateSettings", "ran");
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-
-        formatErrors = new ArrayList<>();
+        intent = Objects.requireNonNull(getActivity()).getIntent();
         tournament = Objects.requireNonNull(intent.getExtras()).getParcelable("tournament");
-        updatedTournament = new Tournament();
 
-        ChallongeRequests.sendRequest(new VolleyCallback() {
-            @Override
-            public void onSuccess(String response) {
-                tournament = new Gson().fromJson(new JsonParser().parse(response).getAsJsonObject().get("tournament"), Tournament.class);
-                tournament.undoJsonShenanigans();
+        return view;
+    }
 
-            }
-
-            @Override
-            public void onErrorResponse(ArrayList errorList) {
-
-            }
-        }, ChallongeRequests.tournamentShow(tournament.getId()));
-
-
-        assert tournament != null;
-        if (!TextUtils.isEmpty(tournament.getSubdomain())) {
-            tournamentURL = tournament.getSubdomain() + "-" + tournament.getUrl();
-        } else {
-            tournamentURL = tournament.getUrl();
-        }
-
-        Log.d("bleh", tournamentURL);
-
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.d("OnViewCreatedSettings", "ran");
 
         errorsLayout = view.findViewById(R.id.tournament_errors_linear_layout);
         name = view.findViewById(R.id.tournament_name);
@@ -186,6 +167,14 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         dateTime = view.findViewById(R.id.date_time);
         calendar = Calendar.getInstance();
         dateTimezone = view.findViewById(R.id.settings_timezone);
+
+        formatMenu = view.findViewById(R.id.format_menu);
+        rankedByMenu = view.findViewById(R.id.ranked_by_menu);
+
+
+        formatErrors = new ArrayList<>();
+        updatedTournament = new Tournament();
+
         dateTimezone.setText(calendar.getTimeZone().getDisplayName(calendar.getTimeZone().inDaylightTime(new Date()), TimeZone.SHORT));
 
         setYear = calendar.get(Calendar.YEAR);
@@ -240,13 +229,12 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         };
 
 
-        formatMenu = view.findViewById(R.id.format_menu);
         formatMenu.setOnItemSelectedListener(this);
         formatMenuAdapter = ArrayAdapter.createFromResource(getContext(), R.array.format_array, R.layout.menu_spinner_item);
         formatMenuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         formatMenu.setAdapter(formatMenuAdapter);
 
-        rankedByMenu = view.findViewById(R.id.ranked_by_menu);
+
         rankedByMenu.setOnItemSelectedListener(this);
         rankedByMenuAdapter = ArrayAdapter.createFromResource(getContext(), R.array.ranked_by_array, R.layout.menu_spinner_item);
         rankedByMenuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -267,13 +255,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             return false;
         });
 
-        if (tournament.getId() != null) {
-            //ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.tournamentShow(tournamentURL));
-            getTournamentInfo("holdthisstringrealfast");
-        } else {
-
-        }
-        Log.d("onCreateView", "iscalled");
 
         applySettings.setOnClickListener(v -> {
             formatErrors.clear();
@@ -335,7 +316,33 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         if (tournament.isSearched()) {
             applySettings.setClickable(false);
         }
-        return view;
+        sendSettingsRequest();
+
+    }
+
+
+    private void sendSettingsRequest() {
+        if (tournament.getId() != null) {
+            //ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.tournamentShow(tournamentURL));
+            ChallongeRequests.sendRequest(new VolleyCallback() {
+                @Override
+                public void onSuccess(String response) {
+
+                    tournament = new Gson().fromJson(new JsonParser().parse(response).getAsJsonObject().get("tournament"), Tournament.class);
+                    tournament.undoJsonShenanigans();
+                    getTournamentInfo(response);
+                    Objects.requireNonNull(getView()).jumpDrawablesToCurrentState();
+
+                }
+
+                @Override
+                public void onErrorResponse(ArrayList errorList) {
+
+                }
+            }, ChallongeRequests.tournamentShow(tournament.getId()));
+        } else {
+
+        }
     }
 
     /**
@@ -465,7 +472,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
     }
 
-    //TODO doesnt set/update the DE dropdowns, check RR, SWISS AS WELL, also set RR/SWISS rank by
+
     private void setGFModifier() {
         int selectIndex = grandFinalsModifier.getCheckedRadioButtonId();
         switch (selectIndex) {
@@ -500,7 +507,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         setRankedBy();
         setCustomPointsSetting();
 
-        //TODO make timezone default to UTC-5
 
         try {
             updatedTournament.setCheckInDuration(Integer.valueOf(checkInDuration.getText().toString()));
@@ -536,7 +542,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
     private void getTournamentInfo(String response) {
 
-
+        Log.d("getTournamentInfo", "ran");
         name.setText(tournament.getName());
         url.setText(tournament.getUrl());
         subDomain.setText(tournament.getSubdomain());
@@ -544,7 +550,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         description.setText(Html.fromHtml(tournament.getDescription()));
 
         formatMenu.setSelection(formatMenuAdapter.getPosition(WordUtils.capitalize(tournament.getType())), true);
-        //TODO set ranked by menu
+
 
         holdThirdPlace.setChecked(tournament.isHoldThirdPlaceMatch());
         getGrandsModifier();
@@ -566,7 +572,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
         checkInDuration.setText(String.valueOf(tournament.getCheckInDuration()));
 
-        //TODO probably should navigate to java.time
         if (tournament.getStartAt() != null) {
             try {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);

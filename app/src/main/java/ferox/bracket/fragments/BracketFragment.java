@@ -20,6 +20,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -441,11 +442,16 @@ public class BracketFragment extends Fragment {
                 roundTmp.setIsWinners(true);
                 winnersRounds.add(roundTmp);
             }
-
+            GsonBuilder builder = new GsonBuilder();
+            builder.excludeFieldsWithoutExposeAnnotation();
+            Gson gsonMatch = builder.create();
             for (JsonElement match : round) {
                 Participant player1 = new Participant();
                 Participant player2 = new Participant();
-                Match matchTmp = gson.fromJson(match.getAsJsonObject(), Match.class);
+                Match matchTmp = gsonMatch.fromJson(match.getAsJsonObject(), Match.class);
+
+                setMatchScore(matchTmp, match);
+
                 matchTmp.undoJsonShenanigans();
                 if (!match.getAsJsonObject().get("player1").isJsonNull()) {
                     player1 = gson.fromJson(match.getAsJsonObject().get("player1").getAsJsonObject(), Participant.class);
@@ -535,6 +541,17 @@ public class BracketFragment extends Fragment {
         //losers rounds are denoted with a negative number, Round -x is Loser's Round X
         //Since the rounds have been sorted by number value they need to be reversed to be order by actual round
         Collections.reverse(losersRounds);
+
+
+    }
+
+    private void setMatchScore(Match match, JsonElement matchJson) {
+
+        JsonArray score = matchJson.getAsJsonObject().get("scores").getAsJsonArray();
+        if (score.size() == 2) {
+            match.setP1Score(score.get(0).getAsString());
+            match.setP2Score(score.get(1).getAsString());
+        }
 
 
     }
@@ -660,7 +677,7 @@ public class BracketFragment extends Fragment {
 
         TextView matchNumber = match.findViewById(R.id.matchNumber);
 
-        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), String.valueOf(matchInfo.getP1PrereqIdentifier()) + "-" + matchInfo.getP2PrereqIdentifier(), Toast.LENGTH_SHORT).show());
+        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), matchInfo.getP1PrereqIdentifier() + "-" + matchInfo.getP2PrereqIdentifier(), Toast.LENGTH_SHORT).show());
 
         matchNumber.setText(String.valueOf(matchInfo.getIdentifier()));
         TextView P1Seed = match.findViewById(R.id.seed1);
@@ -671,6 +688,13 @@ public class BracketFragment extends Fragment {
         P1Name.setText(matchInfo.getP1().getName());
         TextView P2Name = match.findViewById(R.id.participant2);
         P2Name.setText(matchInfo.getP2().getName());
+        TextView P1Score = match.findViewById(R.id.player1_score);
+        P1Score.setText(matchInfo.getP1Score());
+        TextView P2Score = match.findViewById(R.id.player2_score);
+        P2Score.setText(matchInfo.getP2Score());
+
+        //TODO set match ID
+
 
     }
 

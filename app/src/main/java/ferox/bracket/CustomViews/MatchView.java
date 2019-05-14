@@ -12,7 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import ferox.bracket.R;
 
 
-public class matchView extends ConstraintLayout {
+public class MatchView extends ConstraintLayout {
 
     Context mContext;
     String mMatchId;
@@ -28,26 +28,25 @@ public class matchView extends ConstraintLayout {
     TextView tP2Name;
 
 
-
-    public matchView(Context context) {
+    public MatchView(Context context) {
         super(context);
 
         init(context, null);
     }
 
-    public matchView(Context context, AttributeSet attrs) {
+    public MatchView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         init(context, attrs);
     }
 
-    public matchView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MatchView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         init(context, attrs);
     }
 
-    public matchView(Context context, @Nullable AttributeSet attrs, String matchNumber, String P1Seed, String P2Seed, String P1Name, String P2Name) {
+    public MatchView(Context context, @Nullable AttributeSet attrs, String matchNumber, String P1Seed, String P2Seed, String P1Name, String P2Name) {
         super(context, attrs);
         mMatchNumber = matchNumber;
         mP1Seed = P1Seed;
@@ -62,13 +61,13 @@ public class matchView extends ConstraintLayout {
     private void init(Context context, AttributeSet attrs) {
         mContext = context;
 
-        final TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.matchView);
+        final TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.MatchView);
 
-        mMatchNumber = ta.getString(R.styleable.matchView_matchNumber);
-        mP1Seed = ta.getString(R.styleable.matchView_player1Seed);
-        mP2Seed = ta.getString(R.styleable.matchView_player2Seed);
-        mP1Name = ta.getString(R.styleable.matchView_player1Name);
-        mP2Name = ta.getString(R.styleable.matchView_player2Name);
+        mMatchNumber = ta.getString(R.styleable.MatchView_matchNumber);
+        mP1Seed = ta.getString(R.styleable.MatchView_player1Seed);
+        mP2Seed = ta.getString(R.styleable.MatchView_player2Seed);
+        mP1Name = ta.getString(R.styleable.MatchView_player1Name);
+        mP2Name = ta.getString(R.styleable.MatchView_player2Name);
 
         ta.recycle();
 

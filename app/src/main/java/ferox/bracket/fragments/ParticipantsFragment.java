@@ -149,6 +149,7 @@ public class ParticipantsFragment extends Fragment {
         }, ChallongeRequests.participantIndex(url));
     }
 
+    //TODO Refreshing list causes some views to be blanked out
     public void initPlayerList(String jsonString) {
 
         players.clear();

@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_margin="0dp"
-        android:hint="Seed" />
+        android:hint="Seed(Leave empty for last seed)" />
 
     <LinearLayout
         android:id="@+id/participant_add_dialog_error_layout"

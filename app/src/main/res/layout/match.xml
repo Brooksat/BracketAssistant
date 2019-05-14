@@ -1,60 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
 
 
+    android:layout_height="wrap_content">
 
-    xmlns:app="http://schemas.android.com/apk/res-auto">
     <TextView
         android:id="@+id/matchNumber"
+        style="@style/match"
         android:layout_width="@dimen/match_number_width"
-        android:layout_height="60dp"
+        android:layout_height="@dimen/match_view_height"
         android:gravity="center"
         android:text="1"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        style="@style/match"
-       />
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/seed1"
+        style="@style/match"
         android:layout_width="@dimen/player_seed_width"
-        android:layout_height="30dp"
+        android:layout_height="@dimen/match_view_half_height"
         android:gravity="center"
         android:text="0"
         app:layout_constraintLeft_toRightOf="@id/matchNumber"
-        app:layout_constraintTop_toTopOf="@id/matchNumber"
-        style="@style/match" />
+        app:layout_constraintTop_toTopOf="@id/matchNumber" />
+
     <TextView
         android:id="@+id/seed2"
+        style="@style/match"
         android:layout_width="@dimen/player_seed_width"
-        android:layout_height="30dp"
+        android:layout_height="@dimen/match_view_half_height"
         android:gravity="center"
         android:text="0"
         app:layout_constraintLeft_toRightOf="@id/matchNumber"
-        app:layout_constraintTop_toBottomOf="@id/seed1"
-        style="@style/match" />
+        app:layout_constraintTop_toBottomOf="@id/seed1" />
+
     <TextView
         android:id="@+id/participant1"
+        style="@style/match"
         android:layout_width="@dimen/player_name_width"
-        android:layout_height="30dp"
-        android:paddingLeft="5dp"
+        android:layout_height="@dimen/match_view_half_height"
         android:gravity="center_vertical"
+        android:paddingLeft="5dp"
         android:text="Player 1"
         app:layout_constraintLeft_toRightOf="@id/seed1"
-        app:layout_constraintTop_toTopOf="@id/matchNumber"
-        style="@style/match" />
+        app:layout_constraintTop_toTopOf="@id/matchNumber" />
 
     <TextView
         android:id="@+id/participant2"
+        style="@style/match"
         android:layout_width="@dimen/player_name_width"
-        android:layout_height="30dp"
-        android:paddingLeft="5dp"
+        android:layout_height="@dimen/match_view_half_height"
         android:gravity="center_vertical"
+        android:paddingLeft="5dp"
         android:text="Player 2"
         app:layout_constraintLeft_toRightOf="@+id/seed2"
-        app:layout_constraintTop_toBottomOf="@id/participant1"
-        style="@style/match" />
+        app:layout_constraintTop_toBottomOf="@id/participant1" />
+
+    <TextView
+        android:id="@+id/player1_score"
+        style="@style/match"
+        android:layout_width="@dimen/player_seed_width"
+        android:layout_height="@dimen/match_view_half_height"
+        android:gravity="center"
+        android:text="-"
+        app:layout_constraintStart_toEndOf="@id/participant1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/player2_score"
+        style="@style/match"
+        android:layout_width="@dimen/player_seed_width"
+        android:layout_height="@dimen/match_view_half_height"
+        android:gravity="center"
+        android:text="-"
+        app:layout_constraintStart_toEndOf="@id/participant1"
+        app:layout_constraintTop_toBottomOf="@id/player1_score" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
