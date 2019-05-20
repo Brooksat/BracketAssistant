@@ -12,7 +12,7 @@ public class Participant {
     final static String SEED = "participant[seed]=";
 
     @SerializedName("id")
-    int id;
+    String id;
     @SerializedName("seed")
     private int seed;
     @SerializedName("display_name")
@@ -44,11 +44,11 @@ public class Participant {
         }
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

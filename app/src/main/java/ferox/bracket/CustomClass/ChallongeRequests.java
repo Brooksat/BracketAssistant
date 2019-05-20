@@ -61,9 +61,9 @@ public class ChallongeRequests {
         return new APIRequest(url, Request.Method.POST);
     }
 
-    static public APIRequest tournamentShow(String tournamentURL) {
+    static public APIRequest tournamentShow(String tournamentID) {
         String requestURL = API_URL;
-        requestURL += "/" + tournamentURL;
+        requestURL += "/" + tournamentID;
         requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
         requestURL += "&include_matches=1&include_participants=1";
         return new APIRequest(requestURL, Request.Method.GET);
@@ -76,6 +76,30 @@ public class ChallongeRequests {
         requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
         requestURL += tournament.getSettings();
         return new APIRequest(requestURL, Request.Method.PUT);
+    }
+
+    static public APIRequest tournamentStart(String id) {
+        String requestURL = API_URL;
+        requestURL += "/" + id;
+        requestURL += "/start";
+        requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
+        return new APIRequest(requestURL, Request.Method.POST);
+    }
+
+    static public APIRequest tournamentFinalize(String id) {
+        String requestURL = API_URL;
+        requestURL += "/" + id;
+        requestURL += "/finalize";
+        requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
+        return new APIRequest(requestURL, Request.Method.POST);
+    }
+
+    static public APIRequest tournamentReset(String id) {
+        String requestURL = API_URL;
+        requestURL += "/" + id;
+        requestURL += "/reset";
+        requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
+        return new APIRequest(requestURL, Request.Method.POST);
     }
 
     /*
@@ -147,13 +171,23 @@ public class ChallongeRequests {
         return new APIRequest(url, Request.Method.POST);
     }
 
+    static public APIRequest matchShow(Match match) {
+        String url = API_URL + "/";
+        url += match.getTournamentID();
+        url += MATCHES + "/";
+        url += match.getId();
+        url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
+        return new APIRequest(url, Request.Method.GET);
+    }
+
     static public APIRequest matchUpdate(Match match) {
         String url = API_URL + "/";
         url += match.getTournamentID();
         url += MATCHES + "/";
         url += match.getId();
-        url += JSON_TAG + API_KEY_SEGMENT + apiKey;
-        return new APIRequest(url, Request.Method.POST);
+        url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
+        url += match.getSettings();
+        return new APIRequest(url, Request.Method.PUT);
     }
 
 

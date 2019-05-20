@@ -18,12 +18,12 @@ public class ParticipantSettings extends Participant {
     }
 
     @Override
-    public int getId() {
+    public String getId() {
         return super.getId();
     }
 
     @Override
-    public void setId(int id) {
+    public void setId(String id) {
         super.setId(id);
     }
 

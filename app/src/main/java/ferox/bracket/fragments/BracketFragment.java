@@ -2,6 +2,7 @@ package ferox.bracket.fragments;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Space;
@@ -148,6 +150,8 @@ public class BracketFragment extends Fragment {
 
     private Tournament tournament;
 
+    private Match lastSearchedMatch;
+
 
     @Nullable
     @Override
@@ -193,6 +197,8 @@ public class BracketFragment extends Fragment {
         if (tournament.isSearched()) {
             actionButton.setVisibility(View.GONE);
         }
+
+        lastSearchedMatch = new Match();
 
         oldType = "default";
 
@@ -355,22 +361,54 @@ public class BracketFragment extends Fragment {
 
     }
 
+    private void sendStartRequest() {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                sendTournamentRequest();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+
+            }
+        }, ChallongeRequests.tournamentStart(tournament.getId()));
+    }
+
+    private void sendFinalizeRequest() {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                sendTournamentRequest();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+
+            }
+        }, ChallongeRequests.tournamentFinalize(tournament.getId()));
+    }
 
     private void setActionButton() {
         switch (tournament.getState()) {
             case CHECKED_IN:
             case PENDING:
+                actionButton.setVisibility(View.VISIBLE);
                 actionButton.setText("Start");
+                actionButton.setOnClickListener(v -> sendStartRequest());
                 break;
             case CHECKING_IN:
+                actionButton.setVisibility(View.VISIBLE);
                 actionButton.setText("Check In");
                 break;
             case UNDERWAY:
             case COMPLETE:
-                actionButton.setText("------");
+                actionButton.setVisibility(View.GONE);
                 break;
             case AWAITING_REVIEW:
+                actionButton.setVisibility(View.VISIBLE);
                 actionButton.setText("Finalize");
+                actionButton.setOnClickListener(v -> sendFinalizeRequest());
                 break;
             default:
                 actionButton.setText("-----");
@@ -674,70 +712,137 @@ public class BracketFragment extends Fragment {
 
     }
 
-    private void setMatchView(MatchView match, Match matchInfo) {
+    private void setMatchView(MatchView matchView, Match match) {
 
-        match.setmMatchId(matchInfo.getId());
-        match.setMatch(matchInfo);
+        matchView.setmMatchId(match.getId());
+        matchView.setMatch(match);
 
-        TextView matchNumber = match.findViewById(R.id.matchNumber);
-        matchNumber.setText(String.valueOf(matchInfo.getIdentifier()));
-        TextView P1Seed = match.findViewById(R.id.player1_seed);
-        P1Seed.setText(String.valueOf(matchInfo.getP1Seed()));
-        TextView P2Seed = match.findViewById(R.id.player2_seed);
-        P2Seed.setText(String.valueOf(matchInfo.getP2Seed()));
-        TextView P1Name = match.findViewById(R.id.player1_name);
-        P1Name.setText(matchInfo.getP1().getName());
-        TextView P2Name = match.findViewById(R.id.player2_name);
-        P2Name.setText(matchInfo.getP2().getName());
-        TextView P1Score = match.findViewById(R.id.player1_score);
-        P1Score.setText(matchInfo.getP1Score());
-        TextView P2Score = match.findViewById(R.id.player2_score);
-        P2Score.setText(matchInfo.getP2Score());
+        TextView matchNumber = matchView.findViewById(R.id.matchNumber);
+        matchNumber.setText(String.valueOf(match.getIdentifier()));
+        TextView P1Seed = matchView.findViewById(R.id.player1_seed);
+        P1Seed.setText(String.valueOf(match.getP1Seed()));
+        TextView P2Seed = matchView.findViewById(R.id.player2_seed);
+        P2Seed.setText(String.valueOf(match.getP2Seed()));
+        TextView P1Name = matchView.findViewById(R.id.player1_name);
+        P1Name.setText(match.getP1().getName());
+        TextView P2Name = matchView.findViewById(R.id.player2_name);
+        P2Name.setText(match.getP2().getName());
+        TextView P1Score = matchView.findViewById(R.id.player1_score);
+        P1Score.setText(match.getP1Score());
+        TextView P2Score = matchView.findViewById(R.id.player2_score);
+        P2Score.setText(match.getP2Score());
 
+        P1Score.setBackgroundTintList(getResources().getColorStateList(R.color.menu_background_light));
+        P2Score.setBackgroundTintList(getResources().getColorStateList(R.color.menu_background_light));
 
-        match.setOnLongClickListener(v -> {
-            buildMatchReportDialog(match.getMatch());
-            return true;
-        });
+        if (match.getState().equals(Match.COMPLETE)) {
+            if (match.getWinnerID().equals(match.getP1().getId())) {
+                P1Score.setBackgroundTintList(getResources().getColorStateList(R.color.menu_title));
+                P2Score.setBackgroundTintList(getResources().getColorStateList(R.color.menu_background_light));
+            } else if (match.getWinnerID().equals(match.getP2().getId())) {
+                P2Score.setBackgroundTintList(getResources().getColorStateList(R.color.menu_title));
+                P1Score.setBackgroundTintList(getResources().getColorStateList(R.color.menu_background_light));
+            }
+        }
+
+        if (match.getState().equals(Match.OPEN) || match.getState().equals(Match.COMPLETE)) {
+            matchView.setOnLongClickListener(v -> {
+                buildMatchReportDialog(matchView.getMatch());
+                return true;
+            });
+        }
         //match.setOnClickListener(v -> Toast.makeText(getContext(), match.getmMatchId(), Toast.LENGTH_SHORT).show());
 
 
     }
 
     private void buildMatchReportDialog(Match match) {
+
+        AlertDialog dialog = makeMatchReportDialogBuilder(match).create();
+
+
+        setPositiveButton(dialog, match);
+
+
+        dialog.show();
+    }
+
+    private AlertDialog.Builder makeMatchReportDialogBuilder(Match match) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Report Score");
+        builder.setNegativeButton("Cancel", (dialog1, which) -> {
+        });
+        builder.setPositiveButton("Submit", (dialog, which) -> {
+        });
+
+        return builder;
+    }
+
+    private void setPositiveButton(AlertDialog dialog, Match match) {
         View dialogueLayout = getLayoutInflater().inflate(R.layout.match_report_dialog, null);
         TextView p1Name = dialogueLayout.findViewById(R.id.match_report_player1_name);
         p1Name.setText(match.getP1().getName());
         TextView p2Name = dialogueLayout.findViewById(R.id.match_report_player2_name);
         p2Name.setText(match.getP2().getName());
+        EditText p1Score = dialogueLayout.findViewById(R.id.match_report_player1_score);
+        EditText p2Score = dialogueLayout.findViewById(R.id.match_report_player2_score);
         MatchReportButton p1Win = dialogueLayout.findViewById(R.id.match_report_P1_winner);
         MatchReportButton p2Win = dialogueLayout.findViewById(R.id.match_report_P2_winner);
+        LinearLayout errorsLayout = dialogueLayout.findViewById(R.id.match_report_dialog_error_layout);
         setUpMatchReportButtons(p1Win, p2Win);
-        builder.setView(dialogueLayout);
-        builder.setNegativeButton("Cancel", (dialog1, which) -> {
-        });
-        if (match.getState().equals(Match.OPEN)) {
-            builder.setPositiveButton("Submit", (dialog1, which) -> {
-            });
-        } else if (match.getState().equals(Match.COMPLETE)) {
-            builder.setPositiveButton("Update", (dialog1, which) -> {
-            });
-        } else if (match.getState().equals(Match.PENDING)) {
-            builder.setNegativeButton("Back", (dialog, which) -> {
-
-            });
+        dialog.setView(dialogueLayout);
+        if (match.getWinnerID().equals(match.getP1().getId())) {
+            p1Win.setWon(true);
+            p2Win.setWon(false);
+        } else if (match.getWinnerID().equals(match.getP2().getId())) {
+            p2Win.setWon(true);
+            p1Win.setWon(false);
+        } else {
+            p1Win.setWon(false);
         }
 
-
-        AlertDialog dialog = builder.create();
         dialog.setOnShowListener(dialog1 -> {
-
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(v -> {
+                match.setP1Score(p1Score.getText().toString());
+                match.setP2Score(p2Score.getText().toString());
+                if (p1Win.isWon()) {
+                    match.setWinnerID(match.getP1().getId());
+                } else if (p2Win.isWon()) {
+                    match.setWinnerID(match.getP2().getId());
+                }
+                sendMatchUpdateRequest(match, errorsLayout, dialog);
+            });
 
         });
-        dialog.show();
+
+
     }
+
+    private void sendMatchUpdateRequest(Match match, LinearLayout errorsLayout, AlertDialog dialog) {
+        dialog.dismiss();
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                sendTournamentRequest();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                errorsLayout.removeAllViews();
+                for (int i = 0; i < errorList.size(); i++) {
+                    TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                    error.setText(String.valueOf(errorList.get(i)));
+                    error.setSelected(true);
+                    error.setTextColor(Color.RED);
+                    errorsLayout.addView(error);
+                }
+            }
+        }, ChallongeRequests.matchUpdate(match));
+    }
+
+
+
 
     private void setUpMatchReportButtons(MatchReportButton p1, MatchReportButton p2) {
         p1.setWon(true);
@@ -981,86 +1086,7 @@ public class BracketFragment extends Fragment {
         return bcv;
     }
 
-    private void makeBracketConnectors(int numMatches, int multiplier, ViewGroup vg, int modifier) {
 
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout bracketConnector = new LinearLayout(this.getContext());
-        bracketConnector.setLayoutParams(layoutParams);
-        bracketConnector.setOrientation(LinearLayout.VERTICAL);
-
-        //for non grand finals rounds
-        if (modifier == 0) {
-            for (int i = 0; i < numMatches / 2; i++) {
-                Space space = new Space(this.getContext());
-                Space space2 = new Space(this.getContext());
-                Space space3 = new Space(this.getContext());
-                space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 1)));
-                space2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 1)));
-                space3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        mHeightUnit * 2));
-
-                bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null
-                        , mHeightUnit * (int) Math.pow(2, multiplier + 1)
-                        , bracketConnectorView.MODE_TOP
-                        , "");
-                bracketConnectorView bcv2 = new bracketConnectorView(this.getContext(), null
-                        , mHeightUnit * (int) Math.pow(2, multiplier + 1)
-                        , bracketConnectorView.MODE_BOTTOM
-                        , "");
-
-
-                bracketConnector.addView(space);
-                bracketConnector.addView(bcv);
-                bracketConnector.addView(bcv2);
-                bracketConnector.addView(space2);
-                bracketConnector.addView(space3);
-
-            }
-        }
-        //grandfinals
-        else if (modifier == 1) {
-            Space space = new Space(this.getContext());
-            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                    mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 1)));
-            bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null, mHeightUnit, bracketConnectorView.MODE_TOP, "");
-            bracketConnector.addView(space);
-            bracketConnector.addView(bcv);
-        }
-        //grandfinals reset
-        else if (modifier == 2) {
-            Space space = new Space(this.getContext());
-            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                    mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2 + 1)));
-            bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null, mHeightUnit * 2, bracketConnectorView.MODE_MIDDLE, "");
-            bracketConnector.addView(space);
-            bracketConnector.addView(bcv);
-        }
-        //losers rounds
-        else if (modifier == 4) {
-
-            if (multiplier != 0) {
-                Space space = new Space(this.getContext());
-                space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2)));
-                bracketConnector.addView(space);
-            }
-            for (int i = 0; i < numMatches; i++) {
-                bracketConnectorView bcv = new bracketConnectorView(this.getContext(), null, mHeightUnit * 2, bracketConnectorView.MODE_MIDDLE, "");
-                Space space = new Space(this.getContext());
-                space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        (mHeightUnit * ((int) Math.pow(2, multiplier + 2) - 2))));
-                bracketConnector.addView(bcv);
-                bracketConnector.addView(space);
-
-
-            }
-        }
-        vg.addView(bracketConnector);
-    }
 
     //Constructs round headers
     private void setRoundHeaders() {
@@ -1165,11 +1191,6 @@ public class BracketFragment extends Fragment {
 
     }
 
-    public void setGrandsResetInvis() {
-        if (tournament.getType().equals(DOUBLE_ELIM)) {
-            bracketWinners.getChildAt(bracketWinners.getChildCount() - 1).setVisibility(View.INVISIBLE);
-        }
-    }
 
 
     public LinearLayout getRoundWinners() {

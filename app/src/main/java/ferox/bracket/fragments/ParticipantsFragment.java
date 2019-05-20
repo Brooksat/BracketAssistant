@@ -162,7 +162,7 @@ public class ParticipantsFragment extends Fragment {
             Participant player = new Participant();
             JsonObject participantObject = participant.getAsJsonObject().get("participant").getAsJsonObject();
 
-            player.setId(participantObject.get("id").getAsInt());
+            player.setId(participantObject.get("id").getAsString());
             player.setName(participantObject.get("name").getAsString());
             player.setSeed(participantObject.get("seed").getAsInt());
             player.setTournamentID(participantObject.get("tournament_id").getAsString());
@@ -176,6 +176,7 @@ public class ParticipantsFragment extends Fragment {
     }
 
     //TODO If players puts in a seed out of bounds than seed field should be removed
+    //TODO disable delete and other function if tournament has ended
 
     private void makeAddParticipantDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -194,7 +195,7 @@ public class ParticipantsFragment extends Fragment {
         AlertDialog dialog = builder.create();
         dialog.setOnShowListener(dialog1 -> {
 
-            Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             button.setOnClickListener(v -> {
                 Participant player = new Participant();
                 player.setName(nameText.getText().toString());

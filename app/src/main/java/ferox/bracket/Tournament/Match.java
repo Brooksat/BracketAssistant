@@ -107,6 +107,18 @@ public class Match {
 
     }
 
+    //TODO gotta format score_csv
+    public String getSettings() {
+        String s = "match[scores_csv]=" + p1Score + "-" + p2Score + "&";
+        s += "match[winner_id]=" + winnerID;
+        return s;
+    }
+
+    public String formatScore() {
+        String s = "";
+        return s;
+    }
+
     /**
      * When deserializing JSON sets any JsonNull fields to their default values, therefore settings
      * string to null, this methods changes String fields to ""
