@@ -14,7 +14,7 @@
         <activity android:name=".Activity.TabTestActivity" />
         <activity
             android:name=".Activity.MainActivity"
-            android:label="Sign In">
+            android:label="Ferox's Bracket Assistant">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

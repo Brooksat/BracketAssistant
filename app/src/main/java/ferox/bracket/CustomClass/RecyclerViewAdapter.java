@@ -27,6 +27,8 @@ import ferox.bracket.R;
 import ferox.bracket.Tournament.Participant;
 import ferox.bracket.Tournament.ParticipantSettings;
 
+//TODO fix refresh
+//TODO need to disable seed switching if tournament had started/invalid api
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.CustomViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
@@ -78,7 +80,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                 if (viewHolder.getAdapterPosition() > -1) {
                     Participant player = players.get(viewHolder.getAdapterPosition());
-                    //TODO handle time errors and add drag down to refresh list to make sure list is accurate
+                    //TODO add drag down to refresh list to make sure list is accurate
 
                     CustomViewHolder cvh = (CustomViewHolder) viewHolder;
 

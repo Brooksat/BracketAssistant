@@ -6,6 +6,12 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 public class Match {
+
+    public final static String PENDING = "pending";
+    public final static String OPEN = "open";
+    public final static String COMPLETE = "complete";
+    public final static String NONE = "";
+
     @SerializedName("id")
     @Expose
     private String id;

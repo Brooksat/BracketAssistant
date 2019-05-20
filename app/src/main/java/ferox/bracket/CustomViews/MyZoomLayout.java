@@ -135,7 +135,7 @@ public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.On
                     break;
                 }
 
-                //TODO switch from zoom to drag doesnt work
+
                 case MotionEvent.ACTION_MOVE: {
 //                    Log.d("ActionMove", String.valueOf(mode));
 //                    Log.d("PointerCount", String.valueOf(event.getPointerCount()));
@@ -360,7 +360,7 @@ public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.On
         //Log.i(TAG, "onScaleEnd");
     }
 
-    //TODO zooming needs to zoom in on focal point
+
     private void applyScaleAndTranslation(View child) {
         if (!pivotWasSet) {
             child.setPivotX(0);

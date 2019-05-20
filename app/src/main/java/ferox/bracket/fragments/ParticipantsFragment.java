@@ -82,7 +82,7 @@ public class ParticipantsFragment extends Fragment {
                 switch (item.getTitle().toString()) {
                     case "Add": {
 
-                        makeAddParticipantDialog2();
+                        makeAddParticipantDialog();
 
                         break;
                     }
@@ -176,57 +176,8 @@ public class ParticipantsFragment extends Fragment {
     }
 
     //TODO If players puts in a seed out of bounds than seed field should be removed
+
     private void makeAddParticipantDialog() {
-        AlertDialog.Builder addParticipantDialog = new AlertDialog.Builder(getContext());
-        addParticipantDialog.setIcon(R.mipmap.ic_launcher);
-        addParticipantDialog.setTitle("Add Participant");
-        View dialogueLayout = getLayoutInflater().inflate(R.layout.fragment_participant_add_dialog, null);
-        LinearLayout addDialogLayout = dialogueLayout.findViewById(R.id.participant_add_dialog_layout);
-        EditText nameText = dialogueLayout.findViewById(R.id.new_participant_name);
-        EditText seedText = dialogueLayout.findViewById(R.id.new_participant_seed);
-        addParticipantDialog.setView(dialogueLayout);
-        addParticipantDialog.setPositiveButton("OK", null)
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                })
-                .create();
-
-
-//            Participant player = new Participant();
-//            player.setName(nameText.getText().toString());
-//            try {
-//                player.setSeed(Integer.parseInt(seedText.getText().toString()));
-//            } catch (NumberFormatException e) {
-//                e.printStackTrace();
-//                Toast.makeText(ParticipantsFragment.this.getContext(), "Not an Integer", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            ChallongeRequests.sendRequest(new VolleyCallback() {
-//                @Override
-//                public void onSuccess(String response) {
-//                    ChallongeRequests.sendRequest(new VolleyCallback() {
-//                        @Override
-//                        public void onSuccess(String response) {
-//                            initPlayerList(response);
-//
-//                        }
-//
-//                        @Override
-//                        public void onErrorResponse(ArrayList errorResponse) {
-//
-//                        }
-//                    }, ChallongeRequests.participantIndex(url));
-//                }
-//
-//                @Override
-//                public void onErrorResponse(ArrayList errorResponse) {
-//                    for (int i = 0; i < errorResponse.size(); i++) {
-//                        Log.d("participantAdd", errorResponse.get(i).toString());
-//                    }
-//                }
-//            }, ChallongeRequests.participantCreate(url, player));
-    }
-
-    private void makeAddParticipantDialog2() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Add Paricipant");
         View dialogueLayout = getLayoutInflater().inflate(R.layout.fragment_participant_add_dialog, null);

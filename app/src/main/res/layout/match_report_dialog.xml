@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/participant_add_dialog_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/match_report_player1_name"
+        style="@style/menu_h2"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="0dp"
+        android:text="Player 1"
+        app:layout_constraintEnd_toStartOf="@id/match_report_player1_score"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/match_report_player1_score"
+        style="@style/menu_edit_text"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:hint="0"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/match_report_player1_name"
+        app:layout_constraintTop_toTopOf="@id/match_report_player1_name" />
+
+    <TextView
+        android:id="@+id/match_report_player2_name"
+        style="@style/menu_h2"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="0dp"
+        android:text="Player 2"
+        app:layout_constraintEnd_toStartOf="@id/match_report_player2_score"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/match_report_player1_name" />
+
+    <EditText
+        android:id="@+id/match_report_player2_score"
+        style="@style/menu_edit_text"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:hint="0"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/match_report_player2_name"
+        app:layout_constraintTop_toTopOf="@id/match_report_player2_name" />
+
+    <ferox.bracket.CustomViews.MatchReportButton
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:id="@+id/match_report_P1_winner"
+        style="@style/menu_button"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="P1"
+        app:layout_constraintEnd_toStartOf="@id/match_report_P2_winner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/match_report_player2_name" />
+
+    <ferox.bracket.CustomViews.MatchReportButton
+        android:id="@+id/match_report_P2_winner"
+        style="@style/menu_button"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="P2"
+        android:backgroundTint="@color/menu_background_light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/match_report_P1_winner"
+        app:layout_constraintTop_toTopOf="@id/match_report_P1_winner" />
+
+
+    <LinearLayout
+        android:id="@+id/match_report_dialog_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/match_report_P1_winner" />
+</androidx.constraintlayout.widget.ConstraintLayout>

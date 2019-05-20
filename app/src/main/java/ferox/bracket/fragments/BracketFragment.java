@@ -1,5 +1,6 @@
 package ferox.bracket.fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +34,8 @@ import java.util.Objects;
 import ferox.bracket.CustomClass.ChallongeRequests;
 import ferox.bracket.CustomClass.StringJsonArrayPair;
 import ferox.bracket.CustomViews.LoadingView;
+import ferox.bracket.CustomViews.MatchReportButton;
+import ferox.bracket.CustomViews.MatchView;
 import ferox.bracket.CustomViews.MyZoomLayout;
 import ferox.bracket.CustomViews.bracketConnectorView;
 import ferox.bracket.Interface.VolleyCallback;
@@ -607,7 +609,7 @@ public class BracketFragment extends Fragment {
                 for (int j = 0; j < round.getChildCount(); j++) {
                     //must only set info for the visible constraintlayout/ignore unused matches
                     if (round.getChildAt(j) instanceof ConstraintLayout && round.getChildAt(j).getVisibility() == View.VISIBLE) {
-                        setMatchView((ConstraintLayout) round.getChildAt(j), matches.get(iterator));
+                        setMatchView((MatchView) round.getChildAt(j), matches.get(iterator));
                         iterator++;
                     }
                 }
@@ -623,13 +625,13 @@ public class BracketFragment extends Fragment {
 
 
                 LinearLayout GF1 = (LinearLayout) bracketWinners.getChildAt(grandFinalsIndex);
-                ConstraintLayout GF1Match = (ConstraintLayout) GF1.getChildAt(1);
+                MatchView GF1Match = (MatchView) GF1.getChildAt(1);
                 setMatchView(GF1Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(0));
 
 
                 if (tournament.getGrandFinalsModifier().equals(GRANDS_DEFAULT) && winnersRounds.get(winnersRounds.size() - 1).getMatchList().size() > 1) {
                     LinearLayout GF2 = (LinearLayout) bracketWinners.getChildAt(grandFinalsIndex + 2);
-                    ConstraintLayout GF2Match = (ConstraintLayout) GF2.getChildAt(1);
+                    MatchView GF2Match = (MatchView) GF2.getChildAt(1);
                     setMatchView(GF2Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(1));
                 } else if (!tournament.getGrandFinalsModifier().equals(GRANDS_SINGLE_MATCH)) {
 
@@ -648,7 +650,7 @@ public class BracketFragment extends Fragment {
                     //must only set info for the visible constraintlayout/ignore unused matches
                     if (round.getChildAt(j) instanceof ConstraintLayout && round.getChildAt(j).getVisibility() == View.VISIBLE) {
 
-                        setMatchView((ConstraintLayout) round.getChildAt(j), matches.get(iterator));
+                        setMatchView((MatchView) round.getChildAt(j), matches.get(iterator));
                         iterator++;
                     }
                 }
@@ -662,7 +664,7 @@ public class BracketFragment extends Fragment {
                 for (int j = 0; j < round.getChildCount(); j++) {
                     //must only set info for the visible constraintlayout/ignore unused matches
                     if (round.getChildAt(j) instanceof ConstraintLayout) {
-                        setMatchView((ConstraintLayout) round.getChildAt(j), matches.get(iterator));
+                        setMatchView((MatchView) round.getChildAt(j), matches.get(iterator));
                         iterator++;
                     }
                 }
@@ -672,29 +674,94 @@ public class BracketFragment extends Fragment {
 
     }
 
-    private void setMatchView(ConstraintLayout match, Match matchInfo) {
+    private void setMatchView(MatchView match, Match matchInfo) {
 
+        match.setmMatchId(matchInfo.getId());
+        match.setMatch(matchInfo);
 
         TextView matchNumber = match.findViewById(R.id.matchNumber);
-
-        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), matchInfo.getP1PrereqIdentifier() + "-" + matchInfo.getP2PrereqIdentifier(), Toast.LENGTH_SHORT).show());
-
         matchNumber.setText(String.valueOf(matchInfo.getIdentifier()));
-        TextView P1Seed = match.findViewById(R.id.seed1);
+        TextView P1Seed = match.findViewById(R.id.player1_seed);
         P1Seed.setText(String.valueOf(matchInfo.getP1Seed()));
-        TextView P2Seed = match.findViewById(R.id.seed2);
+        TextView P2Seed = match.findViewById(R.id.player2_seed);
         P2Seed.setText(String.valueOf(matchInfo.getP2Seed()));
-        TextView P1Name = match.findViewById(R.id.participant1);
+        TextView P1Name = match.findViewById(R.id.player1_name);
         P1Name.setText(matchInfo.getP1().getName());
-        TextView P2Name = match.findViewById(R.id.participant2);
+        TextView P2Name = match.findViewById(R.id.player2_name);
         P2Name.setText(matchInfo.getP2().getName());
         TextView P1Score = match.findViewById(R.id.player1_score);
         P1Score.setText(matchInfo.getP1Score());
         TextView P2Score = match.findViewById(R.id.player2_score);
         P2Score.setText(matchInfo.getP2Score());
 
-        //TODO set match ID
 
+        match.setOnLongClickListener(v -> {
+            buildMatchReportDialog(match.getMatch());
+            return true;
+        });
+        //match.setOnClickListener(v -> Toast.makeText(getContext(), match.getmMatchId(), Toast.LENGTH_SHORT).show());
+
+
+    }
+
+    private void buildMatchReportDialog(Match match) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Report Score");
+        View dialogueLayout = getLayoutInflater().inflate(R.layout.match_report_dialog, null);
+        TextView p1Name = dialogueLayout.findViewById(R.id.match_report_player1_name);
+        p1Name.setText(match.getP1().getName());
+        TextView p2Name = dialogueLayout.findViewById(R.id.match_report_player2_name);
+        p2Name.setText(match.getP2().getName());
+        MatchReportButton p1Win = dialogueLayout.findViewById(R.id.match_report_P1_winner);
+        MatchReportButton p2Win = dialogueLayout.findViewById(R.id.match_report_P2_winner);
+        setUpMatchReportButtons(p1Win, p2Win);
+        builder.setView(dialogueLayout);
+        builder.setNegativeButton("Cancel", (dialog1, which) -> {
+        });
+        if (match.getState().equals(Match.OPEN)) {
+            builder.setPositiveButton("Submit", (dialog1, which) -> {
+            });
+        } else if (match.getState().equals(Match.COMPLETE)) {
+            builder.setPositiveButton("Update", (dialog1, which) -> {
+            });
+        } else if (match.getState().equals(Match.PENDING)) {
+            builder.setNegativeButton("Back", (dialog, which) -> {
+
+            });
+        }
+
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(dialog1 -> {
+
+
+        });
+        dialog.show();
+    }
+
+    private void setUpMatchReportButtons(MatchReportButton p1, MatchReportButton p2) {
+        p1.setWon(true);
+        p2.setWon(false);
+        p1.setOnClickListener(v -> {
+            if (p2.isWon()) {
+                p2.setWon(false);
+                p1.setWon(true);
+            } else if (!p2.isWon() && p1.isWon()) {
+                p1.setWon(false);
+            } else {
+                p1.setWon(true);
+            }
+        });
+        p2.setOnClickListener(v -> {
+            if (p1.isWon()) {
+                p1.setWon(false);
+                p2.setWon(true);
+            } else if (!p1.isWon() && p2.isWon()) {
+                p2.setWon(false);
+            } else {
+                p2.setWon(true);
+            }
+        });
 
     }
 
@@ -738,7 +805,7 @@ public class BracketFragment extends Fragment {
     private void makeThirdPlaceMatch() {
         LinearLayout finalRound = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 1);
         Space space = makeSpaceComponent(2);
-        ConstraintLayout thirdPlaceMatch = makeMatchComponent();
+        MatchView thirdPlaceMatch = makeMatchComponent();
         finalRound.addView(space);
         finalRound.addView(thirdPlaceMatch);
     }
@@ -893,11 +960,10 @@ public class BracketFragment extends Fragment {
 
 
     // get match layout
-    private ConstraintLayout makeMatchComponent() {
-        LayoutInflater inflater = getLayoutInflater();
-        assert inflater != null;
-        ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
-        return match;
+    private MatchView makeMatchComponent() {
+//        LayoutInflater inflater = getLayoutInflater();
+//        assert inflater != null;
+        return new MatchView(getContext());
     }
 
     //get space
@@ -1066,7 +1132,6 @@ public class BracketFragment extends Fragment {
             if (firstRoundLayout.getChildCount() > secondRoundLayout.getChildCount()) {
                 for (int i = 0; i < secondRoundMatches.size(); i++) {
 
-                    //TODO i dont think using qualifyRound/postQualRound is needed anymore
 
                     if (secondRoundMatches.get(i).isP1IsPrereqLoser()) {
                         //index of of matchLayout and BCV corresponding to current second round index

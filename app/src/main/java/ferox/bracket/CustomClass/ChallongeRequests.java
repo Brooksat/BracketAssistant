@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import ferox.bracket.Interface.VolleyCallback;
+import ferox.bracket.Tournament.Match;
 import ferox.bracket.Tournament.Participant;
 import ferox.bracket.Tournament.ParticipantSettings;
 import ferox.bracket.Tournament.Tournament;
@@ -33,6 +34,7 @@ public class ChallongeRequests {
     static final private String JSON_TAG = ".json";
     static final private String API_KEY_SEGMENT = "?api_key=";
     static final private String PARTICIPANTS = "/participants";
+    static final private String MATCHES = "/matches";
 
     static private String apiKey;
 
@@ -105,8 +107,7 @@ public class ChallongeRequests {
         url += "/" + name;
         url += "/participants";
         url += JSON_TAG + API_KEY_SEGMENT + apiKey;
-        APIRequest request = new APIRequest(url, Request.Method.GET);
-        return request;
+        return new APIRequest(url, Request.Method.GET);
     }
 
     static public APIRequest participantCreate(String tournamentURL, Participant participant) {
@@ -114,8 +115,7 @@ public class ChallongeRequests {
         url += "/" + tournamentURL;
         url += PARTICIPANTS + JSON_TAG + API_KEY_SEGMENT + apiKey;
         url += participant.getSettings();
-        APIRequest request = new APIRequest(url, Request.Method.POST);
-        return request;
+        return new APIRequest(url, Request.Method.POST);
     }
 
     static public APIRequest participantUpdate(String tournamentUrl, String id, ParticipantSettings settings) {
@@ -126,8 +126,7 @@ public class ChallongeRequests {
         url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
         url += settings.getSettings();
 
-        APIRequest request = new APIRequest(url, Request.Method.PUT);
-        return request;
+        return new APIRequest(url, Request.Method.PUT);
     }
 
     static public APIRequest participantDestroy(String tournamentURL, String ID) {
@@ -136,8 +135,7 @@ public class ChallongeRequests {
         url += PARTICIPANTS;
         url += "/" + ID;
         url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
-        APIRequest request = new APIRequest(url, Request.Method.DELETE);
-        return request;
+        return new APIRequest(url, Request.Method.DELETE);
     }
 
     static public APIRequest participantRandomize(String tournamentURL) {
@@ -146,8 +144,16 @@ public class ChallongeRequests {
         url += PARTICIPANTS;
         url += "/randomize";
         url += JSON_TAG + API_KEY_SEGMENT + apiKey;
-        APIRequest request = new APIRequest(url, Request.Method.POST);
-        return request;
+        return new APIRequest(url, Request.Method.POST);
+    }
+
+    static public APIRequest matchUpdate(Match match) {
+        String url = API_URL + "/";
+        url += match.getTournamentID();
+        url += MATCHES + "/";
+        url += match.getId();
+        url += JSON_TAG + API_KEY_SEGMENT + apiKey;
+        return new APIRequest(url, Request.Method.POST);
     }
 
 

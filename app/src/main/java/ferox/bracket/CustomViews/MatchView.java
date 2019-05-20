@@ -1,15 +1,15 @@
 package ferox.bracket.CustomViews;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import ferox.bracket.R;
+import ferox.bracket.Tournament.Match;
 
 
 public class MatchView extends ConstraintLayout {
@@ -21,103 +21,115 @@ public class MatchView extends ConstraintLayout {
     String mP2Seed;
     String mP1Name = "";
     String mP2Name = "";
-    TextView tMatchNumber;
-    TextView tP1Seed;
-    TextView tP2Seed;
-    TextView tP1Name;
-    TextView tP2Name;
+    TextView MatchNumber;
+    TextView P1Seed;
+    TextView P2Seed;
+    TextView P1Name;
+    TextView P2Name;
+    TextView P1MatchScore;
+    TextView P2MatchScore;
+    Match match;
 
 
     public MatchView(Context context) {
         super(context);
-
+        Log.d("MatchConstructor1", "Called");
         init(context, null);
+
     }
 
     public MatchView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Log.d("MatchConstructor2", "Called");
 
-        init(context, attrs);
     }
 
     public MatchView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        Log.d("MatchConstructor3", "Called");
         init(context, attrs);
+
     }
 
-    public MatchView(Context context, @Nullable AttributeSet attrs, String matchNumber, String P1Seed, String P2Seed, String P1Name, String P2Name) {
-        super(context, attrs);
-        mMatchNumber = matchNumber;
-        mP1Seed = P1Seed;
-        mP2Seed = P2Seed;
-        mP1Name = P1Name;
-        mP2Name = P2Name;
 
-        init2(context);
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
     }
-
 
     private void init(Context context, AttributeSet attrs) {
         mContext = context;
 
-        final TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.MatchView);
+//        final TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.MatchView);
+//
+//        mMatchNumber = ta.getString(R.styleable.MatchView_matchNumber);
+//        mP1Seed = ta.getString(R.styleable.MatchView_player1Seed);
+//        mP2Seed = ta.getString(R.styleable.MatchView_player2Seed);
+//        mP1Name = ta.getString(R.styleable.MatchView_player1Name);
+//        mP2Name = ta.getString(R.styleable.MatchView_player2Name);
+//
+//        ta.recycle();
 
-        mMatchNumber = ta.getString(R.styleable.MatchView_matchNumber);
-        mP1Seed = ta.getString(R.styleable.MatchView_player1Seed);
-        mP2Seed = ta.getString(R.styleable.MatchView_player2Seed);
-        mP1Name = ta.getString(R.styleable.MatchView_player1Name);
-        mP2Name = ta.getString(R.styleable.MatchView_player2Name);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        ta.recycle();
+        inflater.inflate(R.layout.match, this, true);
+        MatchNumber = findViewById(R.id.matchNumber);
+        P1Seed = findViewById(R.id.player1_seed);
+        P2Seed = findViewById(R.id.player2_seed);
+        P1Name = findViewById(R.id.player1_name);
+        P2Name = findViewById(R.id.player2_name);
+        P1MatchScore = findViewById(R.id.player1_score);
+        P2MatchScore = findViewById(R.id.player2_score);
+        mMatchId = "";
 
-        getMatchView(mMatchNumber, mP1Seed, mP2Seed, mP1Name, mP2Name);
+
+        // getMatchView(mMatchNumber, mP1Seed, mP2Seed, mP1Name, mP2Name);
     }
 
-    private void init2(Context context) {
-        TextView tMatchNumber = new TextView(getContext());
-        TextView tP1Seed = new TextView(getContext());
-        TextView tP2Seed = new TextView(getContext());
-        TextView tP1Name = new TextView(getContext());
-        TextView tP2Name = new TextView(getContext());
 
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
+//        int childSumWidth = 0;
+//        int childSumHeight = 0;
+//        int childHspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+//        int childWspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+//
+//        for (int i = 0; i < getChildCount(); i++) {
+//            View child = getChildAt(i);
+//            child.measure(childWspec, childHspec);
+//            int childWidth = child.getMeasuredWidth(),
+//                    childHeight = child.getMeasuredHeight();
+//            childSumWidth += childWidth;
+//            childSumHeight += childHeight;
+//        }
+//
+//        int desiredWSpec = MeasureSpec.makeMeasureSpec(childSumWidth, MeasureSpec.UNSPECIFIED);
+//        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight, MeasureSpec.EXACTLY);
+//        setMeasuredDimension(desiredWSpec, desiredHSpec);
+//        super.onMeasure(desiredWSpec, desiredHSpec);
+
+//        int width = getResources().getDimensionPixelSize(R.dimen.match_width);
+//        int height = getResources().getDimensionPixelSize(R.dimen.match_height);
+//        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+//        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+//        setMeasuredDimension(desiredWSpec, desiredHSpec);
+//        super.onMeasure(desiredWSpec, desiredHSpec);
+//    }
+
+//    @Override
+//    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+//        for(int i = 0 ; i < getChildCount() ; i++){
+//            getChildAt(i).layout(left, top, right, bottom);
+//        }
+//    }
+
+    public Context getmContext() {
+        return mContext;
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-
-        int width = getResources().getDimensionPixelSize(R.dimen.match_width);
-        int height = getResources().getDimensionPixelSize(R.dimen.match_height);
-        int desiredWSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
-        int desiredHSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-        setMeasuredDimension(desiredWSpec, desiredHSpec);
-        super.onMeasure(desiredWSpec, desiredHSpec);
-    }
-
-    private void getMatchView(String matchNumber, String P1Seed, String P2Seed, String P1Name, String P2Name){
-
-        System.out.println(matchNumber);
-        System.out.println(P1Seed);
-        System.out.println(P2Seed);
-        System.out.println(P1Name);
-        System.out.println(P2Name);
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ConstraintLayout constraintLayout = (ConstraintLayout) inflater.inflate(R.layout.match, this, true);
-
-        TextView textView1 = constraintLayout.findViewById(R.id.matchNumber);
-        textView1.setText(matchNumber);
-        TextView textView2 = constraintLayout.findViewById(R.id.seed1);
-        textView2.setText(P1Seed);
-        TextView textView3 = constraintLayout.findViewById(R.id.seed2);
-        textView3.setText(P2Seed);
-        TextView textView4 = constraintLayout.findViewById(R.id.participant1);
-        textView4.setText(P1Name);
-        TextView textView5 = constraintLayout.findViewById(R.id.participant2);
-        textView5.setText(P2Name);
-
-        addView(constraintLayout);
-        requestLayout();
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
     }
 
     public String getmMatchId() {
@@ -128,23 +140,107 @@ public class MatchView extends ConstraintLayout {
         this.mMatchId = mMatchId;
     }
 
-    public void setMatchNumberText(String s) {
-        tMatchNumber.setText(s);
+    public String getmMatchNumber() {
+        return mMatchNumber;
     }
 
-    public void setP1SeedText(String s) {
-        tP1Seed.setText(s);
+    public void setmMatchNumber(String mMatchNumber) {
+        this.mMatchNumber = mMatchNumber;
     }
 
-    public void setP2SeedText(String s) {
-        tP2Seed.setText(s);
+    public String getmP1Seed() {
+        return mP1Seed;
     }
 
-    public void setP1NameText(String s) {
-        tP1Name.setText(s);
+    public void setmP1Seed(String mP1Seed) {
+        this.mP1Seed = mP1Seed;
     }
 
-    public void setP2NameText(String s) {
-        tP2Name.setText(s);
+    public String getmP2Seed() {
+        return mP2Seed;
+    }
+
+    public void setmP2Seed(String mP2Seed) {
+        this.mP2Seed = mP2Seed;
+    }
+
+    public String getmP1Name() {
+        return mP1Name;
+    }
+
+    public void setmP1Name(String mP1Name) {
+        this.mP1Name = mP1Name;
+    }
+
+    public String getmP2Name() {
+        return mP2Name;
+    }
+
+    public void setmP2Name(String mP2Name) {
+        this.mP2Name = mP2Name;
+    }
+
+    public TextView getMatchNumber() {
+        return MatchNumber;
+    }
+
+    public void setMatchNumber(TextView matchNumber) {
+        this.MatchNumber = matchNumber;
+    }
+
+    public TextView getP1Seed() {
+        return P1Seed;
+    }
+
+    public void setP1Seed(TextView p1Seed) {
+        P1Seed = p1Seed;
+    }
+
+    public TextView getP2Seed() {
+        return P2Seed;
+    }
+
+    public void setP2Seed(TextView p2Seed) {
+        P2Seed = p2Seed;
+    }
+
+    public TextView getP1Name() {
+        return P1Name;
+    }
+
+    public void setP1Name(TextView p1Name) {
+        P1Name = p1Name;
+    }
+
+    public TextView getP2Name() {
+        return P2Name;
+    }
+
+    public void setP2Name(TextView p2Name) {
+        P2Name = p2Name;
+    }
+
+    public TextView getP1MatchScore() {
+        return P1MatchScore;
+    }
+
+    public void setP1MatchScore(TextView p1MatchScore) {
+        P1MatchScore = p1MatchScore;
+    }
+
+    public TextView getP2MatchScore() {
+        return P2MatchScore;
+    }
+
+    public void setP2MatchScore(TextView p2MatchScore) {
+        P2MatchScore = p2MatchScore;
+    }
+
+    public Match getMatch() {
+        return match;
+    }
+
+    public void setMatch(Match match) {
+        this.match = match;
     }
 }
