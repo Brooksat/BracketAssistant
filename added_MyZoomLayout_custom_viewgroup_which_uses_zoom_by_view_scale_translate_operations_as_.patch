@@ -1,0 +1,3968 @@
+Index: .idea/codeStyles/Project.xml
+===================================================================
+--- .idea/codeStyles/Project.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ .idea/codeStyles/Project.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
+@@ -1,29 +0,0 @@
+-<component name="ProjectCodeStyleConfiguration">
+-  <code_scheme name="Project" version="173">
+-    <Objective-C-extensions>
+-      <file>
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Import" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Macro" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Typedef" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Enum" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Constant" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Global" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Struct" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="FunctionPredecl" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Function" />
+-      </file>
+-      <class>
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Property" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Synthesize" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="InitMethod" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="StaticMethod" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="InstanceMethod" />
+-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="DeallocMethod" />
+-      </class>
+-      <extensions>
+-        <pair source="cpp" header="h" fileNamingConvention="NONE" />
+-        <pair source="c" header="h" fileNamingConvention="NONE" />
+-      </extensions>
+-    </Objective-C-extensions>
+-  </code_scheme>
+-</component>
+\ No newline at end of file
+Index: gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- gradle.properties	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ gradle.properties	(date 1553030531412)
+@@ -6,6 +6,8 @@
+ # http://www.gradle.org/docs/current/userguide/build_environment.html
+ # Specifies the JVM arguments used for the daemon process.
+ # The setting is particularly useful for tweaking memory settings.
++android.enableJetifier=true
++android.useAndroidX=true
+ org.gradle.jvmargs=-Xmx1536m
+ # When configured, Gradle will run in incubating parallel mode.
+ # This option should only be used with decoupled projects. More details, visit
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- build.gradle	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ build.gradle	(date 1556195737128)
+@@ -7,7 +7,7 @@
+         jcenter()
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:3.2.1'
++        classpath 'com.android.tools.build:gradle:3.4.0'
+         
+ 
+         // NOTE: Do not place your application dependencies here; they belong
+Index: app/src/main/res/menu/participants_fragments_options.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/participants_fragments_options.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/menu/participants_fragments_options.xml	(date 1556279445107)
+@@ -2,12 +2,12 @@
+ <menu xmlns:android="http://schemas.android.com/apk/res/android">
+     <item
+         android:id="@+id/participants_action_add"
+-        android:title="Add"></item>
++        android:name="Add"></item>
+     <item
+         android:id="@+id/participants_action_shuffle"
+-        android:title="Shuffle"></item>
++        android:name="Shuffle"></item>
+     <item
+         android:id="@+id/participants_action_refresh"
+-        android:title="Refresh"></item>
++        android:name="Refresh"></item>
+ 
+ </menu>
+\ No newline at end of file
+Index: app/src/main/res/menu/host_menu.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/host_menu.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/menu/host_menu.xml	(date 1556279445029)
+@@ -2,7 +2,7 @@
+ <menu xmlns:android="http://schemas.android.com/apk/res/android">
+ 
+     <item android:id="@+id/user"
+-        android:title="User"></item>
++        android:name="User"></item>
+     <item android:id="@+id/org"
+-        android:title="Organization"></item>
++        android:name="Organization"></item>
+ </menu>
+\ No newline at end of file
+Index: app/src/main/res/menu/format_menu.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/format_menu.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/menu/format_menu.xml	(date 1556279985212)
+@@ -1,11 +1,12 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <menu xmlns:android="http://schemas.android.com/apk/res/android">
+     <item android:id="@+id/single_elim"
+-        android:title="Single Elimination"></item>
++        android:name="Single Elimination"></item>
+     <item android:id="@+id/double_elim"
+-        android:title="Double Elimination"></item>
++        android:name="Double Elimination"></item>
+     <item android:id="@+id/round_robin"
+-        android:title="Round Robin"></item>
+-    <!--<item android:id="@+id/swiss"-->
+-    <!--android:title="Swiss"></item>-->
++        android:name="Round Robin"></item>
++    <item
++        android:id="@+id/swiss"
++        android:name="Swiss"></item>
+ </menu>
+\ No newline at end of file
+Index: gradle/wrapper/gradle-wrapper.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- gradle/wrapper/gradle-wrapper.properties	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ gradle/wrapper/gradle-wrapper.properties	(date 1556195737157)
+@@ -1,6 +1,6 @@
+-#Mon Sep 24 18:39:54 EDT 2018
++#Thu Apr 25 08:35:37 EDT 2019
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-4.6-all.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-5.1.1-all.zip
+Index: app/src/main/res/menu/bracket_navigation.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/bracket_navigation.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/menu/bracket_navigation.xml	(date 1556279445078)
+@@ -4,13 +4,13 @@
+     <item
+         android:id="@+id/nav_bracket"
+         android:icon="@drawable/ic_home_black_24dp"
+-        android:title="Bracket" />
++        android:name="Bracket" />
+     <item
+         android:id="@+id/nav_participants"
+         android:icon="@drawable/ic_person_add_black_24dp"
+-        android:title="Participants" />
++        android:name="Participants" />
+     <item
+         android:id="@+id/nav_settings"
+         android:icon="@drawable/ic_settings_black_24dp"
+-        android:title="Settings" />
++        android:name="Settings" />
+ </menu>
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_bracket.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_bracket.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/layout/activity_bracket.xml	(date 1556279985203)
+@@ -1,35 +1,41 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<androidx.coordinatorlayout.widget.CoordinatorLayout
+ 
+-    xmlns:android="http://schemas.android.com/apk/res/android"
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
++    android:orientation="vertical"
+     style="@style/menu_layout">
+ 
+-    <com.google.android.material.appbar.AppBarLayout
+-        android:id="@+id/app_bar"
+-        android:layout_width="match_parent"
+-        android:layout_height="wrap_content"
+-        app:layout_constraintLeft_toLeftOf="parent"
+-        app:layout_constraintTop_toTopOf="parent">
++    <androidx.coordinatorlayout.widget.CoordinatorLayout
++
++
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content">
++
++        <com.google.android.material.appbar.AppBarLayout
++            android:id="@+id/app_bar"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            app:layout_constraintLeft_toLeftOf="parent"
++            app:layout_constraintTop_toTopOf="parent">
+ 
+-        <com.google.android.material.tabs.TabLayout
+-            android:id="@+id/bracket_tab_layout"
+-            android:layout_width="match_parent"
+-            android:layout_height="@dimen/tab_layout_height"
+-            app:layout_scrollFlags="scroll|enterAlways|exitUntilCollapsed"
+-            style="@style/menu_tablayout" />
+-    </com.google.android.material.appbar.AppBarLayout>
++            <com.google.android.material.tabs.TabLayout
++                android:id="@+id/bracket_tab_layout"
++                style="@style/menu_tablayout"
++                android:layout_width="match_parent"
++                android:layout_height="@dimen/tab_layout_height" />
++        </com.google.android.material.appbar.AppBarLayout>
+ 
+ 
++    </androidx.coordinatorlayout.widget.CoordinatorLayout>
++
+     <ferox.bracket.ViewPagerNoHorsScroll
+         android:id="@+id/fragment_container"
+         android:layout_width="match_parent"
+-        android:layout_height="match_parent"
+-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+-
+-    </ferox.bracket.ViewPagerNoHorsScroll>
+-
+-
+-</androidx.coordinatorlayout.widget.CoordinatorLayout>
++        android:layout_height="0dp"
++        android:layout_weight="1"
++        android:layout_margin="2dp"
++        android:padding="2dp"
++        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/java/ferox/bracket/MyZoomLayout.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/MyZoomLayout.java	(date 1556279985236)
++++ app/src/main/java/ferox/bracket/MyZoomLayout.java	(date 1556279985236)
+@@ -0,0 +1,198 @@
++package ferox.bracket;
++
++import android.annotation.SuppressLint;
++import android.content.Context;
++import android.util.AttributeSet;
++import android.util.Log;
++import android.view.MotionEvent;
++import android.view.ScaleGestureDetector;
++import android.view.View;
++import android.widget.FrameLayout;
++
++import androidx.annotation.NonNull;
++import androidx.annotation.Nullable;
++
++public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.OnScaleGestureListener {
++    private static final String TAG = "MyZoomLayout";
++
++    private enum Mode {
++        NONE,
++        DRAG,
++        ZOOM
++    }
++
++    final static float MIN_ZOOM = 0.5f;
++    final static float MAX_ZOOM = 2.0f;
++
++    private Mode mode = Mode.NONE;
++    float scale = 1.0f;
++    private float lastScaleFactor = 0f;
++
++    // Where the finger first  touches the screen
++    private float startX = 0f;
++    private float startY = 0f;
++
++    // How much to translate the canvas
++    float dx = 0f;
++    float dy = 0f;
++    private float prevDx = 0f;
++    private float prevDy = 0f;
++
++    float minDx;
++    float minDy;
++
++
++    public MyZoomLayout(@NonNull Context context) {
++        super(context);
++        init(context);
++    }
++
++    public MyZoomLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
++        super(context, attrs);
++        init(context);
++    }
++
++    public MyZoomLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
++        super(context, attrs, defStyleAttr);
++        init(context);
++    }
++
++    public MyZoomLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
++        super(context, attrs, defStyleAttr, defStyleRes);
++        init(context);
++
++    }
++
++//    @Override
++//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
++//
++//
++//        int childSumWidth = 0;
++//        int childSumHeight = 0;
++//        int childHspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
++//        int childWspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
++//
++//
++//        for (int i = 0; i < getChildCount(); i++) {
++//            View child = getChildAt(i);
++//            child.measure(childWspec, childHspec);
++//            int childWidth = child.getMeasuredWidth(),
++//                    childHeight = child.getMeasuredHeight();
++//            childSumWidth += childWidth;
++//            childSumHeight += childHeight;
++//        }
++//
++//
++//
++//        int desiredWSpec = MeasureSpec.makeMeasureSpec(childSumWidth, MeasureSpec.UNSPECIFIED);
++//        //statusbarheight, bracket activity toolbar height and navbar height are to make it so that a part of the bracket doesnt get cut off
++//        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight , MeasureSpec.UNSPECIFIED);
++//        setMeasuredDimension(desiredWSpec, desiredHSpec);
++//        super.onMeasure(desiredWSpec, desiredHSpec);
++//    }
++
++
++    //TODO make sure this is accessible
++    @SuppressLint("ClickableViewAccessibility")
++    private void init(Context context) {
++
++        final ScaleGestureDetector scaleDetector = new ScaleGestureDetector(context, this);
++        this.setOnTouchListener((v, event) -> {
++            switch (event.getAction() & MotionEvent.ACTION_MASK) {
++                case MotionEvent.ACTION_DOWN:
++                    Log.i(TAG, "DOWN");
++                    mode = Mode.DRAG;
++                    startX = event.getX() - prevDx;
++                    startY = event.getY() - prevDy;
++                    break;
++                case MotionEvent.ACTION_MOVE:
++                    if (mode == mode.DRAG) {
++                        dx = event.getX() - startX;
++                        dy = event.getY() - startY;
++                    }
++                    break;
++                case MotionEvent.ACTION_POINTER_DOWN:
++                    mode = mode.ZOOM;
++                    break;
++                case MotionEvent.ACTION_POINTER_UP:
++                    mode = Mode.DRAG;
++                    break;
++                case MotionEvent.ACTION_UP:
++                    Log.i(TAG, "UP");
++                    mode = Mode.NONE;
++                    prevDx = dx;
++                    prevDy = dy;
++                    break;
++
++            }
++            scaleDetector.onTouchEvent(event);
++
++
++            getParent().requestDisallowInterceptTouchEvent(true);
++
++
++            if (getParent() != null) {
++                minDx = ((child().getWidth() * scale) - ((View) getParent()).getWidth()) * (-1);
++                minDy = ((child().getHeight() * scale) - ((View) getParent()).getHeight()) * (-1);
++            } else {
++                minDx = ((child().getWidth() * scale)) * (-1);
++                minDy = ((child().getHeight() * scale)) * (-1);
++            }
++
++
++            dx = Math.min(Math.max(dx, minDx), 0);
++            dy = Math.min(Math.max(dy, minDy), 0);
++            Log.i(TAG, "ZoomWidth: " + this.getWidth() + ", ChildWidth: " + child().getWidth() + ", ZoomHeight " + this.getHeight()
++                    + ", ChildHeight: " + child().getHeight());
++            applyScaleAndTranslation(child());
++
++
++            return true;
++        });
++
++    }
++
++
++    @Override
++    public boolean onScaleBegin(ScaleGestureDetector detector) {
++        Log.i(TAG, "onScaleBegin");
++        return true;
++    }
++
++    @Override
++    public boolean onScale(ScaleGestureDetector detector) {
++        float scaleFactor = detector.getScaleFactor();
++        Log.i(TAG, "onScale" + scaleFactor);
++        if (lastScaleFactor == 0 || (Math.signum(scaleFactor) == Math.signum(lastScaleFactor))) {
++            scale *= scaleFactor;
++            scale = Math.max(MIN_ZOOM, Math.min(scale, MAX_ZOOM));
++            lastScaleFactor = scaleFactor;
++        } else {
++            lastScaleFactor = 0;
++        }
++
++        return true;
++    }
++
++    @Override
++    public void onScaleEnd(ScaleGestureDetector detector) {
++        Log.i(TAG, "onScaleEnd");
++    }
++
++
++    private void applyScaleAndTranslation(View child) {
++        child.setPivotX(0);
++        child.setPivotY(0);
++        child.setScaleX(scale);
++        child.setScaleY(scale);
++        child.setTranslationX(dx);
++        child.setTranslationY(dy);
++
++        requestLayout();
++    }
++
++    public View child() {
++        return getChildAt(0);
++    }
++
++}
+Index: app/src/main/java/ferox/bracket/SettingsFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/SettingsFragment.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/SettingsFragment.java	(date 1556279985249)
+@@ -1,20 +1,340 @@
+ package ferox.bracket;
+ 
++import android.app.DatePickerDialog;
++import android.app.TimePickerDialog;
++import android.content.Intent;
++import android.graphics.Color;
++import android.graphics.drawable.ColorDrawable;
+ import android.os.Bundle;
++import android.util.Log;
+ import android.view.LayoutInflater;
++import android.view.MotionEvent;
+ import android.view.View;
+ import android.view.ViewGroup;
++import android.widget.AdapterView;
++import android.widget.ArrayAdapter;
++import android.widget.Button;
++import android.widget.CheckBox;
++import android.widget.EditText;
++import android.widget.RadioGroup;
++import android.widget.Spinner;
++import android.widget.TextView;
+ 
+ import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
+ import androidx.fragment.app.Fragment;
+ 
+-public class SettingsFragment extends Fragment {
++import com.google.gson.Gson;
++import com.google.gson.JsonElement;
++import com.google.gson.JsonParser;
++
++import java.util.Calendar;
++import java.util.Locale;
++
++public class SettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
++
++
++    final static String SINGLE_ELIMINATION = "Single Elimination";
++    final static String DOUBLE_ELIMINATION = "Double Elimination";
++    final static String ROUND_ROBIN = "Round Robin";
++    final static String SWISS = "Swiss";
++
++    final static String MATCH_WIN = "Match Wins";
++    final static String GAME_SET_WINS = "Game/Set Wins";
++    final static String POINTS_SCORED = "Points Scored";
++    final static String POINTS_DIFF = "Points Difference";
++    final static String CUSTOM = "Custom";
++
++
++    int setYear;
++    int setMonth;
++    int setDay;
++    int setHour;
++    String setMinute;
++    int ampm;
++
++    Tournament tournament;
++
++
++    Calendar calendar;
++    DatePickerDialog.OnDateSetListener mOnDateSetListener;
++    TimePickerDialog.OnTimeSetListener mOnTimeSetListener;
++    Spinner formatMenu;
++    ArrayAdapter<CharSequence> formatMenuAdapter;
++    Spinner rankedByMenu;
++    ArrayAdapter<CharSequence> rankedByMenuAdapter;
++
++    EditText name;
++    EditText url;
++    EditText subDomain;
++    EditText description;
++    CheckBox holdThirdPlace;
++    RadioGroup grandFinalsModifier;
++    EditText ptsPerMatchWin;
++    EditText ptsPerMatchTie;
++    EditText ptsPerGameWin;
++    EditText ptsPerGameTie;
++    EditText ptsPerBye;
++    TextView dateDay;
++    TextView dateTime;
++    EditText checkInDuration;
++    EditText maxParticipants;
++    CheckBox showRounds;
++    CheckBox isTournamentPrivate;
++    CheckBox notifyMatchOpen;
++    CheckBox notifyTournamentOver;
++    CheckBox traditionalSeeding;
++    CheckBox allowAttachments;
++    Button applySettings;
++
++    String tournamentURL;
++
++
+     @Nullable
+     @Override
+     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+-        View v = inflater.inflate(R.layout.fragment_settings, container, false);
++        Intent intent = getActivity().getIntent();
++        tournamentURL = intent.getStringExtra("tournamentURL");
++        View view = inflater.inflate(R.layout.fragment_settings, container, false);
++
++        name = view.findViewById(R.id.tournament_name);
++        url = view.findViewById(R.id.url);
++        subDomain = view.findViewById(R.id.subdomain);
++        description = view.findViewById(R.id.description);
++        holdThirdPlace = view.findViewById(R.id.third_place_match_checkbox);
++        grandFinalsModifier = view.findViewById(R.id.grand_finals_radio_group);
++        ptsPerMatchWin = view.findViewById(R.id.points_per_match_win);
++        ptsPerMatchTie = view.findViewById(R.id.points_per_match_tie);
++        ptsPerGameWin = view.findViewById(R.id.points_per_gameset_win);
++        ptsPerGameTie = view.findViewById(R.id.points_per_gameset_tie);
++        ptsPerBye = view.findViewById(R.id.points_per_bye);
++
++        //TODO need to accomodate for round robin points
++        checkInDuration = view.findViewById(R.id.check_in_duration);
++        maxParticipants = view.findViewById(R.id.max_number_participants);
++        showRounds = view.findViewById(R.id.show_rounds_checkbox);
++        isTournamentPrivate = view.findViewById(R.id.tournament_private_checkbox);
++        notifyMatchOpen = view.findViewById(R.id.notify_match_open_checkbox);
++        notifyTournamentOver = view.findViewById(R.id.notify_tournament_over_checkbox);
++        traditionalSeeding = view.findViewById(R.id.traditional_seeding_checkbox);
++        allowAttachments = view.findViewById(R.id.allow_attachments_checkbox);
++        applySettings = view.findViewById(R.id.apply_settings);
++
++        dateDay = view.findViewById(R.id.date_day);
++        dateTime = view.findViewById(R.id.date_time);
++        calendar = Calendar.getInstance();
++        setYear = calendar.get(Calendar.YEAR);
++        setMonth = calendar.get(Calendar.MONTH);
++        setDay = calendar.get(Calendar.DAY_OF_MONTH);
++        setHour = calendar.get(Calendar.HOUR);
++        setMinute = String.format(Locale.ENGLISH, "%02d", calendar.get(Calendar.MINUTE));
++        ampm = calendar.get(Calendar.AM_PM);
++
++
++        if (getContext() instanceof NewTournamentActivity) {
++            applySettings.setText("Create");
++        }
++
++        String defDate = setYear + "/" + (setMonth + 1) + "/" + setDay;
++        dateDay.setText(defDate);
++
++
++        String time = setHour + ":" + setMinute + " " + (ampm == Calendar.AM ? "AM" : "PM");
++        dateTime.setText(time);
++
++        dateDay.setOnClickListener(v -> {
++
++            DatePickerDialog datePickerDialog = new DatePickerDialog(v.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnDateSetListener, setYear, setMonth, setDay);
++            datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
++            datePickerDialog.show();
++        });
++
++        dateTime.setOnClickListener(v -> {
++
++
++            TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnTimeSetListener, setHour, Integer.valueOf(setMinute), false);
++            timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
++            timePickerDialog.show();
++        });
++
++        mOnDateSetListener = (view1, year, month, dayOfMonth) -> {
++
++            String date = year + "/" + (month + 1) + "/" + dayOfMonth;
++            dateDay.setText(date);
++
++            setYear = year;
++            setMonth = month;
++            setDay = dayOfMonth;
++        };
++
++        mOnTimeSetListener = (view12, hourOfDay, minute) -> {
++            String minuteTmp = String.format(Locale.ENGLISH, "%02d", minute);
++
++            Log.d("minute", minuteTmp);
++            String AM_PM = hourOfDay < 12 ? "AM" : "PM";
++            if (hourOfDay > 12) {
++                hourOfDay = hourOfDay - 12;
++            } else if (hourOfDay == 0) {
++                hourOfDay = 12;
++            }
++
++
++            String time1 = hourOfDay + ":" + minuteTmp + " " + AM_PM;
++            dateTime.setText(time1);
++
++            setHour = hourOfDay;
++            setMinute = minuteTmp;
++        };
++
++
++        formatMenu = view.findViewById(R.id.format_menu);
++        formatMenu.setOnItemSelectedListener(this);
++        formatMenuAdapter = ArrayAdapter.createFromResource(getContext(), R.array.format_array, R.layout.menu_spinner_item);
++        formatMenuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
++        formatMenu.setAdapter(formatMenuAdapter);
++
++        rankedByMenu = view.findViewById(R.id.ranked_by_menu);
++        rankedByMenu.setOnItemSelectedListener(this);
++        rankedByMenuAdapter = ArrayAdapter.createFromResource(getContext(), R.array.ranked_by_array, R.layout.menu_spinner_item);
++        rankedByMenuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
++        rankedByMenu.setAdapter(rankedByMenuAdapter);
++
++
++        description.setOnTouchListener((v, event) -> {
++            if (v.getId() == R.id.description) {
++                if (v.hasFocus()) {
++                    v.getParent().requestDisallowInterceptTouchEvent(true);
++                }
++                switch (event.getAction() & MotionEvent.ACTION_MASK) {
++                    case MotionEvent.ACTION_UP:
++                        v.getParent().requestDisallowInterceptTouchEvent(false);
++                        break;
++                }
++            }
++            return false;
++        });
++
++        ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.tournamentShow(tournamentURL));
++        Log.d("onCreateView", "iscalled");
++        return view;
++    }
++
++    private void getTournamentInfo(String response) {
++        Log.d("getTournamentInfo", "isCalled");
++        Gson gson = new Gson();
++        JsonParser jsonParser = new JsonParser();
++        JsonElement tournamentInfo = jsonParser.parse(response);
++        tournament = gson.fromJson(tournamentInfo.getAsJsonObject().get("tournament"), Tournament.class);
++        Log.d("getTournamentInfo2", tournament.getName());
++
++        name.setText(tournament.getName());
++        url.setText(tournament.getUrl());
++        subDomain.setText(tournament.getSubdomain());
++        //TODO may have to process it first
++        description.setText(tournament.getDescription());
++
++        //TODO value from json dooesnt match in  onItemSelected
++        formatMenu.setSelection(formatMenuAdapter.getPosition(tournament.getType()), true);
++        Log.d("fragmentSettings", tournament.getType());
++
++
++        holdThirdPlace.setChecked(tournament.isHoldThirdPlaceMatch());
++        //TODO set radio for grand finals modifier
++
++        //TODO probably should change all tournament values to strings
++        ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
++        ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
++        ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
++        ptsPerGameTie.setText(String.valueOf(tournament.getSwissPtsForGameTie()));
++        ptsPerBye.setText(String.valueOf(tournament.getSwissPtsForBye()));
++
++        ptsPerMatchWin.setText(String.valueOf(tournament.getSwissPtsForMatchWin()));
++        ptsPerMatchTie.setText(String.valueOf(tournament.getSwissPtsForMatchTie()));
++        ptsPerGameWin.setText(String.valueOf(tournament.getSwissPtsForGameWin()));
++        ptsPerGameTie.setText(String.valueOf(tournament.getSwissPtsForGameTie()));
++        ptsPerBye.setText(String.valueOf(tournament.getSwissPtsForBye()));
++
++        checkInDuration.setText(String.valueOf(tournament.getCheckInDuration()));
++        maxParticipants.setText(String.valueOf(tournament.getSignUpCap()));
++        showRounds.setChecked(tournament.isShowRounds());
++        isTournamentPrivate.setChecked(tournament.isPrivate());
++        notifyMatchOpen.setChecked(tournament.isNotifyUsersMatchesOpens());
++        notifyTournamentOver.setChecked(tournament.isNotifyUsersTourneyOver());
++        traditionalSeeding.setChecked(!tournament.isSequentialPairings());
++        allowAttachments.setChecked(tournament.isAcceptAttachments());
++
++
++    }
++
++    @Override
++    public void onItemSelected(AdapterView<?> parent, View view,
++                               int pos, long id) {
++        // An item was selected. You can retrieve the selected item using
++        // parent.getItemAtPosition(pos)
++        String item = (String) parent.getItemAtPosition(pos);
++
++
++        if (parent == getView().findViewById(R.id.format_menu)) {
++            switch (item) {
++                case SINGLE_ELIMINATION: {
++                    getView().findViewById(R.id.single_elim_view).setVisibility(View.VISIBLE);
++                    getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
++                    getView().findViewById(R.id.round_robin_format).setVisibility(View.GONE);
++                    break;
++                }
++                case DOUBLE_ELIMINATION: {
++                    getView().findViewById(R.id.single_elim_view).setVisibility(View.GONE);
++                    getView().findViewById(R.id.double_elim_view).setVisibility(View.VISIBLE);
++                    getView().findViewById(R.id.round_robin_format).setVisibility(View.GONE);
++                    break;
++                }
++                case ROUND_ROBIN: {
++                    getView().findViewById(R.id.single_elim_view).setVisibility(View.GONE);
++                    getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
++                    getView().findViewById(R.id.round_robin_format).setVisibility(View.VISIBLE);
++                    getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.GONE);
++                    break;
++                }
++                case SWISS: {
++                    getView().findViewById(R.id.single_elim_view).setVisibility(View.GONE);
++                    getView().findViewById(R.id.double_elim_view).setVisibility(View.GONE);
++                    getView().findViewById(R.id.round_robin_format).setVisibility(View.VISIBLE);
++                    getView().findViewById(R.id.swiss_points_per_bye_layout).setVisibility(View.VISIBLE);
++                    break;
++                }
++
++            }
++        }
++        if (parent == getView().findViewById(R.id.ranked_by_menu)) {
++
++            switch (item) {
++                case CUSTOM: {
++                    getView().findViewById(R.id.round_robin_custom_parameters).setVisibility(View.VISIBLE);
++                    break;
++                }
++                default: {
++                    getView().findViewById(R.id.round_robin_custom_parameters).setVisibility(View.GONE);
++                    break;
++                }
++            }
++        }
++    }
++
++    @Override
++    public void onNothingSelected(AdapterView<?> parent) {
++
++    }
++
++    private void applySettings() {
++
++    }
+ 
+-        return v;
++
++    public Tournament getTournament() {
++        return tournament;
++    }
++
++    public void setTournament(Tournament tournament) {
++        this.tournament = tournament;
+     }
+ }
+Index: app/src/main/java/ferox/bracket/Bracket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/Bracket.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/Bracket.java	(date 1556279985208)
+@@ -2,13 +2,16 @@
+ 
+ import android.content.Intent;
+ import android.os.Bundle;
++import android.os.Handler;
++import android.util.Log;
+ import android.widget.TextView;
+ 
+-import com.google.android.material.tabs.TabLayout;
+-
+ import androidx.appcompat.app.ActionBar;
+ import androidx.appcompat.app.AppCompatActivity;
+ 
++import com.google.android.material.appbar.AppBarLayout;
++import com.google.android.material.tabs.TabLayout;
++
+ public class Bracket extends AppCompatActivity {
+ 
+ 
+@@ -19,6 +22,7 @@
+ 
+     BracketPagerAdapter mBracketPagerAdapter;
+     ViewPagerNoHorsScroll mViewPager;
++    AppBarLayout appBarLayout;
+ 
+ 
+     @Override
+@@ -33,24 +37,51 @@
+         mViewPager.setOffscreenPageLimit(2);
+         mBracketPagerAdapter = new BracketPagerAdapter(this.getSupportFragmentManager());
+         mViewPager.setAdapter(mBracketPagerAdapter);
++        appBarLayout = findViewById(R.id.app_bar);
+ 
+ 
+-        TabLayout tabLayout = (TabLayout) findViewById(R.id.bracket_tab_layout);
++        TabLayout tabLayout = findViewById(R.id.bracket_tab_layout);
+         tabLayout.setupWithViewPager(mViewPager);
++        tabLayout.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
++            @Override
++            public void onTabSelected(TabLayout.Tab tab) {
++                AppBarLayout.LayoutParams layoutParams = (AppBarLayout.LayoutParams) tabLayout.getLayoutParams();
++                Log.d("TabPosition", String.valueOf(tab.getPosition()));
++                if (tab.getPosition() == 0) {
++                    appBarLayout.setExpanded(true);
++                    layoutParams.setScrollFlags(0);
++                    tabLayout.setLayoutParams(layoutParams);
++                } else {
++                    Log.d("elseran", "elseran");
++                    layoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL |
++                            AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS |
++                            AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
++                    tabLayout.setLayoutParams(layoutParams);
++                }
++            }
++
++            @Override
++            public void onTabUnselected(TabLayout.Tab tab) {
++
++            }
++
++            @Override
++            public void onTabReselected(TabLayout.Tab tab) {
++
++            }
++        });
+ 
+ 
+-//        mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height) / 2;
+-//        mWidthUnit = getResources().getDimensionPixelSize(R.dimen.match_width);
+-//        final Handler handler = new Handler();
+-//        Runnable runnable = new Runnable() {
+-//            @Override
+-//            public void run() {
+-//                lv.updateAnimation();
+-//            }
+-//        };
+-//        final int delay = 800; //milliseconds
+-//
+-//        handler.postDelayed(runnable, delay);
++        final Handler handler = new Handler();
++        Runnable runnable = new Runnable() {
++            @Override
++            public void run() {
++
++            }
++        };
++        final int delay = 800; //milliseconds
++
++        handler.postDelayed(runnable, delay);
+ 
+     }
+ 
+Index: app/src/main/java/ferox/bracket/ChallongeRequests.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/ChallongeRequests.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/ChallongeRequests.java	(date 1556222832833)
+@@ -29,8 +29,7 @@
+         if (subDomain != null) {
+             url += makeAPIParameter("subdomain", subDomain);
+         }
+-        APIRequest request = new APIRequest(url, Request.Method.GET);
+-        return request;
++        return new APIRequest(url, Request.Method.GET);
+     }
+ 
+     static public String tounamentCreate(String name, String URL, int type, String subdomain, String description, boolean thirdPlaceMatch
+@@ -40,12 +39,12 @@
+         return url;
+     }
+ 
+-    static public String tournamentShow(String name) {
+-        String url = API_URL;
+-        url += "/" + name;
+-        url += JSON_TAG + API_KEY_SEGMENT + apiKey;
+-        url += "&include_matches=1&include_participants=1";
+-        return url;
++    static public APIRequest tournamentShow(String tournamentURL) {
++        String requestURL = API_URL;
++        requestURL += "/" + tournamentURL;
++        requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
++        requestURL += "&include_matches=1&include_participants=1";
++        return new APIRequest(requestURL, Request.Method.GET);
+     }
+ 
+     /*
+Index: app/src/main/res/layout/fragment_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_settings.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/layout/fragment_settings.xml	(date 1556279985220)
+@@ -15,19 +15,13 @@
+         android:descendantFocusability="beforeDescendants"
+         android:focusableInTouchMode="true"
+         android:orientation="vertical"
+-        android:paddingBottom="50dp">
++        android:paddingBottom="10dp">
+ 
+         <androidx.constraintlayout.widget.ConstraintLayout
+             android:id="@+id/basic_info_layout"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+ 
+-            <!--<TextView-->
+-            <!--android:id="@+id/newTourney"-->
+-            <!--style="@style/menu_title"-->
+-            <!--android:text="New Tournament"-->
+-            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+-            <!--app:layout_constraintTop_toTopOf="parent" />-->
+ 
+             <TextView
+                 android:id="@+id/basicInfo"
+@@ -36,24 +30,6 @@
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 app:layout_constraintTop_toTopOf="parent" />
+ 
+-            <EditText
+-                android:id="@+id/host"
+-                style="@style/menu_edit_text"
+-                android:layout_width="0dp"
+-                android:hint="Subdomain"
+-
+-                app:layout_constraintBottom_toTopOf="@id/tournament_name_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintRight_toLeftOf="@id/subdomain_menu"
+-                app:layout_constraintTop_toBottomOf="@id/basicInfo" />
+-
+-            <Spinner
+-                android:id="@+id/subdomain_menu"
+-                style="@style/menu_spinner"
+-                android:layout_width="wrap_content"
+-                app:layout_constraintLeft_toRightOf="@id/host"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/host" />
+ 
+             <TextView
+                 android:id="@+id/tournament_name_header"
+@@ -64,7 +40,16 @@
+                 app:layout_constraintBottom_toTopOf="@id/url_header"
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 app:layout_constraintRight_toLeftOf="@id/tournament_name"
+-                app:layout_constraintTop_toBottomOf="@id/host" />
++                app:layout_constraintTop_toBottomOf="@id/basicInfo" />
++
++            <EditText
++                android:id="@+id/tournament_name"
++                style="@style/menu_edit_text"
++                android:layout_width="0dp"
++                android:text=""
++                app:layout_constraintLeft_toRightOf="@id/tournament_name_header"
++                app:layout_constraintRight_toRightOf="parent"
++                app:layout_constraintTop_toTopOf="@id/tournament_name_header" />
+ 
+ 
+             <TextView
+@@ -74,38 +59,46 @@
+                 android:ellipsize="marquee"
+                 android:singleLine="true"
+                 android:text="URL: challonge.com/"
+-                app:layout_constraintBottom_toTopOf="@id/description_header"
++                app:layout_constraintBottom_toTopOf="@id/subdomain_header"
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 app:layout_constraintRight_toLeftOf="@id/url"
+                 app:layout_constraintTop_toBottomOf="@id/tournament_name_header"
+ 
+                 />
+ 
+-            <TextView
+-                android:id="@+id/description_header"
+-                style="@style/menu_h2"
+-                android:layout_width="match_parent"
+-                android:text="Description"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/url_header" />
+-
+-
+             <EditText
+-                android:id="@+id/tournament_name"
++                android:id="@+id/url"
+                 style="@style/menu_edit_text"
+                 android:layout_width="0dp"
+-                android:text=""
+-                app:layout_constraintLeft_toRightOf="@id/tournament_name_header"
++                app:layout_constraintLeft_toRightOf="@id/url_header"
+                 app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/tournament_name_header" />
++                app:layout_constraintTop_toTopOf="@id/url_header" />
++
++            <TextView
++                android:id="@+id/subdomain_header"
++                style="@style/menu_h2"
++                android:layout_width="wrap_content"
++                android:text="SubDomain"
++                app:layout_constraintBottom_toTopOf="@id/description"
++                app:layout_constraintStart_toStartOf="parent"
++                app:layout_constraintTop_toBottomOf="@id/url_header" />
+ 
+             <EditText
+-                android:id="@+id/url"
++                android:id="@+id/subdomain"
+                 style="@style/menu_edit_text"
+                 android:layout_width="0dp"
+-                app:layout_constraintLeft_toRightOf="@id/url_header"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/url_header" />
++                app:layout_constraintEnd_toEndOf="parent"
++                app:layout_constraintStart_toEndOf="@id/subdomain_header"
++                app:layout_constraintTop_toTopOf="@id/subdomain_header" />
++
++            <TextView
++                android:id="@+id/description_header"
++                style="@style/menu_h2"
++                android:layout_width="match_parent"
++                android:text="Description"
++                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintTop_toBottomOf="@id/subdomain_header" />
++
+ 
+             <EditText
+                 android:id="@+id/description"
+@@ -165,7 +158,8 @@
+                 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                     android:id="@+id/single_elim_view"
+                     android:layout_width="match_parent"
+-                    android:layout_height="match_parent">
++                    android:layout_height="match_parent"
++                    android:visibility="gone">
+ 
+                     <CheckBox
+                         android:id="@+id/third_place_match_checkbox"
+@@ -217,10 +211,9 @@
+                 </androidx.constraintlayout.widget.ConstraintLayout>
+ 
+                 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-                    android:id="@+id/round_robin_view"
++                    android:id="@+id/round_robin_format"
+                     android:layout_width="match_parent"
+-                    android:layout_height="match_parent"
+-                    android:visibility="gone">
++                    android:layout_height="match_parent">
+ 
+                     <TextView
+                         android:id="@+id/ranked_by"
+@@ -245,7 +238,7 @@
+                         android:id="@+id/round_robin_custom_parameters"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+-                        android:visibility="gone"
++                        android:visibility="visible"
+                         app:layout_constraintLeft_toLeftOf="parent"
+                         app:layout_constraintTop_toBottomOf="@id/ranked_by">
+ 
+@@ -253,6 +246,7 @@
+                             android:id="@+id/points_per_match_win"
+                             style="@style/menu_edit_text"
+                             android:layout_width="60dp"
++                            android:inputType="numberDecimal"
+                             app:layout_constraintLeft_toLeftOf="parent"
+                             app:layout_constraintTop_toTopOf="parent" />
+ 
+@@ -268,6 +262,7 @@
+                             android:id="@+id/points_per_match_tie"
+                             style="@style/menu_edit_text"
+                             android:layout_width="60dp"
++                            android:inputType="numberDecimal"
+                             app:layout_constraintLeft_toLeftOf="parent"
+                             app:layout_constraintTop_toBottomOf="@id/points_per_match_win" />
+ 
+@@ -283,6 +278,7 @@
+                             android:id="@+id/points_per_gameset_win"
+                             style="@style/menu_edit_text"
+                             android:layout_width="60dp"
++                            android:inputType="numberDecimal"
+                             app:layout_constraintLeft_toLeftOf="parent"
+                             app:layout_constraintTop_toBottomOf="@id/points_per_match_tie" />
+ 
+@@ -298,6 +294,7 @@
+                             android:id="@+id/points_per_gameset_tie"
+                             style="@style/menu_edit_text"
+                             android:layout_width="60dp"
++                            android:inputType="numberDecimal"
+                             app:layout_constraintLeft_toLeftOf="parent"
+                             app:layout_constraintTop_toBottomOf="@id/points_per_gameset_win" />
+ 
+@@ -308,6 +305,30 @@
+                             app:layout_constraintLeft_toRightOf="@id/points_per_gameset_tie"
+                             app:layout_constraintTop_toTopOf="@id/points_per_gameset_tie" />
+ 
++                        <androidx.constraintlayout.widget.ConstraintLayout
++                            android:id="@+id/swiss_points_per_bye_layout"
++                            android:layout_width="wrap_content"
++                            android:layout_height="wrap_content"
++                            android:visibility="gone"
++                            app:layout_constraintLeft_toLeftOf="parent"
++                            app:layout_constraintTop_toBottomOf="@id/points_per_gameset_tie">
++
++                            <EditText
++                                android:id="@+id/points_per_bye"
++                                style="@style/menu_edit_text"
++                                android:inputType="numberDecimal"
++                                android:layout_width="60dp"
++                                app:layout_constraintLeft_toLeftOf="parent"
++                                app:layout_constraintTop_toTopOf="parent" />
++
++                            <TextView
++                                style="@style/menu_h2"
++                                android:layout_width="wrap_content"
++                                android:text="Points per bye"
++                                app:layout_constraintLeft_toRightOf="@id/points_per_bye"
++                                app:layout_constraintTop_toTopOf="@id/points_per_bye" />
++                        </androidx.constraintlayout.widget.ConstraintLayout>
++
+ 
+                     </androidx.constraintlayout.widget.ConstraintLayout>
+ 
+@@ -330,62 +351,6 @@
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 app:layout_constraintTop_toTopOf="parent" />
+ 
+-            <TextView
+-                android:id="@+id/registration_header"
+-                style="@style/menu_h2"
+-                android:layout_width="wrap_content"
+-                android:layout_height="80dp"
+-                android:text="Registration"
+-                app:layout_constraintBottom_toTopOf="@id/participants_checkbox_team_register"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/registration_layout_header" />
+-
+-
+-            <RadioGroup
+-
+-                android:id="@+id/registration_radio"
+-                android:layout_width="0dp"
+-                android:layout_height="80dp"
+-                app:layout_constraintLeft_toRightOf="@id/registration_header"
+-                app:layout_constraintTop_toBottomOf="@id/registration_layout_header">
+-
+-                <RadioButton
+-                    style="@style/menu_text_radio"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Provide a list of participants" />
+-
+-                <RadioButton
+-                    style="@style/menu_text_radio"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Host a sign-up page" />
+-            </RadioGroup>
+-
+-            <!--<TextView-->
+-            <!--android:id="@+id/participants_header"-->
+-            <!--style="@style/menu_h2"-->
+-            <!--android:layout_width="wrap_content"-->
+-            <!--android:layout_height="80dp"-->
+-            <!--android:text="Participants"-->
+-            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+-            <!--app:layout_constraintTop_toBottomOf="@id/registration_radio"-->
+-            <!--app:layout_constraintBottom_toTopOf="@id/start_time_header"/>-->
+-
+-
+-            <CheckBox
+-                android:id="@+id/participants_checkbox_team_register"
+-                style="@style/menu_checkbox"
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content"
+-                android:focusable="true"
+-                android:focusableInTouchMode="true"
+-                android:text="Require participants to register as a team"
+-                app:layout_constraintBottom_toTopOf="@id/start_time_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/registration_radio" />
+-
+ 
+             <TextView
+                 android:id="@+id/start_time_header"
+@@ -394,7 +359,7 @@
+                 android:text="Start Time"
+                 app:layout_constraintBottom_toTopOf="@id/check_in_duration_header"
+                 app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/participants_checkbox_team_register" />
++                app:layout_constraintTop_toBottomOf="@id/registration_layout_header" />
+ 
+ 
+             <TextView
+@@ -428,6 +393,7 @@
+                 android:id="@+id/check_in_duration"
+                 style="@style/menu_edit_text"
+                 android:layout_width="42dp"
++                android:inputType="number"
+                 android:text="0"
+                 app:layout_constraintRight_toRightOf="parent"
+                 app:layout_constraintTop_toTopOf="@id/check_in_duration_header" />
+@@ -438,14 +404,14 @@
+                 style="@style/menu_h2"
+                 android:layout_width="wrap_content"
+                 android:text="Maximum number of Participants"
+-                app:layout_constraintBottom_toBottomOf="parent"
+-                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintTop_toBottomOf="@id/check_in_duration_header" />
+ 
+             <EditText
+                 android:id="@+id/max_number_participants"
+                 style="@style/menu_edit_text"
+                 android:layout_width="42dp"
++                android:inputType="number"
+                 android:text="256"
+                 app:layout_constraintRight_toRightOf="parent"
+                 app:layout_constraintTop_toTopOf="@id/max_number_participants_header" />
+@@ -474,36 +440,42 @@
+                 app:layout_constraintTop_toBottomOf="@+id/advanced_options_header">
+ 
+                 <CheckBox
++                    android:id="@+id/show_rounds_checkbox"
+                     style="@style/menu_checkbox"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Show Rounds" />
+ 
+                 <CheckBox
++                    android:id="@+id/tournament_private_checkbox"
+                     style="@style/menu_checkbox"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Private" />
+ 
+                 <CheckBox
++                    android:id="@+id/notify_match_open_checkbox"
+                     style="@style/menu_checkbox"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Notify users when match is open" />
+ 
+                 <CheckBox
++                    android:id="@+id/notify_tournament_over_checkbox"
+                     style="@style/menu_checkbox"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Notify users when tournament is over" />
+ 
+                 <CheckBox
++                    android:id="@+id/traditional_seeding_checkbox"
+                     style="@style/menu_checkbox"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Traditional Seeding" />
+ 
+                 <CheckBox
++                    android:id="@+id/allow_attachments_checkbox"
+                     style="@style/menu_checkbox"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+@@ -515,6 +487,19 @@
+ 
+         </androidx.constraintlayout.widget.ConstraintLayout>
+ 
++        <LinearLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:gravity="center">
++
++            <Button
++                android:id="@+id/apply_settings"
++                style="@style/menu_button"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:text="Update" />
++        </LinearLayout>
++
+     </LinearLayout>
+ 
+ 
+Index: app/src/main/res/layout/activity_new_tournament.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_new_tournament.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/layout/activity_new_tournament.xml	(date 1556279985225)
+@@ -1,521 +1,16 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+-    xmlns:app="http://schemas.android.com/apk/res-auto"
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++
+     xmlns:tools="http://schemas.android.com/tools"
+     style="@style/menu_layout"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     tools:context=".NewTournamentActivity">
+ 
+-
+-    <LinearLayout
+-        android:id="@+id/new_tourney_linear_layout1"
++    <FrameLayout
++        android:id="@+id/new_tournament_container"
+         android:layout_width="match_parent"
+-        android:layout_height="wrap_content"
+-        android:descendantFocusability="beforeDescendants"
+-        android:focusableInTouchMode="true"
+-        android:orientation="vertical"
+-        android:paddingBottom="50dp">
+-
+-        <androidx.constraintlayout.widget.ConstraintLayout
+-            android:id="@+id/basic_info_layout"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content">
+-
+-            <TextView
+-                android:id="@+id/newTourney"
+-                style="@style/menu_title"
+-                android:text="New Tournament"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toTopOf="parent" />
+-
+-            <TextView
+-                android:id="@+id/basicInfo"
+-                style="@style/menu_h1"
+-                android:text="Basic Info"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/newTourney" />
+-
+-            <EditText
+-                android:id="@+id/host"
+-                style="@style/menu_edit_text"
+-                android:layout_width="0dp"
+-                android:hint="Subdomain"
+-
+-                app:layout_constraintBottom_toTopOf="@id/tournament_name_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintRight_toLeftOf="@id/subdomain_menu"
+-                app:layout_constraintTop_toBottomOf="@id/basicInfo" />
+-
+-            <Spinner
+-                android:id="@+id/subdomain_menu"
+-                style="@style/menu_spinner"
+-                android:layout_width="wrap_content"
+-                app:layout_constraintLeft_toRightOf="@id/host"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/host" />
+-
+-            <TextView
+-                android:id="@+id/tournament_name_header"
+-                style="@style/menu_h2"
+-                android:layout_width="0dp"
+-
+-                android:text="Tournament name:"
+-                app:layout_constraintBottom_toTopOf="@id/url_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintRight_toLeftOf="@id/tournament_name"
+-                app:layout_constraintTop_toBottomOf="@id/host" />
+-
+-
+-            <TextView
+-                android:id="@+id/url_header"
+-                style="@style/menu_h2"
+-                android:layout_width="wrap_content"
+-                android:ellipsize="marquee"
+-                android:singleLine="true"
+-                android:text="URL: challonge.com/"
+-                app:layout_constraintBottom_toTopOf="@id/description_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintRight_toLeftOf="@id/url"
+-                app:layout_constraintTop_toBottomOf="@id/tournament_name_header"
+-
+-                />
+-
+-            <TextView
+-                android:id="@+id/description_header"
+-                style="@style/menu_h2"
+-                android:layout_width="match_parent"
+-                android:text="Description"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/url_header" />
+-
+-
+-            <EditText
+-                android:id="@+id/tournament_name"
+-                style="@style/menu_edit_text"
+-                android:layout_width="0dp"
+-                android:text=""
+-                app:layout_constraintLeft_toRightOf="@id/tournament_name_header"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/tournament_name_header" />
+-
+-            <EditText
+-                android:id="@+id/url"
+-                style="@style/menu_edit_text"
+-                android:layout_width="0dp"
+-                app:layout_constraintLeft_toRightOf="@id/url_header"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/url_header" />
+-
+-            <EditText
+-                android:id="@+id/description"
+-                style="@style/menu_edit_text"
+-                android:layout_width="match_parent"
+-                android:layout_height="150dp"
+-                android:gravity="left"
+-                android:inputType="textMultiLine"
+-                android:scrollbars="vertical"
+-                app:layout_constraintTop_toBottomOf="@id/description_header" />
+-
+-
+-        </androidx.constraintlayout.widget.ConstraintLayout>
+-
+-
+-        <androidx.constraintlayout.widget.ConstraintLayout
+-            android:id="@+id/game_info_layout"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content">
+-
+-            <TextView
+-                android:id="@+id/game_info_header"
+-                style="@style/menu_h1"
+-                android:text="Game Info"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toTopOf="parent"
+-                tools:layout_editor_absoluteX="0dp" />
+-
+-            <TextView
+-                android:id="@+id/format_header"
+-                style="@style/menu_h2"
+-                android:layout_width="0dp"
+-                android:text="Format"
+-                app:layout_constraintBottom_toTopOf="@id/format_layout"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintRight_toLeftOf="@id/format_menu"
+-                app:layout_constraintTop_toBottomOf="@id/game_info_header" />
+-
+-            <Spinner
+-                android:id="@+id/format_menu"
+-                style="@style/menu_spinner"
+-                android:layout_width="wrap_content"
+-                app:layout_constraintLeft_toRightOf="@id/format_header"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/format_header" />
+-
+-
+-            <LinearLayout
+-                android:id="@+id/format_layout"
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content"
+-                android:orientation="vertical"
+-                app:layout_constraintBottom_toBottomOf="parent"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/format_header">
+-
+-                <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-                    android:id="@+id/single_elim_view"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="match_parent">
+-
+-                    <CheckBox
+-                        android:id="@+id/third_place_match_checkbox"
+-                        style="@style/menu_checkbox"
+-                        android:layout_width="wrap_content"
+-                        android:layout_height="wrap_content"
+-                        android:text="Include a match for 3rd place."
+-                        app:layout_constraintLeft_toLeftOf="parent"
+-                        app:layout_constraintTop_toTopOf="parent" />
+-
+-                </androidx.constraintlayout.widget.ConstraintLayout>
+-
+-                <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-                    android:id="@+id/double_elim_view"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="match_parent"
+-                    android:visibility="gone">
+-
+-                    <RadioGroup
+-                        android:id="@+id/grand_finals_radio_group"
+-                        android:layout_width="wrap_content"
+-                        android:layout_height="wrap_content"
+-                        android:orientation="vertical"
+-                        app:layout_constraintLeft_toLeftOf="parent"
+-                        app:layout_constraintTop_toTopOf="parent">
+-
+-                        <RadioButton
+-                            android:id="@+id/grand_finals_default"
+-                            style="@style/menu_text_radio"
+-                            android:layout_width="wrap_content"
+-                            android:layout_height="wrap_content"
+-                            android:text="1-2 matches - winner's bracket finalist must lose twice" />
+-
+-                        <RadioButton
+-                            android:id="@+id/grand_finals_one_match"
+-                            style="@style/menu_text_radio"
+-                            android:layout_width="wrap_content"
+-                            android:layout_height="wrap_content"
+-                            android:text="1 match" />
+-
+-                        <RadioButton
+-                            android:id="@+id/grand_finals_none"
+-                            style="@style/menu_text_radio"
+-                            android:layout_width="wrap_content"
+-                            android:layout_height="wrap_content"
+-                            android:text="None" />
+-                    </RadioGroup>
++        android:layout_height="match_parent" />
+ 
+-                </androidx.constraintlayout.widget.ConstraintLayout>
+ 
+-                <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-                    android:id="@+id/round_robin_view"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="match_parent"
+-                    android:visibility="gone">
+-
+-                    <TextView
+-                        android:id="@+id/ranked_by"
+-                        style="@style/menu_h2"
+-                        android:layout_width="0dp"
+-                        android:layout_height="wrap_content"
+-                        android:text="Rank by"
+-                        app:layout_constraintLeft_toLeftOf="parent"
+-                        app:layout_constraintRight_toLeftOf="@id/ranked_by_menu"
+-                        app:layout_constraintTop_toTopOf="parent" />
+-
+-                    <Spinner
+-                        android:id="@+id/ranked_by_menu"
+-                        style="@style/menu_spinner"
+-                        android:layout_width="wrap_content"
+-                        android:layout_height="wrap_content"
+-                        app:layout_constraintLeft_toRightOf="@id/ranked_by"
+-                        app:layout_constraintRight_toRightOf="parent"
+-                        app:layout_constraintTop_toTopOf="parent" />
+-
+-                    <androidx.constraintlayout.widget.ConstraintLayout
+-                        android:id="@+id/round_robin_custom_parameters"
+-                        android:layout_width="wrap_content"
+-                        android:layout_height="wrap_content"
+-                        android:visibility="gone"
+-                        app:layout_constraintLeft_toLeftOf="parent"
+-                        app:layout_constraintTop_toBottomOf="@id/ranked_by">
+-
+-                        <EditText
+-                            android:id="@+id/points_per_match_win"
+-                            style="@style/menu_edit_text"
+-                            android:layout_width="60dp"
+-                            app:layout_constraintLeft_toLeftOf="parent"
+-                            app:layout_constraintTop_toTopOf="parent" />
+-
+-                        <TextView
+-                            style="@style/menu_h2"
+-                            android:layout_width="wrap_content"
+-                            android:text="Points per match win"
+-                            app:layout_constraintLeft_toRightOf="@id/points_per_match_win"
+-                            app:layout_constraintTop_toTopOf="@id/points_per_match_win" />
+-
+-
+-                        <EditText
+-                            android:id="@+id/points_per_match_tie"
+-                            style="@style/menu_edit_text"
+-                            android:layout_width="60dp"
+-                            app:layout_constraintLeft_toLeftOf="parent"
+-                            app:layout_constraintTop_toBottomOf="@id/points_per_match_win" />
+-
+-                        <TextView
+-                            style="@style/menu_h2"
+-                            android:layout_width="wrap_content"
+-                            android:text="Points per match tie"
+-                            app:layout_constraintLeft_toRightOf="@id/points_per_match_tie"
+-                            app:layout_constraintTop_toTopOf="@id/points_per_match_tie" />
+-
+-
+-                        <EditText
+-                            android:id="@+id/points_per_gameset_win"
+-                            style="@style/menu_edit_text"
+-                            android:layout_width="60dp"
+-                            app:layout_constraintLeft_toLeftOf="parent"
+-                            app:layout_constraintTop_toBottomOf="@id/points_per_match_tie" />
+-
+-                        <TextView
+-                            style="@style/menu_h2"
+-                            android:layout_width="wrap_content"
+-                            android:text="Points per match tie"
+-                            app:layout_constraintLeft_toRightOf="@id/points_per_gameset_win"
+-                            app:layout_constraintTop_toTopOf="@id/points_per_gameset_win" />
+-
+-
+-                        <EditText
+-                            android:id="@+id/points_per_gameset_tie"
+-                            style="@style/menu_edit_text"
+-                            android:layout_width="60dp"
+-                            app:layout_constraintLeft_toLeftOf="parent"
+-                            app:layout_constraintTop_toBottomOf="@id/points_per_gameset_win" />
+-
+-                        <TextView
+-                            style="@style/menu_h2"
+-                            android:layout_width="wrap_content"
+-                            android:text="Points per match tie"
+-                            app:layout_constraintLeft_toRightOf="@id/points_per_gameset_tie"
+-                            app:layout_constraintTop_toTopOf="@id/points_per_gameset_tie" />
+-
+-
+-                    </androidx.constraintlayout.widget.ConstraintLayout>
+-
+-                </androidx.constraintlayout.widget.ConstraintLayout>
+-            </LinearLayout>
+-
+-
+-        </androidx.constraintlayout.widget.ConstraintLayout>
+-
+-
+-        <androidx.constraintlayout.widget.ConstraintLayout
+-            android:id="@+id/registration_info_layout"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content">
+-
+-            <TextView
+-                android:id="@+id/registration_layout_header"
+-                style="@style/menu_h1"
+-                android:text="Registration"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toTopOf="parent" />
+-
+-            <TextView
+-                android:id="@+id/registration_header"
+-                style="@style/menu_h2"
+-                android:layout_width="wrap_content"
+-                android:layout_height="80dp"
+-                android:text="Registration"
+-                app:layout_constraintBottom_toTopOf="@id/participants_checkbox_team_register"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/registration_layout_header" />
+-
+-
+-            <RadioGroup
+-
+-                android:id="@+id/registration_radio"
+-                android:layout_width="0dp"
+-                android:layout_height="80dp"
+-                app:layout_constraintLeft_toRightOf="@id/registration_header"
+-                app:layout_constraintTop_toBottomOf="@id/registration_layout_header">
+-
+-                <RadioButton
+-                    style="@style/menu_text_radio"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Provide a list of participants" />
+-
+-                <RadioButton
+-                    style="@style/menu_text_radio"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Host a sign-up page" />
+-            </RadioGroup>
+-
+-            <!--<TextView-->
+-            <!--android:id="@+id/participants_header"-->
+-            <!--style="@style/menu_h2"-->
+-            <!--android:layout_width="wrap_content"-->
+-            <!--android:layout_height="80dp"-->
+-            <!--android:text="Participants"-->
+-            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+-            <!--app:layout_constraintTop_toBottomOf="@id/registration_radio"-->
+-            <!--app:layout_constraintBottom_toTopOf="@id/start_time_header"/>-->
+-
+-
+-            <CheckBox
+-                android:id="@+id/participants_checkbox_team_register"
+-                style="@style/menu_checkbox"
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content"
+-                android:focusable="true"
+-                android:focusableInTouchMode="true"
+-                android:text="Require participants to register as a team"
+-                app:layout_constraintBottom_toTopOf="@id/start_time_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/registration_radio" />
+-
+-
+-            <TextView
+-                android:id="@+id/start_time_header"
+-                style="@style/menu_h2"
+-                android:layout_width="wrap_content"
+-                android:text="Start Time"
+-                app:layout_constraintBottom_toTopOf="@id/check_in_duration_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/participants_checkbox_team_register" />
+-
+-
+-            <TextView
+-                android:id="@+id/date_day"
+-                style="@style/menu_h2_light"
+-                android:layout_width="wrap_content"
+-                android:hint="Date"
+-                app:layout_constraintRight_toLeftOf="@id/date_time"
+-                app:layout_constraintTop_toTopOf="@id/start_time_header" />
+-
+-            <TextView
+-                android:id="@+id/date_time"
+-                style="@style/menu_h2_light"
+-
+-                android:layout_width="wrap_content"
+-                android:hint="Time"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/start_time_header" />
+-
+-
+-            <TextView
+-                android:id="@+id/check_in_duration_header"
+-                style="@style/menu_h2"
+-                android:layout_width="0dp"
+-                android:text="Check In Duration"
+-                app:layout_constraintBottom_toTopOf="@id/max_number_participants_header"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/start_time_header" />
+-
+-            <EditText
+-                android:id="@+id/check_in_duration"
+-                style="@style/menu_edit_text"
+-                android:layout_width="42dp"
+-                android:text="0"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/check_in_duration_header" />
+-
+-
+-            <TextView
+-                android:id="@+id/max_number_participants_header"
+-                style="@style/menu_h2"
+-                android:layout_width="wrap_content"
+-                android:text="Maximum number of Participants"
+-                app:layout_constraintBottom_toBottomOf="parent"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@id/check_in_duration_header" />
+-
+-            <EditText
+-                android:id="@+id/max_number_participants"
+-                style="@style/menu_edit_text"
+-                android:layout_width="42dp"
+-                android:text="256"
+-                app:layout_constraintRight_toRightOf="parent"
+-                app:layout_constraintTop_toTopOf="@id/max_number_participants_header" />
+-
+-
+-        </androidx.constraintlayout.widget.ConstraintLayout>
+-
+-
+-        <androidx.constraintlayout.widget.ConstraintLayout
+-            android:id="@+id/advanced_options_layout"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content">
+-
+-            <TextView
+-                android:id="@+id/advanced_options_header"
+-                style="@style/menu_h1"
+-                android:text="Advanced Options"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toTopOf="parent" />
+-
+-            <LinearLayout
+-                android:layout_width="wrap_content"
+-                android:layout_height="wrap_content"
+-                android:orientation="vertical"
+-                app:layout_constraintLeft_toLeftOf="parent"
+-                app:layout_constraintTop_toBottomOf="@+id/advanced_options_header">
+-
+-                <CheckBox
+-                    style="@style/menu_checkbox"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Show Rounds" />
+-
+-                <CheckBox
+-                    style="@style/menu_checkbox"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Private" />
+-
+-                <CheckBox
+-                    style="@style/menu_checkbox"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Notify users when match is open" />
+-
+-                <CheckBox
+-                    style="@style/menu_checkbox"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Notify users when tournament is over" />
+-
+-                <CheckBox
+-                    style="@style/menu_checkbox"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Traditional Seeding" />
+-
+-                <CheckBox
+-                    style="@style/menu_checkbox"
+-                    android:layout_width="wrap_content"
+-                    android:layout_height="wrap_content"
+-                    android:text="Allow Attachments" />
+-
+-
+-            </LinearLayout>
+-
+-
+-        </androidx.constraintlayout.widget.ConstraintLayout>
+-
+-    </LinearLayout>
+-
+-
+-</ScrollView>
++</LinearLayout>
+Index: app/src/main/res/layout/fragment_bracket.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_bracket.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/layout/fragment_bracket.xml	(date 1556279985190)
+@@ -1,68 +1,181 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++
++
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:id="@+id/bracket_fragment"
++
+     android:layout_width="match_parent"
+-    android:layout_height="match_parent">
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++
++    <ferox.bracket.MyZoomLayout
++        android:id="@+id/bracket_zoom_layout"
++        android:layout_width="match_parent"
++        android:layout_height="0dp"
++        android:layout_weight="1"
++        android:layout_margin="0dp">
+ 
+-    <ferox.bracket.BracketView xmlns:android="http://schemas.android.com/apk/res/android"
+-        xmlns:app="http://schemas.android.com/apk/res-auto"
+-        xmlns:tools="http://schemas.android.com/tools"
+-        android:id="@+id/bracket_root"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_margin="2dp"
+-        app:layout_constraintLeft_toLeftOf="parent"
+-        app:layout_constraintTop_toTopOf="parent"
+-        tools:context=".Bracket">
++        <ferox.bracket.BracketView xmlns:android="http://schemas.android.com/apk/res/android"
++            xmlns:app="http://schemas.android.com/apk/res-auto"
++            xmlns:tools="http://schemas.android.com/tools"
++            android:id="@+id/bracket_root"
++            style="@style/menu_edit_text"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_margin="0dp"
++            app:layout_constraintLeft_toLeftOf="parent"
++            app:layout_constraintTop_toTopOf="parent"
++            tools:context=".Bracket">
+ 
+-        <TextView
+-            android:id="@+id/one_participant_message"
+-            android:layout_width="200dp"
+-            android:layout_height="wrap_content"
+-            android:text="Bracket will display here when there are two or more participants added"
+-            android:visibility="gone"
+-            app:layout_constraintLeft_toLeftOf="parent"
+-            app:layout_constraintTop_toTopOf="parent" />
++            <TextView
++                android:id="@+id/one_participant_message"
++                android:layout_width="200dp"
++                android:layout_height="wrap_content"
++                android:text="Bracket will display here when there are two or more participants added"
++                android:visibility="gone"
++                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintTop_toTopOf="parent" />
+ 
+-        <ferox.bracket.LoadingView
+-            android:id="@+id/loading_view"
+-            android:layout_width="match_parent"
+-            android:layout_height="80dp"
+-            android:gravity="center_horizontal"
+-            android:textSize="50dp"
+-            app:layout_constraintLeft_toLeftOf="parent"
+-            app:layout_constraintTop_toTopOf="parent" />
++            <ferox.bracket.LoadingView
++                android:id="@+id/loading_view"
++                android:layout_width="match_parent"
++                android:layout_height="80dp"
++                android:gravity="center_horizontal"
++                android:textSize="50dp"
++                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintTop_toTopOf="parent" />
+ 
+-        <LinearLayout
+-            android:id="@+id/round_winners"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:orientation="horizontal"
+-            app:layout_constraintLeft_toLeftOf="parent" />
++            <LinearLayout
++                android:id="@+id/round_winners"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:orientation="horizontal"
++                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintTop_toTopOf="parent" />
+ 
+-        <LinearLayout
+-            android:id="@+id/bracket_winners"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:orientation="horizontal"
+-            app:layout_constraintTop_toBottomOf="@id/round_winners" />
++            <LinearLayout
++                android:id="@+id/bracket_winners"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:orientation="horizontal"
++                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintTop_toBottomOf="@id/round_winners" />
+ 
+-        <LinearLayout
+-            android:id="@+id/round_losers"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:orientation="horizontal"
+-            app:layout_constraintTop_toBottomOf="@id/bracket_winners" />
++            <LinearLayout
++                android:id="@+id/round_losers"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:orientation="horizontal"
++                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintTop_toBottomOf="@id/bracket_winners" />
+ 
+-        <LinearLayout
+-            android:id="@+id/bracket_losers"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:orientation="horizontal"
+-            app:layout_constraintTop_toBottomOf="@id/round_losers" />
++            <LinearLayout
++                android:id="@+id/bracket_losers"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:orientation="horizontal"
++                app:layout_constraintLeft_toLeftOf="parent"
++                app:layout_constraintTop_toBottomOf="@id/round_losers" />
+ 
+ 
+-    </ferox.bracket.BracketView>
++        </ferox.bracket.BracketView>
++    </ferox.bracket.MyZoomLayout>
++    <!--<LinearLayout-->
++    <!--android:layout_width="wrap_content"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:orientation="horizontal">-->
++
++    <!--<LinearLayout-->
++    <!--android:layout_width="match_parent"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:orientation="vertical">-->
++
++    <!--<TextView-->
++    <!--android:id="@+id/bracket_width"-->
++    <!--style="@style/menu_h2"-->
++    <!--android:layout_width="60dp"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:layout_margin="2dp"-->
++    <!--android:hint="width"-->
++    <!--android:maxLines="1"-->
++    <!--android:textSize="15sp" />-->
++
++    <!--<TextView-->
++    <!--android:id="@+id/bracket_height"-->
++    <!--style="@style/menu_h2"-->
++    <!--android:layout_width="60dp"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:layout_margin="2dp"-->
++    <!--android:hint="height"-->
++    <!--android:maxLines="1"-->
++    <!--android:textSize="15sp" />-->
++    <!--</LinearLayout>-->
++
++    <!--<LinearLayout-->
++    <!--android:layout_width="match_parent"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:orientation="vertical">-->
++
++    <!--<TextView-->
++    <!--android:id="@+id/bracket_max_dx"-->
++    <!--style="@style/menu_h2"-->
++    <!--android:layout_width="90dp"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:layout_margin="2dp"-->
++    <!--android:hint="maxdx"-->
++    <!--android:maxLines="1"-->
++    <!--android:textSize="15sp" />-->
++
++    <!--<TextView-->
++    <!--android:id="@+id/bracket_max_dy"-->
++    <!--style="@style/menu_h2"-->
++    <!--android:layout_width="90dp"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:layout_margin="2dp"-->
++    <!--android:hint="maxdy"-->
++    <!--android:maxLines="1"-->
++    <!--android:textSize="15sp" />-->
++    <!--</LinearLayout>-->
++
++    <!--<LinearLayout-->
++    <!--android:layout_width="match_parent"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:orientation="vertical">-->
++
++    <!--<TextView-->
++    <!--android:id="@+id/bracket_dx"-->
++    <!--style="@style/menu_h2"-->
++    <!--android:layout_width="90dp"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:layout_margin="2dp"-->
++    <!--android:hint="dx"-->
++    <!--android:maxLines="1"-->
++    <!--android:textSize="15sp" />-->
++
++    <!--<TextView-->
++    <!--android:id="@+id/bracket_dy"-->
++    <!--style="@style/menu_h2"-->
++    <!--android:layout_width="90dp"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:layout_margin="2dp"-->
++    <!--android:hint="dy"-->
++    <!--android:maxLines="1"-->
++    <!--android:textSize="15sp" />-->
++
++
++    <!--</LinearLayout>-->
++
++    <!--<TextView-->
++    <!--android:id="@+id/bracket_scale"-->
++    <!--style="@style/menu_h2"-->
++    <!--android:layout_width="90dp"-->
++    <!--android:layout_height="wrap_content"-->
++    <!--android:layout_margin="2dp"-->
++    <!--android:hint="scale"-->
++    <!--android:maxLines="1"-->
++    <!--android:textSize="15sp" />-->
++    <!--</LinearLayout>-->
+ 
+-</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/java/ferox/bracket/BracketFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/BracketFragment.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/BracketFragment.java	(date 1556279985243)
+@@ -1,9 +1,7 @@
+ package ferox.bracket;
+ 
+-import android.content.Context;
+ import android.content.Intent;
+ import android.os.Bundle;
+-import android.util.Log;
+ import android.view.Gravity;
+ import android.view.LayoutInflater;
+ import android.view.View;
+@@ -11,7 +9,15 @@
+ import android.widget.LinearLayout;
+ import android.widget.Space;
+ import android.widget.TextView;
++import android.widget.Toast;
+ 
++import androidx.annotation.NonNull;
++import androidx.annotation.Nullable;
++import androidx.constraintlayout.widget.ConstraintLayout;
++import androidx.core.widget.NestedScrollView;
++import androidx.fragment.app.Fragment;
++
++import com.google.gson.Gson;
+ import com.google.gson.JsonArray;
+ import com.google.gson.JsonElement;
+ import com.google.gson.JsonObject;
+@@ -21,11 +27,6 @@
+ import java.util.Collections;
+ import java.util.Map;
+ 
+-import androidx.annotation.NonNull;
+-import androidx.annotation.Nullable;
+-import androidx.constraintlayout.widget.ConstraintLayout;
+-import androidx.fragment.app.Fragment;
+-
+ public class BracketFragment extends Fragment {
+ 
+     final static int UNUSED_WINNERS = 0;
+@@ -34,11 +35,19 @@
+     final static String SINGLE_ELIM = "single elimination";
+     final static String DOUBLE_ELIM = "double elimination";
+     final static String ROUND_ROBIN = "round robin";
++    final static String SWISS = "swiss";
+     final static String AWAITING_REVIEW = "awaiting_review";
+     final static String UNDERWAY = "underway";
+     final static String PENDING = "pending";
+     final static String COMPLETE = "complete";
+ 
++    TextView width;
++    TextView height;
++    TextView maxdx;
++    TextView maxdy;
++    TextView dx;
++    TextView dy;
++    TextView scale;
+ 
+     TextView yposition;
+     TextView bracketHeight;
+@@ -53,6 +62,7 @@
+     private int numRoundsLosers;
+ 
+     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
++    Tournament currentTournament;
+ 
+     ArrayList<Round> winnersRounds;
+     ArrayList<Round> losersRounds;
+@@ -63,13 +73,15 @@
+     int numberOfParticipants;
+ 
+ 
+-    private BracketView bv;
++    private MyZoomLayout zoomLayout;
+     private LoadingView lv;
+     private LinearLayout roundWinners;
+     private LinearLayout roundLosers;
+     private LinearLayout bracketWinners;
+     private LinearLayout bracketLosers;
+ 
++    private NestedScrollView nestedScrollView;
++
+ 
+     @Nullable
+     @Override
+@@ -78,13 +90,26 @@
+ 
+         Intent intent = getActivity().getIntent();
+         View v = inflater.inflate(R.layout.fragment_bracket, container, false);
+-        bv = v.findViewById(R.id.bracket_root);
++        currentTournament = new Tournament();
++
++        zoomLayout = v.findViewById(R.id.bracket_zoom_layout);
++//
++//        width = v.findViewById(R.id.bracket_width);
++//        height = v.findViewById(R.id.bracket_height);
++//        maxdx = v.findViewById(R.id.bracket_max_dx);
++//        maxdy = v.findViewById(R.id.bracket_max_dy);
++//        dx = v.findViewById(R.id.bracket_dx);
++//        dy = v.findViewById(R.id.bracket_dy);
++//        scale = v.findViewById(R.id.bracket_scale);
++
++
+         roundWinners = v.findViewById(R.id.round_winners);
+         bracketWinners = v.findViewById(R.id.bracket_winners);
+         roundLosers = v.findViewById(R.id.round_losers);
+         bracketLosers = v.findViewById(R.id.bracket_losers);
+         lv = v.findViewById(R.id.loading_view);
+ 
++
+         mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height);
+         mWidthUnit = getResources().getDimensionPixelSize(R.dimen.match_width);
+ 
+@@ -99,13 +124,40 @@
+         numberOfParticipants = intent.getIntExtra("tournamentSize", 0);
+ 
+ 
+-        ChallongeRequests.sendRequest(response -> getTournamentInfo(response), ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url));
++        ChallongeRequests.sendRequest(response -> getTournamentRoundInfo(response), ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(url));
++
++
++//        int delay = 100; //milliseconds
++//
++//        Handler handler = new Handler();
++//        handler.postDelayed(new Runnable(){
++//            public void run(){
++//                //do something
++//                width.setText(String.valueOf(zoomLayout.child().getWidth()));
++//                height.setText(String.valueOf(zoomLayout.child().getHeight()));
++//                maxdx.setText(String.valueOf(zoomLayout.minDx));
++//                maxdy.setText(String.valueOf(zoomLayout.minDy));
++//                dx.setText(String.valueOf(zoomLayout.dx));
++//                dy.setText(String.valueOf(zoomLayout.dy));
++//                scale.setText(String.valueOf(zoomLayout.scale));
++//
++//                handler.postDelayed(this, delay);
++//            }
++//        }, delay);
++
+ 
+         return v;
+     }
+ 
+ 
+-    private void getTournamentInfo(String jsonString) {
++    private void getTournamentInfo2(String jsonString) {
++        Gson gson = new Gson();
++        JsonParser jsonParser = new JsonParser();
++        JsonElement tournamentInfo = jsonParser.parse(jsonString);
++
++    }
++
++    private void getTournamentRoundInfo(String jsonString) {
+         JsonParser jsonParser = new JsonParser();
+         JsonElement tournament = jsonParser.parse(jsonString);
+         JsonObject matchesByRound = tournament.getAsJsonObject().get("matches_by_round").getAsJsonObject();
+@@ -127,7 +179,7 @@
+             String name = holder.get(i).getName();
+             JsonArray round = holder.get(i).getJsonArr();
+             Round roundTmp = new Round();
+-            roundTmp.setName(name);
++            roundTmp.setTitle(name);
+             roundTmp.setNumber(Integer.parseInt(name));
+             if (roundTmp.getNumber() < 0) {
+                 losersRounds.add(roundTmp);
+@@ -212,9 +264,7 @@
+             oneParticipantMessage.setVisibility(View.GONE);
+             makeBracketDisplay();
+             lv.hide();
+-            //Log.d("sBDbracketSize", String.valueOf(bracketWinners.getChildCount()));
+-            //setMatchInfo(bracketWinners, winnersRounds);
+-//            setMatchInfo(bracketLosers, losersRounds);
++
+         }
+ 
+     }
+@@ -225,105 +275,88 @@
+      */
+     private void makeBracketDisplay() {
+ 
+-
+         if (!type.equals(ROUND_ROBIN)) {
+             setRoundHeaders(8);
+         }
+-
+         makeWinners();
+         makeLosers();
+-
++        setUnusedMatchesInvisible();
++        setMatchInfo();
+ 
+-        //The round of the bracket is initially constructed as if it is a "full" round, and then unused matches are set inivisible
+-//        if (qualifyRound != 0) {
+-////            setUnusedMatchesInvisible(bracketWinners, winnersRounds, UNUSED_WINNERS);
+-//        }
+-//        Log.d("numPart", String.valueOf(numberOfParticipants));
+-//        if (losersRounds.size() > 2) {
+-//            if (losersRounds.size() % 2 == 1) {
+-//                setUnusedMatchesInvisible(bracketLosers, losersRounds, UNUSED_LOSERS_ODD);
+-//            } else {
+-//                setUnusedMatchesInvisible(bracketLosers, losersRounds, UNUSED_LOSERS_EVEN);
+-//            }
+-//        }
+-//
+-//
+     }
+ 
+-    /*
+-    Get list of all matches and set the bracket accordingly
+-     */
++    private void setMatchInfo() {
++        //double/single elim matches
++        if (type.equals(DOUBLE_ELIM) || type.equals(SINGLE_ELIM)) {
++            //get number of rounds minus double elim grands
++            int numberOfRoundsWinners = type.equals(DOUBLE_ELIM) ? winnersRounds.size() - 1 : winnersRounds.size();
+ 
+-    private void setMatchInfo(LinearLayout bracket, ArrayList<Round> roundList) {
+-
+-        //TODO this shit gotta be remade
+-        Log.d("setMatchInfo", "This is being called");
+-
+-        Log.d("bracketSize", String.valueOf(bracket.getChildCount()));
+-        if (type.equals("round robin")) {
+-            return;
+-        }
+-
+-        for (int i = 0; i < roundList.size(); i++) {
+-            LinearLayout round = (LinearLayout) bracket.getChildAt(2 * i);
+-            Round roundInfo = roundList.get(i);
+-            //this case deals with the qualifying round, Player 1 of the first match of the first
+-            //round in an uneven bracket will never have the first seed
+-            if (i < roundList.size() - 1 || i == 0) {
+-                int tracker = 0;
+-                for (int j = 0; tracker < roundInfo.getMatchList().size() && j < round.getChildCount(); j++) {
++            //set winners match info
++            for (int i = 0; i < numberOfRoundsWinners; i++) {
++                ArrayList<Match> matches = winnersRounds.get(i).getMatchList();
++                LinearLayout round = (LinearLayout) bracketWinners.getChildAt(2 * i);
++                int iterator = 0;
++                for (int j = 0; j < round.getChildCount(); j++) {
++                    //must only set info for the visible constraintlayout/ignore unused matches
+                     if (round.getChildAt(j) instanceof ConstraintLayout && round.getChildAt(j).getVisibility() == View.VISIBLE) {
+-                        setMatchView((ConstraintLayout) round.getChildAt(j), roundInfo.getMatchList().get(tracker));
+-                        tracker++;
++                        setMatchView((ConstraintLayout) round.getChildAt(j), matches.get(iterator));
++                        iterator++;
+                     }
++                }
++            }
+ 
+-                }
+-            } else {
+-                //grands and grands reset
+-                if (roundInfo.getMatchList().size() == 1) {
+-                    setMatchView((ConstraintLayout) round.getChildAt(1), roundInfo.getMatchList().get(0));
+-                } else {
+-                    LinearLayout reset = (LinearLayout) bracket.getChildAt(bracket.getChildCount() - 1);
+-                    setMatchView((ConstraintLayout) round.getChildAt(1), roundInfo.getMatchList().get(0));
+-                    setMatchView((ConstraintLayout) reset.getChildAt(1), roundInfo.getMatchList().get(1));
+-                }
+-            }
+-            //even bracket
+-//            else if (roundInfo.getNumber() == 1 && roundInfo.getMatchList().get(0).getP1Seed() == 1) {
+-//                for (int j = 0; j < roundInfo.getMatchList().size(); j++) {
+-//
+-//                    setMatchView((ConstraintLayout) round.getChildAt(j * 2), roundInfo.getMatchList().get(j));
+-//                }
+-//            }
+-//              else {
+-//                for (int j = 0; j < roundInfo.getMatchList().size(); j++) {
+-//                    if (roundInfo.getNumber() != numRoundsWinners) {
+-//                        setMatchView((ConstraintLayout) round.getChildAt((j * 2) + 1), roundInfo.getMatchList().get(j));
+-//                    } else {
+-//                        //if single elim then you are at the final round
+-//                        if (type.equals("single elimination")) {
+-//                            setMatchView((ConstraintLayout) round.getChildAt(1), roundInfo.getMatchList().get(0));
+-//                        }
+-//                        //if double elim then you are at grand finals, according to the API grand
+-//                        //finals and grand finals reset are considered the same round
+-//                        else if (type.equals("double elimination")) {
+-//                            LinearLayout reset = (LinearLayout) bracket.getChildAt(bracket.getChildCount() - 1);
+-//
+-//                            setMatchView((ConstraintLayout) round.getChildAt(1), roundInfo.getMatchList().get(0));
+-//                            setMatchView((ConstraintLayout) reset.getChildAt(1), roundInfo.getMatchList().get(1));
+-//                        }
+-//                    }
+-//                }
+-//            }
+-        }
++            //sets grand finals in double elim
++            //magic numbers are to get the specific location of the grand finals matches in the layout
++            // an iterating method could be used just to eliminate use of magic numbers but these locations
++            //should be constant across any double elim bracket constructed with this program
++            if (type.equals(DOUBLE_ELIM)) {
++                LinearLayout GF1 = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 3);
++                LinearLayout GF2 = (LinearLayout) bracketWinners.getChildAt(bracketWinners.getChildCount() - 1);
++                ConstraintLayout GF1Match = (ConstraintLayout) GF1.getChildAt(1);
++                ConstraintLayout GF2Match = (ConstraintLayout) GF2.getChildAt(1);
++                setMatchView(GF1Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(0));
++                setMatchView(GF2Match, winnersRounds.get(winnersRounds.size() - 1).getMatchList().get(1));
++            }
++
++            //set losers match info
++            for (int i = 0; i < losersRounds.size(); i++) {
++                ArrayList<Match> matches = losersRounds.get(i).getMatchList();
++                LinearLayout round = (LinearLayout) bracketLosers.getChildAt(2 * i);
++                int iterator = 0;
++                for (int j = 0; j < round.getChildCount(); j++) {
++                    //must only set info for the visible constraintlayout/ignore unused matches
++                    if (round.getChildAt(j) instanceof ConstraintLayout && round.getChildAt(j).getVisibility() == View.VISIBLE) {
++                        setMatchView((ConstraintLayout) round.getChildAt(j), matches.get(iterator));
++                        iterator++;
++                    }
++                }
++            }
+ 
+-        bv.invalidate();
++        } else if (type.equals(ROUND_ROBIN) || type.equals(SWISS)) {
++            for (int i = 0; i < winnersRounds.size(); i++) {
++                ArrayList<Match> matches = winnersRounds.get(i).getMatchList();
++                LinearLayout round = (LinearLayout) bracketWinners.getChildAt(2 * i + 1);
++                int iterator = 0;
++                for (int j = 0; j < round.getChildCount(); j++) {
++                    //must only set info for the visible constraintlayout/ignore unused matches
++                    if (round.getChildAt(j) instanceof ConstraintLayout) {
++                        setMatchView((ConstraintLayout) round.getChildAt(j), matches.get(iterator));
++                        iterator++;
++                    }
++                }
++            }
++        }
++
++
+     }
+ 
+     private void setMatchView(ConstraintLayout match, Match matchInfo) {
+ 
+ 
+         TextView matchNumber = match.findViewById(R.id.matchNumber);
++
++        matchNumber.setOnClickListener(v -> Toast.makeText(getContext(), matchNumber.getText(), Toast.LENGTH_SHORT).show());
++
+         matchNumber.setText(String.valueOf(matchInfo.getNumber()));
+         TextView P1Seed = match.findViewById(R.id.seed1);
+         P1Seed.setText(String.valueOf(matchInfo.getP1Seed()));
+@@ -368,65 +401,38 @@
+     }
+ 
+ 
+-    private void makeGrandFinals(int multiplier, ViewGroup vg) {
+-
+-        makeBracketConnectors(1, multiplier, vg, 1);
+-        makeRound(1, multiplier, vg, 1);
+-        makeBracketConnectors(1, multiplier, vg, 2);
+-        makeRound(1, multiplier, vg, 1);
+-
+-
+-    }
+-/*
+-Method makeRound
+-modifier -method to deal with grand finals
+-TODO method could probably be refactored into two different methods to make it more elegant
+- */
++    private void makeGrandFinals() {
+ 
+-    private void makeRound(int numMatches, int multiplier, ViewGroup vg, int modifier) {
+-
+-        Log.d("makeRoundCalled", String.valueOf(modifier));
+-        LinearLayout matches = new LinearLayout(this.getContext());
+         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+-        matches.setLayoutParams(layoutParams);
+-        matches.setOrientation(LinearLayout.VERTICAL);
+-        matches.setGravity(Gravity.CENTER);
+-
+-
+-        //for every round after round 1 there is a space added before the matches for alignment
+-        if (multiplier != 0 || modifier == 1) {
+-            Space space = new Space(this.getContext());
+-            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+-                    mHeightUnit * (int) (Math.pow(2, multiplier + 1) - 2 + (modifier == 0 ? 0 : 1))));
+-            matches.addView(space);
+-        }
+-
+-        //creates the matches
+-        for (int j = 0; j < numMatches; j++) {
+-            LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+-            assert inflater != null;
+-            ConstraintLayout match = (ConstraintLayout) inflater.inflate(R.layout.match, null);
+-
+-            Space space = new Space(this.getContext());
+-            space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+-                    (mHeightUnit * ((int) Math.pow(2, multiplier + 2) - 2))));
+-            if (j == numMatches - 1) {
+-                space.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+-                        mHeightUnit));
+-            }
+-
+-
+-            matches.addView(match);
+-
+-            matches.addView(space);
+ 
+-        }
++        LinearLayout BCV1 = new LinearLayout(getContext());
++        BCV1.setLayoutParams(layoutParams);
++        BCV1.setOrientation(LinearLayout.VERTICAL);
++        LinearLayout grandFinals = new LinearLayout(getContext());
++        grandFinals.setLayoutParams(layoutParams);
++        grandFinals.setOrientation(LinearLayout.VERTICAL);
++        LinearLayout BCV2 = new LinearLayout(getContext());
++        BCV2.setLayoutParams(layoutParams);
++        BCV2.setOrientation(LinearLayout.VERTICAL);
++        LinearLayout grandFinalsReset = new LinearLayout(getContext());
++        grandFinalsReset.setLayoutParams(layoutParams);
++        grandFinalsReset.setOrientation(LinearLayout.VERTICAL);
+ 
++        BCV1.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2) - 0.5));
++        grandFinals.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
++        BCV2.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
++        grandFinalsReset.addView(makeSpaceComponent(Math.pow(2, winnersRounds.size() - 2)));
+ 
+-        vg.addView(matches);
++        BCV1.addView(makeBCVComponent(0, bracketConnectorView.MODE_TOP));
++        grandFinals.addView(makeMatchComponent());
++        BCV2.addView(makeBCVComponent(0, bracketConnectorView.MODE_MIDDLE));
++        grandFinalsReset.addView(makeMatchComponent());
+ 
+-
++        bracketWinners.addView(BCV1);
++        bracketWinners.addView(grandFinals);
++        bracketWinners.addView(BCV2);
++        bracketWinners.addView(grandFinalsReset);
+     }
+ 
+     private void makeWinners() {
+@@ -476,7 +482,14 @@
+                     bracketWinners.addView(bcvLayout);
+                 }
+             }
+-        } else if (type.equals(ROUND_ROBIN)) {
++            //double elimination grand finals
++
++            if (type.equals(DOUBLE_ELIM)) {
++
++                makeGrandFinals();
++            }
++
++        } else if (type.equals(ROUND_ROBIN) || type.equals(SWISS)) {
+             for (int i = 0; i < winnersRounds.size(); i++) {
+                 bracketWinners.setOrientation(LinearLayout.VERTICAL);
+                 LayoutInflater inflater = getLayoutInflater();
+@@ -503,9 +516,11 @@
+         int totalRounds = losersRounds.size();
+ 
+         //This double is for helping keep track of the number of matches to add to each losers round
+-        int shift = (totalRounds % 2);
++        double shift = (totalRounds % 2) == 0 ? 0.5 : 0;
++
+ 
+         for (int i = totalRounds; i > 0; i--) {
++            double multiplier = Math.floor((i / 2.0) + 1 + shift);
+             LinearLayout roundLayout = new LinearLayout(getContext());
+             roundLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+@@ -514,10 +529,10 @@
+             bcvLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+             bcvLayout.setOrientation(LinearLayout.VERTICAL);
+-            int preRoundSpaceSize = (i + shift - 1) / 2;
++
+ 
+             //makes space that offsets the height of subsequent rounds
+-            roundLayout.addView(makeSpaceComponent(Math.pow(2, preRoundSpaceSize) - 1));
++            roundLayout.addView(makeSpaceComponent(Math.pow(2, multiplier - 1) - 1));
+ 
+ 
+             //number of matches in "full" round, not all match slots will be used in which case they will be set invisible
+@@ -526,12 +541,12 @@
+             for (int j = 0; j < numMatches; j++) {
+                 roundLayout.addView(makeMatchComponent());
+                 if (j < numMatches - 1) {
+-                    roundLayout.addView(makeSpaceComponent(Math.pow(2, (i / 2) + shift) - 1));
++                    roundLayout.addView(makeSpaceComponent((Math.pow(2, multiplier)) - 1));
+                 }
+             }
+ 
+-
+-            if (i % 2 == 1) {
++            //Bracket connector views
++            if ((totalRounds - i) % 2 == 0) {
+                 for (int j = 0; j < numMatches / 2; j++) {
+                     bcvLayout.addView(makeSpaceComponent(Math.pow(2, i / 2) - 0.5));
+                     bcvLayout.addView(makeBCVComponent(i / 2, bracketConnectorView.MODE_TOP));
+@@ -540,11 +555,12 @@
+                     bcvLayout.addView(makeSpaceComponent(1));
+                 }
+             } else {
+-                bcvLayout.addView(makeSpaceComponent(Math.pow(2, preRoundSpaceSize) - 1));
++                //preround space for BCV
++                bcvLayout.addView(makeSpaceComponent(Math.pow(2, multiplier - 1) - 1));
+                 for (int j = 0; j < numMatches; j++) {
+                     bcvLayout.addView(makeBCVComponent(0, bracketConnectorView.MODE_MIDDLE));
+                     if (j < numMatches - 1) {
+-                        bcvLayout.addView(makeSpaceComponent(Math.pow(2, (i / 2) + shift) - 1));
++                        bcvLayout.addView(makeSpaceComponent(Math.pow(2, multiplier) - 1));
+                     }
+                 }
+             }
+@@ -558,6 +574,7 @@
+         }
+     }
+ 
++
+     // get match layout
+     private ConstraintLayout makeMatchComponent() {
+         LayoutInflater inflater = getLayoutInflater();
+@@ -574,6 +591,7 @@
+         return space;
+     }
+ 
++    //TODO this takes in an int multiplier whereas the other two take a double of absolute height
+     //get bracketConnectorView
+     private bracketConnectorView makeBCVComponent(int heightMultiplier, int mode) {
+         bracketConnectorView bcv = new bracketConnectorView(getContext(), null, mHeightUnit * (int) Math.pow(2, heightMultiplier), mode, null);
+@@ -582,7 +600,6 @@
+ 
+     private void makeBracketConnectors(int numMatches, int multiplier, ViewGroup vg, int modifier) {
+ 
+-        Log.d("makeBCCalled", String.valueOf(modifier));
+ 
+         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+@@ -678,66 +695,97 @@
+             TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
+             roundNumber.setLayoutParams(roundHeaderLayoutParams);
+             roundNumber.setGravity(Gravity.CENTER);
+-            roundNumber.setText(winnersRounds.get(i).getName());
++            roundNumber.setText(winnersRounds.get(i).getTitle());
+             roundWinners.addView(roundNumber);
+         }
+         for (int i = 0; i < losersRounds.size(); i++) {
+             TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
+             roundNumber.setLayoutParams(roundHeaderLayoutParams);
+             roundNumber.setGravity(Gravity.CENTER);
+-            roundNumber.setText(losersRounds.get(i).getName());
++            roundNumber.setText(losersRounds.get(i).getTitle());
+             roundLosers.addView(roundNumber);
+         }
+ 
+     }
+ 
+ 
+-    private void setUnusedMatchesInvisible(LinearLayout linLayout, ArrayList<Round> roundList, int mode) {
++    private void setUnusedMatchesInvisible() {
++
+ 
+-        ViewGroup QR = (LinearLayout) linLayout.getChildAt(0);
+-        ViewGroup QRBC = (LinearLayout) linLayout.getChildAt(1);
+-        ArrayList<Match> byeRound = roundList.get(1).getMatchList();
+-        //winners round
+-        if (mode == 0) {
++        //winners
++        if ((type.equals(DOUBLE_ELIM) || type.equals(SINGLE_ELIM)) && winnersRounds.size() > 1) {
++            LinearLayout firstRoundLayout = (LinearLayout) bracketWinners.getChildAt(0);
++            LinearLayout firstRoundBC = (LinearLayout) bracketWinners.getChildAt(1);
++            Round secondRound = winnersRounds.get(1);
++            ArrayList<Match> secondRoundMatches = secondRound.getMatchList();
++            for (int i = 0; i < secondRoundMatches.size(); i++) {
+ 
+-            for (int i = 0; i < byeRound.size(); i++) {
+-                Log.d("unusedIndex", String.valueOf(i));
+-                Log.d("p1prev", String.valueOf(byeRound.get(i).getP1PreviousIdentifier()));
+-                Log.d("p2prev", String.valueOf(byeRound.get(i).getP2PreviousIdentifier()));
+-                if (byeRound.get(i).getP1PreviousIdentifier() == 0) {
+-                    QR.getChildAt(4 * i).setVisibility(View.INVISIBLE);
+-                    QRBC.getChildAt(5 * i + 1).setVisibility(View.INVISIBLE);
++                //TODO Possible change so that the match will go through the layout until its gotten to the i matchLayout, gets rid of magic number but loses out on random access
++                //Or just refactor these numbers to static final ints
++                if (secondRoundMatches.get(i).getP1PreviousIdentifier() == 0) {
++                    //index of of matchLayout and BCV corresponding to current second round index
++                    int matchLayoutIndex = (4 * i) + 1;
++                    int bcvIndex = (5 * i) + 1;
++                    firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
++                    firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
++                }
++                if (secondRoundMatches.get(i).getP2PreviousIdentifier() == 0) {
++                    int matchLayoutIndex = (4 * i) + 3;
++                    int bcvIndex = (5 * i) + 2;
++                    firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
++                    firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
+                 }
+-                if (byeRound.get(i).getP2PreviousIdentifier() == 0) {
+-                    QR.getChildAt(4 * i + 2).setVisibility(View.INVISIBLE);
+-                    QRBC.getChildAt(5 * i + 2).setVisibility(View.INVISIBLE);
+-                }
+-            }
+-        } else if (mode == 1) {
+-            for (int i = 0; i < byeRound.size(); i++) {
++            }
++        }
++
++        //losers
++        if ((!type.equals(ROUND_ROBIN)) && losersRounds.size() > 1) {
++            LinearLayout firstRoundLayout = (LinearLayout) bracketLosers.getChildAt(0);
++            LinearLayout firstRoundBC = (LinearLayout) bracketLosers.getChildAt(1);
++            LinearLayout secondRoundLayout = (LinearLayout) bracketLosers.getChildAt(2);
++            Round secondRound = losersRounds.get(1);
++            ArrayList<Match> secondRoundMatches = secondRound.getMatchList();
++
++
++            //handles two scenarios where if first round match capacity is larger than second round
++            if (firstRoundLayout.getChildCount() > secondRoundLayout.getChildCount()) {
++                for (int i = 0; i < secondRoundMatches.size(); i++) {
+ 
+-                if (!(byeRound.get(i).getP1PrereqText().equals(""))) {
+-                    QR.getChildAt(4 * i).setVisibility(View.INVISIBLE);
+-                    QRBC.getChildAt(5 * i + 1).setVisibility(View.INVISIBLE);
+-                }
+-                if (!(byeRound.get(i).getP2PrereqText().equals(""))) {
+-                    QR.getChildAt(4 * i + 2).setVisibility(View.INVISIBLE);
+-                    QRBC.getChildAt(5 * i + 2).setVisibility(View.INVISIBLE);
+-                }
+-            }
+-        } else if (mode == 2) {
+-            for (int i = 0; i < byeRound.size(); i++) {
++                    //if a round 2 losers match has prereq text then it means that the the players comes froms winners
++                    //therefore the unused match slot in LR1 should bet set invisible
++                    if (!secondRoundMatches.get(i).getP1PrereqText().equals("")) {
++                        //index of of matchLayout and BCV corresponding to current second round index
++                        int matchLayoutIndex = (4 * i) + 1;
++                        int bcvIndex = (5 * i) + 1;
++                        firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
++                        firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
++                    }
++                    if (!secondRoundMatches.get(i).getP2PrereqText().equals("")) {
++                        int matchLayoutIndex = (4 * i) + 3;
++                        int bcvIndex = (5 * i) + 2;
++                        firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
++                        firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
++                    }
++                }
++
++            } else {
++                for (int i = 0; i < secondRoundMatches.size(); i++) {
++                    //if a round 2 losers match has prereq text then it means that the the players comes froms winners
++                    //therefore the unused match slot in LR1 should bet set invisible
++
+ 
+-                if (!(byeRound.get(i).getP2PrereqText().equals(""))) {
+-                    QR.getChildAt(2 * i).setVisibility(View.INVISIBLE);
+-                    QRBC.getChildAt(2 * i).setVisibility(View.INVISIBLE);
+-                }
+-            }
+-        }
+-    }
++                    if (!secondRoundMatches.get(i).getP2PrereqText().equals("")) {
++                        int matchLayoutIndex = (2 * i) + 1;
++                        int bcvIndex = (2 * i) + 1;
++                        firstRoundLayout.getChildAt(matchLayoutIndex).setVisibility(View.INVISIBLE);
++                        firstRoundBC.getChildAt(bcvIndex).setVisibility(View.INVISIBLE);
++                    }
++                }
++            }
++
++        }
+ 
+-    private void setUnusedMatchesInvisible2() {
+-        
++
+     }
+ 
+     public void setGrandsResetInvis() {
+@@ -762,4 +810,6 @@
+     public LinearLayout getBracketLosers() {
+         return bracketLosers;
+     }
++
++
+ }
+Index: app/src/main/java/ferox/bracket/VolleyCallback.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/VolleyCallback.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/VolleyCallback.java	(date 1555323946241)
+@@ -3,4 +3,5 @@
+ public interface VolleyCallback {
+ 
+     void onSuccess(String response);
++
+ }
+Index: app/src/main/java/ferox/bracket/BracketView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/BracketView.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/BracketView.java	(date 1556279985196)
+@@ -1,73 +1,30 @@
+ package ferox.bracket;
+ 
+ import android.content.Context;
+-import android.content.res.Resources;
+-import android.graphics.Canvas;
+ import android.util.AttributeSet;
+-import android.util.Log;
+-import android.view.MotionEvent;
+-import android.view.ScaleGestureDetector;
+ import android.view.View;
+-import android.widget.TextView;
+ 
+ import androidx.constraintlayout.widget.ConstraintLayout;
+ 
+ 
+ public class BracketView extends ConstraintLayout {
+ 
+-
+-    private static final int INVALID_POINTER_ID = 1;
+-    private int mActivePointerId = INVALID_POINTER_ID;
+-    private float mPosX;
+-    private float mPosY;
+-    private float mLastTouchX;
+-    private float mLastTouchY;
+-    private ScaleGestureDetector mScaleDetector;
+-    private float mScaleFactor = 1f;
+-    final static float mMinZoom = 0.3f;
+-    final static float mMaxZoom = 3.0f;
+-    int screenWidth;
+-    int screenHeight;
+-    int statusBarHeight;
+-    int navigationBarHeight;
+-    int bracketFragmentToolbarHeight;
+     Context mContext;
+ 
+-
+ //    public BracketView(Context context) {
+ //        //not called?
+ //        super(context);
+ //        setWillNotDraw(false);
+-//        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+ //    }
++
+ 
+     public BracketView(Context context, AttributeSet attrs) {
++
+         super(context, attrs);
+         mContext = context;
+         setWillNotDraw(false);
+-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+-        screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+-        screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+-        bracketFragmentToolbarHeight = (int) getResources().getDimension(R.dimen.tab_layout_height);
+-        init();
+-    }
+-
+-    private void init() {
+-
+-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+-        int resourceId2 = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+-        if (resourceId > 0) {
+-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+-            Log.d("statusBarHeight", String.valueOf(statusBarHeight));
+-        }
+ 
+-        if (resourceId > 0) {
+-            navigationBarHeight = getResources().getDimensionPixelSize(resourceId2);
+-            Log.d("navigationBarHeight", String.valueOf(navigationBarHeight));
+-        }
+-
+     }
+-
+ 
+ 
+     @Override
+@@ -79,7 +36,6 @@
+         int childHspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+         int childWspec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+ 
+-
+         for (int i = 0; i < getChildCount(); i++) {
+             View child = getChildAt(i);
+             child.measure(childWspec, childHspec);
+@@ -89,137 +45,9 @@
+             childSumHeight += childHeight;
+         }
+ 
+-
+         int desiredWSpec = MeasureSpec.makeMeasureSpec(childSumWidth, MeasureSpec.UNSPECIFIED);
+-        //statusbarheight, bracket activity toolbar height and navbar height are to make it so that a part of the bracket doesnt get cut off
+-        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight + statusBarHeight + navigationBarHeight + (bracketFragmentToolbarHeight * 2), MeasureSpec.EXACTLY);
++        int desiredHSpec = MeasureSpec.makeMeasureSpec(childSumHeight, MeasureSpec.EXACTLY);
+         setMeasuredDimension(desiredWSpec, desiredHSpec);
+         super.onMeasure(desiredWSpec, desiredHSpec);
+     }
+-
+-    public void montitor(TextView tv1, TextView tv2, TextView tv3) {
+-        tv1.setText(String.valueOf(mPosY * -1));
+-        tv2.setText(String.valueOf(getHeight() * mScaleFactor));
+-        tv3.setText(String.valueOf(getHeight() * mScaleFactor - (mPosY * -1)));
+-    }
+-
+-    @Override
+-    protected void onDraw(Canvas canvas) {
+-        super.onDraw(canvas);
+-
+-        if (mPosX * -1 < 0) {
+-            mPosX = 0;
+-        } else if (mPosX * -1 > getWidth() * mScaleFactor - screenWidth + 300 && (getWidth() * mScaleFactor > screenWidth)) {
+-            mPosX = (getWidth() * mScaleFactor - screenWidth + 300) * -1;
+-        } else if ((getWidth() * mScaleFactor < screenWidth)) {
+-            mPosX = 0;
+-        }
+-
+-        //stops bracket from scrolling too far down
+-        if (mPosY * -1 < 0) {
+-            mPosY = 0;
+-        }
+-        //stops bracket from scrolling too far up
+-        else if (mPosY * -1 > getHeight() * mScaleFactor - screenHeight && (getHeight() * mScaleFactor > screenHeight)) {
+-            mPosY = (getHeight() * mScaleFactor - screenHeight) * -1;
+-        } else if ((getHeight() * mScaleFactor < screenHeight)) {
+-            mPosY = 0;
+-        }
+-
+-
+-        canvas.translate(mPosX, mPosY);
+-        canvas.scale(mScaleFactor, mScaleFactor);
+-
+-
+-    }
+-
+-
+-    @Override
+-    public boolean onTouchEvent(MotionEvent event) {
+-        //scale detector inspects all events
+-        mScaleDetector.onTouchEvent(event);
+-
+-
+-        final int action = event.getAction();
+-        switch (action & MotionEvent.ACTION_MASK) {
+-            case MotionEvent.ACTION_DOWN: {
+-                //get coordintates where screeen was touches
+-                final float x = event.getX();
+-                final float y = event.getY();
+-
+-                mLastTouchX = x;
+-                mLastTouchY = y;
+-
+-                //save the ID of the pointer
+-                mActivePointerId = event.getPointerId(0);
+-
+-                break;
+-            }
+-            case MotionEvent.ACTION_MOVE: {
+-                final int pointerIndex = event.findPointerIndex(mActivePointerId);
+-
+-                //get  coordinates of the active pointer index
+-                final float x = event.getX(pointerIndex);
+-                final float y = event.getY(pointerIndex);
+-
+-
+-                if (!mScaleDetector.isInProgress()) {
+-
+-                    //calculate distance in x/y diractions
+-                    final float distX = x - mLastTouchX;
+-                    final float distY = y - mLastTouchY;
+-
+-                    mPosX += distX;
+-                    mPosY += distY;
+-
+-                    invalidate();
+-                }
+-
+-                mLastTouchX = x;
+-                mLastTouchY = y;
+-
+-
+-                break;
+-
+-            }
+-
+-            case MotionEvent.ACTION_UP: {
+-                mActivePointerId = INVALID_POINTER_ID;
+-                break;
+-            }
+-            case MotionEvent.ACTION_CANCEL: {
+-                mActivePointerId = INVALID_POINTER_ID;
+-                break;
+-            }
+-            case MotionEvent.ACTION_POINTER_UP: {
+-                //Extract the index of the pointer that left the screen
+-                final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+-                final int pointerId = event.getPointerId(pointerIndex);
+-                if (pointerId == mActivePointerId) {
+-                    //if active pointer left screen set new active pointer
+-                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+-                    mLastTouchX = event.getX(newPointerIndex);
+-                    mLastTouchY = event.getY(newPointerIndex);
+-                    mActivePointerId = event.getPointerId(newPointerIndex);
+-                }
+-                break;
+-            }
+-
+-
+-        }
+-        return true;
+-    }
+-
+-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+-        @Override
+-        public boolean onScale(ScaleGestureDetector detector) {
+-            mScaleFactor *= detector.getScaleFactor();
+-
+-            mScaleFactor = Math.max(mMinZoom, Math.min(mMaxZoom, mScaleFactor));
+-            invalidate();
+-            return true;
+-        }
+-    }
+-
+-
+ }
+\ No newline at end of file
+Index: app/src/main/java/ferox/bracket/NewTournamentActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/NewTournamentActivity.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/NewTournamentActivity.java	(date 1556279985231)
+@@ -1,239 +1,30 @@
+ package ferox.bracket;
+ 
+-import android.app.DatePickerDialog;
+-import android.app.TimePickerDialog;
+-import android.graphics.Color;
+-import android.graphics.drawable.ColorDrawable;
+ import android.os.Bundle;
+-import android.util.Log;
+-import android.view.MotionEvent;
+-import android.view.View;
+-import android.widget.AdapterView;
+-import android.widget.ArrayAdapter;
+-import android.widget.CheckBox;
+-import android.widget.DatePicker;
+-import android.widget.EditText;
+-import android.widget.PopupMenu;
+-import android.widget.Spinner;
+-import android.widget.TextView;
+-import android.widget.TimePicker;
+-
+-import java.util.Calendar;
+-import java.util.Locale;
+ 
+ import androidx.appcompat.app.AppCompatActivity;
+-
+-public class NewTournamentActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+-
+-    final static String SINGLE_ELIMINATION = "Single Elimination";
+-    final static String DOUBLE_ELIMINATION = "Double Elimination";
+-    final static String ROUND_ROBIN = "Round Robin";
+-
+-    int setYear;
+-    int setMonth;
+-    int setDay;
+-    int setHour;
+-    String setMinute;
+-    int ampm;
++import androidx.fragment.app.FragmentManager;
++import androidx.fragment.app.FragmentTransaction;
+ 
+-    CheckBox registerAsTeam;
++public class NewTournamentActivity extends AppCompatActivity {
+ 
+-    TextView dateDay;
+-    TextView dateTime;
+-    Calendar calendar;
+-    DatePickerDialog.OnDateSetListener mOnDateSetListener;
+-    TimePickerDialog.OnTimeSetListener mOnTimeSetListener;
+-    Spinner subdomainMenu;
+-    ArrayAdapter<CharSequence> subdomainMenuAdapter;
+-    Spinner formatMenu;
+-    ArrayAdapter<CharSequence> formatMenuAdapter;
+ 
+-    EditText description;
+-
++    SettingsFragment settingsFragment;
+ 
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_new_tournament);
+ 
+-        registerAsTeam = findViewById(R.id.participants_checkbox_team_register);
+-        registerAsTeam.setSelected(true);
+-
+-        dateDay = findViewById(R.id.date_day);
+-        dateTime = findViewById(R.id.date_time);
+-        calendar = Calendar.getInstance();
+-        setYear = calendar.get(Calendar.YEAR);
+-        setMonth = calendar.get(Calendar.MONTH);
+-        setDay = calendar.get(Calendar.DAY_OF_MONTH);
+-        setHour = calendar.get(Calendar.HOUR);
+-        setMinute = String.format(Locale.ENGLISH, "%02d", calendar.get(Calendar.MINUTE));
+-        ampm = calendar.get(Calendar.AM_PM);
+-
+-
+-        String defDate = setYear + "/" + (setMonth + 1) + "/" + setDay;
+-        dateDay.setText(defDate);
+ 
++        settingsFragment = new SettingsFragment();
+ 
+-        String time = setHour + ":" + setMinute + " " + (ampm == Calendar.AM ? "AM" : "PM");
+-        dateTime.setText(time);
++        FragmentManager fragmentManager = getSupportFragmentManager();
++        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
++        fragmentTransaction.replace(R.id.new_tournament_container, settingsFragment);
++        fragmentTransaction.commit();
+ 
+-        dateDay.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-//                calendar = Calendar.getInstance();
+-//                setYear = calendar.get(Calendar.YEAR);
+-//                setMonth = calendar.get(Calendar.MONTH);
+-//                setDay = calendar.get(Calendar.DAY_OF_MONTH);
+ 
+-                DatePickerDialog datePickerDialog = new DatePickerDialog(v.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnDateSetListener, setYear, setMonth, setDay);
+-                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+-                datePickerDialog.show();
+-            }
+-        });
+-
+-        dateTime.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-//                calendar = Calendar.getInstance();
+-//                int setHour = calendar.get(Calendar.HOUR);
+-//                int setMinute = calendar.get(Calendar.MINUTE);
+-
+-                TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mOnTimeSetListener, setHour, Integer.valueOf(setMinute), false);
+-                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+-                timePickerDialog.show();
+-            }
+-        });
+-
+-        mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
+-            @Override
+-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+-
+-                String date = year + "/" + (month + 1) + "/" + dayOfMonth;
+-                dateDay.setText(date);
+-
+-                setYear = year;
+-                setMonth = month;
+-                setDay = dayOfMonth;
+-            }
+-        };
+-
+-        mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+-            @Override
+-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+-                String minuteTmp = String.format(Locale.ENGLISH, "%02d", minute);
+-
+-                Log.d("minute", minuteTmp);
+-                String AM_PM = hourOfDay < 12 ? "AM" : "PM";
+-                if (hourOfDay > 12) {
+-                    hourOfDay = hourOfDay - 12;
+-                } else if (hourOfDay == 0) {
+-                    hourOfDay = 12;
+-                }
+-
+-
+-                String time = hourOfDay + ":" + minuteTmp + " " + AM_PM;
+-                dateTime.setText(time);
+-
+-                setHour = hourOfDay;
+-                setMinute = minuteTmp;
+-            }
+-        };
+-
+-        subdomainMenu = findViewById(R.id.subdomain_menu);
+-        subdomainMenu.setOnItemSelectedListener(this);
+-        subdomainMenuAdapter = ArrayAdapter.createFromResource(this, R.array.subdomain_menu_array, R.layout.menu_spinner_item);
+-        subdomainMenuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+-        subdomainMenu.setAdapter(subdomainMenuAdapter);
+-
+-        formatMenu = findViewById(R.id.format_menu);
+-        formatMenu.setOnItemSelectedListener(this);
+-        formatMenuAdapter = ArrayAdapter.createFromResource(this, R.array.format_array, R.layout.menu_spinner_item);
+-        formatMenuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+-        formatMenu.setAdapter(formatMenuAdapter);
+-
+-        description = findViewById(R.id.description);
+-
+-        description.setOnTouchListener((v, event) -> {
+-            if (v.getId() == R.id.description) {
+-                if (v.hasFocus()) {
+-                    v.getParent().requestDisallowInterceptTouchEvent(true);
+-                }
+-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+-                    case MotionEvent.ACTION_UP:
+-                        v.getParent().requestDisallowInterceptTouchEvent(false);
+-                        break;
+-                }
+-            }
+-            return false;
+-        });
+-    }
+-
+-    @Override
+-    public void onItemSelected(AdapterView<?> parent, View view,
+-                               int pos, long id) {
+-        // An item was selected. You can retrieve the selected item using
+-        // parent.getItemAtPosition(pos)
+-        String item = (String) parent.getItemAtPosition(pos);
+-
+-
+-        if (parent == findViewById(R.id.format_menu)) {
+-            switch (item) {
+-                case SINGLE_ELIMINATION: {
+-                    findViewById(R.id.single_elim_view).setVisibility(View.VISIBLE);
+-                    findViewById(R.id.double_elim_view).setVisibility(View.GONE);
+-                    findViewById(R.id.round_robin_view).setVisibility(View.GONE);
+-                    break;
+-                }
+-                case DOUBLE_ELIMINATION: {
+-                    findViewById(R.id.single_elim_view).setVisibility(View.GONE);
+-                    findViewById(R.id.double_elim_view).setVisibility(View.VISIBLE);
+-                    findViewById(R.id.round_robin_view).setVisibility(View.GONE);
+-                    break;
+-                }
+-                case ROUND_ROBIN: {
+-                    findViewById(R.id.single_elim_view).setVisibility(View.GONE);
+-                    findViewById(R.id.double_elim_view).setVisibility(View.GONE);
+-                    findViewById(R.id.round_robin_view).setVisibility(View.VISIBLE);
+-                    break;
+-                }
+-            }
+-        }
+-    }
+-
+-    @Override
+-    public void onNothingSelected(AdapterView<?> parent) {
+-
+-    }
+-
+-
+-    public void showHostMenu(View view) {
+-        PopupMenu popup = new PopupMenu(this, view);
+-        popup.inflate(R.menu.host_menu);
+-        popup.show();
+-    }
+-
+-    public void showFormatMenu(View view) {
+-        PopupMenu popup = new PopupMenu(this, view);
+-        popup.setOnMenuItemClickListener(item -> {
+-            if (item.getItemId() == R.id.single_elim) {
+-                findViewById(R.id.single_elim_view).setVisibility(View.VISIBLE);
+-                findViewById(R.id.double_elim_view).setVisibility(View.GONE);
+-                findViewById(R.id.round_robin_view).setVisibility(View.GONE);
+-            }
+-            if (item.getItemId() == R.id.double_elim) {
+-                findViewById(R.id.single_elim_view).setVisibility(View.GONE);
+-                findViewById(R.id.double_elim_view).setVisibility(View.VISIBLE);
+-                findViewById(R.id.round_robin_view).setVisibility(View.GONE);
+-            }
+-            if (item.getItemId() == R.id.round_robin) {
+-                findViewById(R.id.single_elim_view).setVisibility(View.GONE);
+-                findViewById(R.id.double_elim_view).setVisibility(View.GONE);
+-                findViewById(R.id.round_robin_view).setVisibility(View.VISIBLE);
+-            }
+-            return false;
+-        });
+-        popup.inflate(R.menu.format_menu);
+-        popup.show();
+ 
+     }
+ 
+Index: app/src/main/res/layout/fragment_participants.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_participants.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/layout/fragment_participants.xml	(date 1555322687444)
+@@ -42,7 +42,7 @@
+         android:id="@+id/participant_list"
+         android:layout_width="match_parent"
+         android:layout_height="0dp"
+-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
++
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/players_header" />
+ 
+Index: app/src/main/res/layout/round_robin_layout.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/round_robin_layout.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/layout/round_robin_layout.xml	(date 1555416356010)
+@@ -3,7 +3,7 @@
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+-    android:id="@+id/round_robin_view">
++    android:id="@+id/round_robin_format">
+ 
+     <TextView
+         android:layout_width="match_parent"
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ .idea/misc.xml	(date 1553127763456)
+@@ -2,10 +2,10 @@
+ <project version="4">
+   <component name="NullableNotNullManager">
+     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
+-    <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
++    <option name="myDefaultNotNull" value="androidx.annotation.NonNull" />
+     <option name="myNullables">
+       <value>
+-        <list size="7">
++        <list size="10">
+           <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.Nullable" />
+           <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nullable" />
+           <item index="2" class="java.lang.String" itemvalue="javax.annotation.CheckForNull" />
+@@ -13,23 +13,29 @@
+           <item index="4" class="java.lang.String" itemvalue="android.support.annotation.Nullable" />
+           <item index="5" class="java.lang.String" itemvalue="androidx.annotation.Nullable" />
+           <item index="6" class="java.lang.String" itemvalue="androidx.annotation.RecentlyNullable" />
++          <item index="7" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.qual.Nullable" />
++          <item index="8" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NullableDecl" />
++          <item index="9" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NullableType" />
+         </list>
+       </value>
+     </option>
+     <option name="myNotNulls">
+       <value>
+-        <list size="6">
++        <list size="9">
+           <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
+           <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
+           <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
+           <item index="3" class="java.lang.String" itemvalue="android.support.annotation.NonNull" />
+           <item index="4" class="java.lang.String" itemvalue="androidx.annotation.NonNull" />
+           <item index="5" class="java.lang.String" itemvalue="androidx.annotation.RecentlyNonNull" />
++          <item index="6" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.qual.NonNull" />
++          <item index="7" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NonNullDecl" />
++          <item index="8" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NonNullType" />
+         </list>
+       </value>
+     </option>
+   </component>
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="1.8" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+   <component name="ProjectType">
+Index: app/src/main/java/ferox/bracket/Tournament.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/Tournament.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/Tournament.java	(date 1556279445036)
+@@ -1,77 +1,264 @@
+ package ferox.bracket;
+ 
++import com.google.gson.annotations.SerializedName;
++
++import java.io.UnsupportedEncodingException;
++import java.net.URLEncoder;
++import java.nio.charset.StandardCharsets;
++
+ public class Tournament {
+ 
+-    final static String SINGLE_ELIM = "single elimination";
+-    final static String DOUBLE_ELIM = "double elimination";
+-    final static String ROUND_ROBIN = "round robin";
+-    final static String AWAITING_REVIEW = "awaiting_review";
+-    final static String UNDERWAY = "underway";
+-    final static String PENDING = "pending";
+-    final static String COMPLETE = "complete";
+-    final static String MATCH_WINS = "match wins";
+-    final static String GAME_WINS = "game wins";
+-    final static String POINTS_SCORED = "points scored";
+-    final static String POINTS_DIFFERENCE = "points difference";
+-    final static String CUSTOM = "custom";
+-    final static String DEFAULT_GRANDS = "";
+-    final static String SINGLE_MATCH = "single match";
+-    final static String SKIP = "skip";
+-
++    private static final String SINGLE_ELIM = "single elimination";
++    private static final String DOUBLE_ELIM = "double elimination";
++    private static final String ROUND_ROBIN = "round robin";
++    private static final String AWAITING_REVIEW = "awaiting_review";
++    private static final String UNDERWAY = "underway";
++    private static final String PENDING = "pending";
++    private static final String COMPLETE = "complete";
++    private static final String MATCH_WINS = "match wins";
++    private static final String GAME_WINS = "game wins";
++    private static final String POINTS_SCORED = "points scored";
++    private static final String POINTS_DIFFERENCE = "points difference";
++    private static final String CUSTOM = "custom";
++    private static final String DEFAULT_GRANDS = "";
++    private static final String SINGLE_MATCH = "single match";
++    private static final String SKIP = "skip";
+ 
++    private static final String TOURNAMENT_NAME = "&tournament[name]=";
++    private static final String TOURNAMENT_TYPE = "&tournament[tournament_type]=";
++    private static final String TOURNAMENT_URL = "&tournament[url]=";
++    private static final String TOURNAMENT_SUBDOMAIN = "&tournament[subdomain]=";
++    private static final String TOURNAMENT_DESCRIPTION = "&tournament[description]=";
++    private static final String TOURNAMENT_SIGNUP = "&tournament[open_signup]=";
++    private static final String TOURNAMENT_THIRD_PLACE = "&tournament[hold_third_place_match]=";
++    private static final String TOURNAMENT_SWISS_MATCH_WIN = "&tournament[pts_for_match_win]=";
++    private static final String TOURNAMENT_SWISS_MATCH_TIE = "&tournament[pts_for_match_tie]=";
++    private static final String TOURNAMENT_SWISS_GAME_WIN = "&tournament[pts_for_game_win]=";
++    private static final String TOURNAMENT_SWISS_GAME_TIE = "&tournament[pts_for_game_tie]=";
++    private static final String TOURNAMENT_SWISS_PTS_BYE = "&tournament[pts_for_bye]=";
++    private static final String TOURNAMENT_SWISS_ROUNDS = "&tournament[swiss_rounds]=";
++    private static final String TOURNAMENT_RANKED_BY = "&tournament[ranked_by]=";
++    private static final String TOURNAMENT_RR_MATCH_WIN = "&tournament[rr_pts_for_match_win]=";
++    private static final String TOURNAMENT_RR_MATCH_TIE = "&tournament[rr_pts_for_match_tie]=";
++    private static final String TOURNAMENT_RR_GAME_WIN = "&tournament[rr_pts_for_game_win]=";
++    private static final String TOURNAMENT_RR_GAME_TIE = "&tournament[rr_pts_for_game_tie]=";
++    private static final String TOURNAMENT_ACCEPT_ATTACHMENTS = "&tournament[accept_attachments]=";
++    private static final String TOURNAMENT_SHOW_ROUNDS = "&tournament[show_rounds]=";
++    private static final String TOURNAMENT_PRIVATE = "&tournament[private]=";
++    private static final String TOURNAMENT_NOTIFY_MATCH_OPEN = "&tournament[notify_users_when_matches_opens]=";
++    private static final String TOURNAMENT_NOTIFY_TOURNAMENT_ENDS = "&tournament[notify_users_when_the_tournament_ends]=";
++    private static final String TOURNAMENT_SEQUENTIAL_PAIRINGS = "&tournament[sequential_pairings]=";
++    private static final String TOURNAMENT_SIGNUP_CAP = "&tournament[signup_cap]=";
++    private static final String TOURNAMENT_START_AT = "&tournament[start_at]=";
++    private static final String TOURNAMENT_CHECK_IN_DURATION = "&tournament[check_in_duration]=";
++    private static final String TOURNAMENT_GRAND_FINALS_MODIFIER = "&tournament[grand_finals_modifier]=";
+ 
+ 
+-
+-
++    @SerializedName("name")
+     private String name;
+-    private String tournamentType;
++    @SerializedName("tournament_type")
++    private String type;
++    @SerializedName("url")
+     private String url;
++    @SerializedName("subdomain")
+     private String subdomain;
+-    private String discription;
++    @SerializedName("description_source")
++    private String description;
++    @SerializedName("open_signup")
+     private boolean openSignUp;
++    @SerializedName("hold_third_place_match")
+     private boolean holdThirdPlaceMatch;
++    @SerializedName("pts_for_match_win")
+     private float swissPtsForMatchWin;
++    @SerializedName("pts_for_match_tie")
+     private float swissPtsForMatchTie;
++    @SerializedName("pts_for_game_win")
+     private float swissPtsForGameWin;
++    @SerializedName("pts_for_game_tie")
+     private float swissPtsForGameTie;
++    @SerializedName("pts_for_bye")
+     private float swissPtsForBye;
++    @SerializedName("swiss_rounds")
+     private int swissRounds;
+-    private String swissRankedBy;
++    //Challonge provides a value for number of rounds in swiss bracket
++    //it should be left alone but this value's purpose is to tell us if this value is explicitly set
++    //TODO remember to set this
++    private boolean isSwissRoundSet;
++    @SerializedName("ranked_by")
++    private String rankedBy;
++    @SerializedName("rr_pts_for_match_win")
+     private float rrPtsForMatchWin;
++    @SerializedName("rr_pts_for_match_tie")
+     private float rrPtsForMatchTie;
++    @SerializedName("rr_pts_for_game_win")
+     private float rrPtsForGameWin;
++    @SerializedName("rr_pts_for_game_tie")
+     private float rrPtsForGameTie;
++    @SerializedName("accept_attachments")
+     private boolean acceptAttachments;
+-    private boolean hideForum;
++    @SerializedName("show_rounds")
+     private boolean showRounds;
++    @SerializedName("private")
+     private boolean isPrivate;
++    @SerializedName("notify_users_when_matches_opens")
+     private boolean notifyUsersMatchesOpens;
++    @SerializedName("notify_users_when_the_tournament_ends")
+     private boolean notifyUsersTourneyOver;
++    @SerializedName("sequential_parings")
+     private boolean sequentialPairings;
++    @SerializedName("signup_cao")
+     private int signUpCap;
++    @SerializedName("start_at")
+     private String startAt;
++    @SerializedName("check_in_duration")
+     private int checkInDuration;
++    @SerializedName("grand_finals_modifier")
+     private String grandFinalsModifier;
+-
+-
+-
++    @SerializedName("state")
+     String state;
+-    private int size;
++    @SerializedName("participants_count")
++    private int participantCount;
+ 
++    //TODO UMM GOTTA WORK OUT CONSTRUCTORS
+ 
+     public Tournament() {
+-        this.name = "Default Name";
+-        this.url = "Defautl URL";
+-        this.tournamentType = "Default Type";
+-        this.state = "Default State";
++        name = "";
++        type = SINGLE_ELIM;
++        url = "";
++        subdomain = "";
++        description = "";
++        openSignUp = false;
++        holdThirdPlaceMatch = false;
++        swissPtsForMatchWin = 1.0f;
++        swissPtsForMatchTie = 0.5f;
++        swissPtsForGameWin = 0.0f;
++        swissPtsForGameTie = 0.0f;
++        swissPtsForBye = 1.0f;
++        swissRounds = 0;
++        isSwissRoundSet = false;
++        rankedBy = MATCH_WINS;
++        rrPtsForMatchWin = 1.0f;
++        rrPtsForMatchTie = 0.5f;
++        rrPtsForGameWin = 0.0f;
++        rrPtsForGameTie = 0.0f;
++        acceptAttachments = false;
++        showRounds = true;
++        isPrivate = false;
++        notifyUsersMatchesOpens = true;
++        notifyUsersTourneyOver = true;
++        sequentialPairings = false;
++        signUpCap = 256;
++        startAt = "";
++        checkInDuration = 0;
++        grandFinalsModifier = DEFAULT_GRANDS;
++
+     }
+ 
+     public Tournament(String name, String URL, String type, String state, int participants_count) {
+         this.name = name;
+         this.url = URL;
+-        this.tournamentType = type;
++        this.type = type;
+         this.state = state;
+-        this.size = size;
++        this.participantCount = participants_count;
++    }
++
++    public String getSettings() {
++        String settings = "";
++
++        try {
++
++            if (getName() != null) {
++                settings += TOURNAMENT_NAME + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
++            }
++            if (getType() != null) {
++                settings += TOURNAMENT_TYPE + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
++            }
++            if (getUrl() != null) {
++                settings += TOURNAMENT_URL + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
++            }
++            if (getSubdomain() != null) {
++                settings += TOURNAMENT_SUBDOMAIN + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
++            }
++            if (getDescription() != null) {
++                settings += TOURNAMENT_DESCRIPTION + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
++            }
++
++            settings += TOURNAMENT_DESCRIPTION + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_THIRD_PLACE + URLEncoder.encode(String.valueOf(isHoldThirdPlaceMatch()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_SWISS_MATCH_WIN + URLEncoder.encode(String.valueOf(getSwissPtsForMatchWin()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_SWISS_MATCH_TIE + URLEncoder.encode(String.valueOf(getSwissPtsForMatchTie()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_SWISS_GAME_WIN + URLEncoder.encode(String.valueOf(getSwissPtsForGameWin()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_SWISS_GAME_TIE + URLEncoder.encode(String.valueOf(getSwissPtsForGameTie()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_SWISS_PTS_BYE + URLEncoder.encode(String.valueOf(getSwissPtsForBye()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_SWISS_ROUNDS + URLEncoder.encode(String.valueOf(getSwissRounds()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_RANKED_BY + URLEncoder.encode(getRankedBy(), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_RR_MATCH_WIN + URLEncoder.encode(String.valueOf(getRrPtsForMatchWin()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_RR_MATCH_TIE + URLEncoder.encode(String.valueOf(getRrPtsForMatchTie()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_RR_GAME_WIN + URLEncoder.encode(String.valueOf(getRrPtsForGameWin()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_RR_GAME_TIE + URLEncoder.encode(String.valueOf(getRrPtsForGameTie()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_ACCEPT_ATTACHMENTS + URLEncoder.encode(String.valueOf(isAcceptAttachments()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_SHOW_ROUNDS + URLEncoder.encode(String.valueOf(isShowRounds()), StandardCharsets.UTF_8.toString());
++            settings += TOURNAMENT_PRIVATE + encode(isPrivate);
++            settings += TOURNAMENT_NOTIFY_MATCH_OPEN + encode(isNotifyUsersMatchesOpens());
++            settings += TOURNAMENT_NOTIFY_TOURNAMENT_ENDS + encode(isNotifyUsersTourneyOver());
++            settings += TOURNAMENT_SEQUENTIAL_PAIRINGS + encode(isSequentialPairings());
++            settings += TOURNAMENT_SIGNUP_CAP + encode(getSignUpCap());
++            settings += TOURNAMENT_START_AT + encode(getStartAt());
++            settings += TOURNAMENT_CHECK_IN_DURATION + encode(getCheckInDuration());
++            settings += TOURNAMENT_GRAND_FINALS_MODIFIER + encode(getGrandFinalsModifier());
++
++        } catch (UnsupportedEncodingException e) {
++            e.printStackTrace();
++        }
++
++        return settings;
++    }
++
++    public String encode(Object object) {
++        String encodedString = "";
++        try {
++            encodedString = URLEncoder.encode(String.valueOf(object), StandardCharsets.UTF_8.toString());
++        } catch (UnsupportedEncodingException e) {
++            e.printStackTrace();
++        }
++        return encodedString;
++    }
++
++    @Override
++    public String toString() {
++        return "Tournament{" +
++                "name='" + name + '\'' +
++                ", type='" + type + '\'' +
++                ", url='" + url + '\'' +
++                ", subdomain='" + subdomain + '\'' +
++                ", description='" + description + '\'' +
++                ", openSignUp=" + openSignUp +
++                ", holdThirdPlaceMatch=" + holdThirdPlaceMatch +
++                ", swissPtsForMatchWin=" + swissPtsForMatchWin +
++                ", swissPtsForMatchTie=" + swissPtsForMatchTie +
++                ", swissPtsForGameWin=" + swissPtsForGameWin +
++                ", swissPtsForGameTie=" + swissPtsForGameTie +
++                ", swissPtsForBye=" + swissPtsForBye +
++                ", swissRounds=" + swissRounds +
++                ", isSwissRoundSet=" + isSwissRoundSet +
++                ", rankedBy='" + rankedBy + '\'' +
++                ", rrPtsForMatchWin=" + rrPtsForMatchWin +
++                ", rrPtsForMatchTie=" + rrPtsForMatchTie +
++                ", rrPtsForGameWin=" + rrPtsForGameWin +
++                ", rrPtsForGameTie=" + rrPtsForGameTie +
++                ", acceptAttachments=" + acceptAttachments +
++                ", showRounds=" + showRounds +
++                ", isPrivate=" + isPrivate +
++                ", notifyUsersMatchesOpens=" + notifyUsersMatchesOpens +
++                ", notifyUsersTourneyOver=" + notifyUsersTourneyOver +
++                ", sequentialPairings=" + sequentialPairings +
++                ", signUpCap=" + signUpCap +
++                ", startAt='" + startAt + '\'' +
++                ", checkInDuration=" + checkInDuration +
++                ", grandFinalsModifier='" + grandFinalsModifier + '\'' +
++                ", state='" + state + '\'' +
++                ", participantCount=" + participantCount +
++                '}';
+     }
+ 
+     public String getName() {
+@@ -82,12 +269,12 @@
+         this.name = name;
+     }
+ 
+-    public String getTournamentType() {
+-        return tournamentType;
++    public String getType() {
++        return type;
+     }
+ 
+-    public void setTournamentType(String tournamentType) {
+-        this.tournamentType = tournamentType;
++    public void setType(String type) {
++        this.type = type;
+     }
+ 
+     public String getUrl() {
+@@ -106,12 +293,12 @@
+         this.subdomain = subdomain;
+     }
+ 
+-    public String getDiscription() {
+-        return discription;
++    public String getDescription() {
++        return description;
+     }
+ 
+-    public void setDiscription(String discription) {
+-        this.discription = discription;
++    public void setDescription(String description) {
++        this.description = description;
+     }
+ 
+     public boolean isOpenSignUp() {
+@@ -178,12 +365,12 @@
+         this.swissRounds = swissRounds;
+     }
+ 
+-    public String getSwissRankedBy() {
+-        return swissRankedBy;
++    public String getRankedBy() {
++        return rankedBy;
+     }
+ 
+-    public void setSwissRankedBy(String swissRankedBy) {
+-        this.swissRankedBy = swissRankedBy;
++    public void setRankedBy(String rankedBy) {
++        this.rankedBy = rankedBy;
+     }
+ 
+     public float getRrPtsForMatchWin() {
+@@ -226,13 +413,6 @@
+         this.acceptAttachments = acceptAttachments;
+     }
+ 
+-    public boolean isHideForum() {
+-        return hideForum;
+-    }
+-
+-    public void setHideForum(boolean hideForum) {
+-        this.hideForum = hideForum;
+-    }
+ 
+     public boolean isShowRounds() {
+         return showRounds;
+@@ -314,11 +494,11 @@
+         this.state = state;
+     }
+ 
+-    public int getSize() {
+-        return size;
++    public int getParticipantCount() {
++        return participantCount;
+     }
+ 
+-    public void setSize(int size) {
+-        this.size = size;
++    public void setParticipantCount(int participantCount) {
++        this.participantCount = participantCount;
+     }
+ }
+Index: app/src/main/java/ferox/bracket/HomeActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/HomeActivity.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/HomeActivity.java	(date 1556279982566)
+@@ -7,6 +7,8 @@
+ import android.widget.ArrayAdapter;
+ import android.widget.ListView;
+ 
++import androidx.appcompat.app.AppCompatActivity;
++
+ import com.google.gson.Gson;
+ import com.google.gson.JsonArray;
+ import com.google.gson.JsonElement;
+@@ -14,8 +16,6 @@
+ 
+ import java.util.ArrayList;
+ 
+-import androidx.appcompat.app.AppCompatActivity;
+-
+ public class HomeActivity extends AppCompatActivity {
+ 
+     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
+@@ -49,8 +49,8 @@
+         for (int i = 0; i < tournaments.size(); i++) {
+ 
+             Tournament tournament = gson.fromJson(tournaments.get(i).getAsJsonObject().get("tournament"), Tournament.class);
+-            tournament.setTournamentType(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("tournament_type").getAsString());
+-            tournament.setSize(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("participants_count").getAsInt());
++            tournament.setType(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("tournament_type").getAsString());
++            tournament.setParticipantCount(tournaments.get(i).getAsJsonObject().get("tournament").getAsJsonObject().get("participants_count").getAsInt());
+             tournamentList.add(0, tournament);
+         }
+ 
+@@ -66,12 +66,14 @@
+         listView.setAdapter(listViewAdapter);
+ 
+         listView.setOnItemClickListener((parent, view, position, id) -> {
++            Log.i("TAG", tournamentList.get(position).toString());
+             Intent intent = new Intent(view.getContext(), Bracket.class);
++            //TODO only need url , anything else can be set using that
+             intent.putExtra("tournamentName", tournamentList.get(position).getName());
+             intent.putExtra("tournamentURL", tournamentList.get(position).getUrl());
+-            intent.putExtra("tournamentType", tournamentList.get(position).getTournamentType());
++            intent.putExtra("tournamentType", tournamentList.get(position).getType());
+             intent.putExtra("tournamentState", tournamentList.get(position).getState());
+-            intent.putExtra("tournamentSize", tournamentList.get(position).getSize());
++            intent.putExtra("tournamentSize", tournamentList.get(position).getParticipantCount());
+             startActivity(intent);
+             Log.d("TournamentName", String.valueOf(tournamentList.get(position).getName()));
+ 
+Index: app/src/main/java/ferox/bracket/Round.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/ferox/bracket/Round.java	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/java/ferox/bracket/Round.java	(date 1556279856697)
+@@ -1,15 +1,19 @@
+ package ferox.bracket;
+ 
++import com.google.gson.annotations.SerializedName;
++
+ import java.util.ArrayList;
+ 
+ public class Round {
+-    String name;
++    @SerializedName("name")
++    String title;
++    @SerializedName("number")
+     int number;
+     boolean isInWinners;
+     ArrayList<Match> matchList;
+ 
+-    public Round(String name, int number, boolean isInWinners, ArrayList<Match> matchList) {
+-        this.name = name;
++    public Round(String title, int number, boolean isInWinners, ArrayList<Match> matchList) {
++        this.title = title;
+         this.number = number;
+         this.isInWinners = isInWinners;
+         this.matchList = matchList;
+@@ -17,18 +21,18 @@
+ 
+ 
+     public Round() {
+-        this.name = "";
++        this.title = "";
+         this.number = 0;
+         this.isInWinners = true;
+         matchList = new ArrayList<>();
+     }
+ 
+-    public String getName() {
+-        return name;
++    public String getTitle() {
++        return title;
+     }
+ 
+-    public void setName(String name) {
+-        this.name = name;
++    public void setTitle(String title) {
++        this.title = title;
+     }
+ 
+     public int getNumber() {
+Index: app/src/main/res/values/array.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/array.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/values/array.xml	(date 1556279445122)
+@@ -9,6 +9,7 @@
+         <item>Single Elimination</item>
+         <item>Double Elimination</item>
+         <item>Round Robin</item>
++        <item>Swiss</item>
+     </string-array>
+     <string-array name="ranked_by_array">
+         <item>Match Wins</item>
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/gradle.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ .idea/gradle.xml	(date 1553030173295)
+@@ -3,6 +3,9 @@
+   <component name="GradleSettings">
+     <option name="linkedExternalProjectsSettings">
+       <GradleProjectSettings>
++        <compositeConfiguration>
++          <compositeBuild compositeDefinitionSource="SCRIPT" />
++        </compositeConfiguration>
+         <option name="distributionType" value="DEFAULT_WRAPPED" />
+         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+         <option name="modules">
+Index: .idea/encodings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/encodings.xml	(date 1556195737740)
++++ .idea/encodings.xml	(date 1556195737740)
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="Encoding" addBOMForNewFiles="with NO BOM" />
++</project>
+\ No newline at end of file
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/strings.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/values/strings.xml	(date 1556279445073)
+@@ -1,7 +1,6 @@
+ <resources>
+     <string name="app_name">TwoActivities</string>
+ 
+-    <!-- TODO: Remove or change this placeholder text -->
+     <string name="hello_blank_fragment">Hello blank fragment</string>
+     <string name="Round_Number">Round %1$d</string>
+     <string name="Semifinals">Semifinals</string>
+@@ -9,4 +8,5 @@
+     <string name="title_activity_main2">Main2Activity</string>
+     <string name="action_settings">Settings</string>
+     <string name="section_format">Hello World from section: %1$d</string>
++
+ </resources>
+Index: app/src/main/res/layout/fragment_tournament.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_tournament.xml	(revision 4b6a8971c9222fdba413420944ca8a58ddb36dc8)
++++ app/src/main/res/layout/fragment_tournament.xml	(date 1556277329904)
+@@ -5,7 +5,7 @@
+     android:layout_height="match_parent"
+     tools:context=".TournamentFragment">
+ 
+-    <!-- TODO: Update blank fragment layout -->
++
+     <ListView
+         android:id="@+id/tournament_list"
+         android:layout_width="match_parent"
+diff --git .idea/caches/build_file_checksums.ser .idea/caches/build_file_checksums.ser
+index 18b1a1929070b92e05eba74f2f8afac3009f0e55..4c8e01e1c961a210a40079951cbf19df64afe60b
+GIT binary patch
+literal 537
+zc${1FmVvdnh`~NNKUXg?FQq6yGexf?KR>5fFEb@IQ7^qHF(oHeub?PDD>b=9F91S2
+zm1gFoxMk*~I%lLNXBU^|7Q2L-Ts|(GuF1r}<i#MFTj`TnT;dMa8(f)}9Fm!vT3nKt
+zTj0aMpIeEdv4nx&Co8cmQNOe#Ge_SyvB0{bfPsNAE3)PaFVJ0rAUQpdoSsKwaRyMH
+zmHpPi!(s^+nHiYe7`Srs6I0w0lS}f8JQ+AkGKx}*GxBp%Dhli!7(jrhoC8P-05Mw$
+zgFs?IK}-_J=}>Q#7BMhIJFWRF{)3Gp<N*@{1ITIyfimXr4Ih;B1K%<&u+0}2ZU8#5
+zIJKlCGcUaurm>Krj)4uNcHYf|eKz;m^K=vRq{5vJFDzluaJGsGElw>ej!8@@%1n%b
+zYKcLFWI<|CNoHy>!jLPnJvaLqHnF^H;GFU1hf`e%0}qNb;R>~MD{r>no^~LuukfwN
+z&Zo^lKjq{nC+1)^wf@fKAEkn8GS@O4X<2gOr(_9(ARafEFib7lk~N`QP2uaj6JJZ7
+GRR91Xlf4W8
+

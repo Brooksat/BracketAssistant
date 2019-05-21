@@ -26,25 +26,59 @@ import ferox.bracket.Interface.VolleyCallback;
 import ferox.bracket.R;
 import ferox.bracket.Tournament.Tournament;
 
+
+//TODO save api key
 public class MainActivity extends AppCompatActivity {
 
     ImageButton main_search;
+    EditText apikeyParam;
+    Button signIn;
+    LinearLayout errorsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         VolleyLog.DEBUG = true;
-        ChallongeRequests.setApiKey("WoaE4Sj7pEIlkTxdiDlEZVLXLbYp3TItipqBJbDJ");
+        //ChallongeRequests.setApiKey("WoaE4Sj7pEIlkTxdiDlEZVLXLbYp3TItipqBJbDJ");
         ChallongeRequests.setApplicationContext(this.getApplicationContext());
+
 
         main_search = findViewById(R.id.main_search_button);
         main_search.setOnClickListener(v -> makeSearchDialog());
+        apikeyParam = findViewById(R.id.log_in_api_key);
+        signIn = findViewById(R.id.log_in_button);
+        signIn.setOnClickListener(v -> sendTournamentIndexRequest());
+        errorsLayout = findViewById(R.id.log_in_errors_layout);
+
         //Intent intent = new Intent(this, HomeActivity.class);
         //startActivity(intent);
     }
 
-    public void goToSecondActivity(View view) {
+
+    private void sendTournamentIndexRequest() {
+        ChallongeRequests.setApiKey(apikeyParam.getText().toString().trim());
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                goToHomeActivity();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                errorsLayout.removeAllViews();
+                for (int i = 0; i < errorList.size(); i++) {
+                    TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                    error.setText(String.valueOf(errorList.get(i)));
+                    error.setSelected(true);
+                    error.setTextColor(Color.RED);
+                    errorsLayout.addView(error);
+                }
+            }
+        }, ChallongeRequests.tournamentsIndex());
+    }
+
+    public void goToHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }

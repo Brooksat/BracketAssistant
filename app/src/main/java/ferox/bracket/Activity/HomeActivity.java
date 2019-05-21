@@ -2,14 +2,18 @@ package ferox.bracket.Activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +32,7 @@ import ferox.bracket.Tournament.Tournament;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private static final String RESET = "Reset";
 
     String api_key = "hyxStYdr5aFDRNHEHscBgrzKGXCgNFp4GWfErw07";
     String subDomain;
@@ -123,12 +128,49 @@ public class HomeActivity extends AppCompatActivity {
             Log.d("TournamentName", String.valueOf(tournamentList.get(position).getName()));
 
         });
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Would you like to Reset the match");
+            builder.setNegativeButton("Cancel", (dialog1, which) -> {
+            });
+            builder.setPositiveButton("Reset", (dialog, which) -> {
+            });
+            AlertDialog dialog = builder.create();
+            setReopenDialog(dialog);
+            dialog.show();
+            return true;
+        });
 
         //listViewAdapter.notifyDataSetChanged();
         ((ArrayAdapter<String>) listView.getAdapter()).notifyDataSetChanged();
         listView.invalidate();
     }
 
+    private void setReopenDialog(AlertDialog dialog) {
+        View dialogueLayout = getLayoutInflater().inflate(R.layout.match_reopen_dialog, null);
+        EditText reopenPrompt = dialogueLayout.findViewById(R.id.match_reopen_prompt);
+        LinearLayout errorsLayout = dialogueLayout.findViewById(R.id.match_reopen_error_layout);
+        dialog.setView(dialogueLayout);
+        dialog.setOnShowListener(dialog1 -> {
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(v -> {
+                if (reopenPrompt.getText().toString().equals(RESET)) {
+                    sendTournamentResetRequest();
+                    dialog.dismiss();
+                } else {
+                    TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                    error.setText("Type 'Reset' with no spaces or other punctuation on either side");
+                    error.setSelected(true);
+                    error.setTextColor(Color.RED);
+                    errorsLayout.addView(error);
+                }
+            });
+        });
+    }
+
+    private void sendTournamentResetRequest() {
+
+    }
 
     private void makeSetSubdomainDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

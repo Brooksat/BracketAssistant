@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,37 +51,40 @@ import ferox.bracket.Tournament.Tournament;
 public class BracketFragment extends Fragment {
 
 
-    final static String SINGLE_ELIM = "single elimination";
-    final static String DOUBLE_ELIM = "double elimination";
-    final static String ROUND_ROBIN = "round robin";
-    final static String SWISS = "swiss";
+    private final static String SINGLE_ELIM = "single elimination";
+    private final static String DOUBLE_ELIM = "double elimination";
+    private final static String ROUND_ROBIN = "round robin";
+    private final static String SWISS = "swiss";
     /**
      * All the tournaments matches have been completed and is now ready to be ended
      */
-    final static String AWAITING_REVIEW = "awaiting_review";
+    private final static String AWAITING_REVIEW = "awaiting_review";
     /**
      * Tournament has begun but still has pending matches
      */
-    final static String UNDERWAY = "underway";
+    private final static String UNDERWAY = "underway";
     /**
      * Tournament has not begun yet
      */
-    final static String PENDING = "pending";
+    private final static String PENDING = "pending";
     /**
      * Tournament has been ended
      */
-    final static String COMPLETE = "complete";
+    private final static String COMPLETE = "complete";
     /**
      * When start_at has been set tournament enters check in state
      */
-    final static String CHECKING_IN = "checking_in";
+    private final static String CHECKING_IN = "checking_in";
     /**
      * Tournament check-ins have been processed
      */
     private final static String CHECKED_IN = "checked_in";
+
     private final static String GRANDS_DEFAULT = "";
     private final static String GRANDS_SINGLE_MATCH = "single match";
     private final static String GRANDS_SKIP = "skip";
+
+    private final static String REOPEN = "Reopen";
 
 //    TextView width;
 //    TextView height;
@@ -745,28 +749,70 @@ public class BracketFragment extends Fragment {
             }
         }
 
-        if (match.getState().equals(Match.OPEN) || match.getState().equals(Match.COMPLETE)) {
+        if (tournament.getState().equals(COMPLETE)) {
             matchView.setOnLongClickListener(v -> {
-                buildMatchReportDialog(matchView.getMatch());
+                Toast.makeText(getContext(), "Tournament is over", Toast.LENGTH_LONG).show();
                 return true;
             });
+        } else {
+            if (match.getState().equals(Match.OPEN) || match.getState().equals(Match.COMPLETE)) {
+                matchView.setOnLongClickListener(v -> {
+                    buildMatchReportDialog(matchView.getMatch());
+                    return true;
+                });
+            }
         }
         //match.setOnClickListener(v -> Toast.makeText(getContext(), match.getmMatchId(), Toast.LENGTH_SHORT).show());
 
 
     }
 
+    //TODO predicting bug where is someone reports a match on one device but doesnt not show on another device,
     private void buildMatchReportDialog(Match match) {
 
-        AlertDialog dialog = makeMatchReportDialogBuilder(match).create();
-
-
-        setPositiveButton(dialog, match);
-
-
-        dialog.show();
+        if (match.getState().equals(Match.OPEN)) {
+            AlertDialog dialog = makeMatchReportDialogBuilder(match).create();
+            setPositiveButton(dialog, match);
+            dialog.show();
+        }
+        if (match.getState().equals(Match.COMPLETE)) {
+            AlertDialog dialog = buildReopenDialog(match).create();
+            setReopenDialog(dialog, match);
+            dialog.show();
+        }
     }
 
+    private void setReopenDialog(AlertDialog dialog, Match match) {
+        View dialogueLayout = getLayoutInflater().inflate(R.layout.match_reopen_dialog, null);
+        EditText reopenPrompt = dialogueLayout.findViewById(R.id.match_reopen_prompt);
+        LinearLayout errorsLayout = dialogueLayout.findViewById(R.id.match_reopen_error_layout);
+        dialog.setView(dialogueLayout);
+        dialog.setOnShowListener(dialog1 -> {
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(v -> {
+                if (reopenPrompt.getText().toString().equals(REOPEN)) {
+                    sendMatchReopenRequest(match, errorsLayout, dialog);
+                } else {
+                    TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                    error.setText("Type 'Reopen' with no spaces or other punctuation on either side");
+                    error.setSelected(true);
+                    error.setTextColor(Color.RED);
+                    errorsLayout.addView(error);
+                }
+            });
+        });
+    }
+
+    private AlertDialog.Builder buildReopenDialog(Match match) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Would you like to reopen the match");
+        builder.setNegativeButton("Cancel", (dialog1, which) -> {
+        });
+        builder.setPositiveButton("Reopen", (dialog, which) -> {
+        });
+
+        return builder;
+    }
     private AlertDialog.Builder makeMatchReportDialogBuilder(Match match) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Report Score");
@@ -817,6 +863,28 @@ public class BracketFragment extends Fragment {
         });
 
 
+    }
+
+    private void sendMatchReopenRequest(Match match, LinearLayout errorsLayout, AlertDialog dialog) {
+        dialog.dismiss();
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                sendTournamentRequest();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                errorsLayout.removeAllViews();
+                for (int i = 0; i < errorList.size(); i++) {
+                    TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                    error.setText(String.valueOf(errorList.get(i)));
+                    error.setSelected(true);
+                    error.setTextColor(Color.RED);
+                    errorsLayout.addView(error);
+                }
+            }
+        }, ChallongeRequests.matchReopen(match));
     }
 
     private void sendMatchUpdateRequest(Match match, LinearLayout errorsLayout, AlertDialog dialog) {

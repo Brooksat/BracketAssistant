@@ -44,6 +44,13 @@ public class ChallongeRequests {
 
     }
 
+    static public APIRequest tournamentsIndex() {
+        String url = API_URL;
+        url += JSON_TAG;
+        url += API_KEY_SEGMENT + apiKey;
+        return new APIRequest(url, Request.Method.GET);
+    }
+
     static public APIRequest tournamentsIndex(String subDomain) {
         String url = API_URL;
         url += JSON_TAG;
@@ -188,6 +195,16 @@ public class ChallongeRequests {
         url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
         url += match.getSettings();
         return new APIRequest(url, Request.Method.PUT);
+    }
+
+    static public APIRequest matchReopen(Match match) {
+        String url = API_URL + "/";
+        url += match.getTournamentID();
+        url += MATCHES + "/";
+        url += match.getId();
+        url += "/reopen";
+        url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
+        return new APIRequest(url, Request.Method.POST);
     }
 
 
