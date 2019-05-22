@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -150,6 +151,8 @@ public class ParticipantsFragment extends Fragment {
     }
 
     //TODO Refreshing list causes some views to be blanked out
+
+    //TODO make participant from gson
     public void initPlayerList(String jsonString) {
 
         players.clear();
@@ -161,12 +164,13 @@ public class ParticipantsFragment extends Fragment {
         for (JsonElement participant : participants) {
             Participant player = new Participant();
             JsonObject participantObject = participant.getAsJsonObject().get("participant").getAsJsonObject();
+            Participant player1 = new Gson().fromJson(participantObject, Participant.class);
 
             player.setId(participantObject.get("id").getAsString());
             player.setName(participantObject.get("name").getAsString());
             player.setSeed(participantObject.get("seed").getAsInt());
             player.setTournamentID(participantObject.get("tournament_id").getAsString());
-            players.add(player);
+            players.add(player1);
             playerSeeds.add(String.valueOf(player.getSeed()));
 
         }
@@ -177,6 +181,7 @@ public class ParticipantsFragment extends Fragment {
 
     //TODO If players puts in a seed out of bounds than seed field should be removed
     //TODO disable delete and other function if tournament has ended
+    //TODO add invite by challonge username
 
     private void makeAddParticipantDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -276,8 +281,6 @@ public class ParticipantsFragment extends Fragment {
                 .create().show();
     }
 
-    private void validateAddParticipant(AlertDialog dialog) {
 
-    }
 
 }

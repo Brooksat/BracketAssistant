@@ -38,6 +38,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="@id/your_tournaments_header"
         android:scaleType="fitXY" />
+
+    <TextView
+        android:id="@+id/home_subdomain"
+        style="@style/menu_title"
+        android:layout_width="100dp"
+        android:textSize="15sp"
+        android:text="(Subdomain)"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toStartOf="@id/home_menu_options"
+        app:layout_constraintTop_toTopOf="@id/your_tournaments_header" />
+
     <ImageButton
         android:id="@+id/button2"
         android:layout_width="55dp"

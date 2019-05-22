@@ -1,12 +1,15 @@
 package ferox.bracket.Activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -27,13 +30,26 @@ import ferox.bracket.R;
 import ferox.bracket.Tournament.Tournament;
 
 
-//TODO save api key
+
 public class MainActivity extends AppCompatActivity {
 
     ImageButton main_search;
     EditText apikeyParam;
     Button signIn;
+    CheckBox savePasswordCheckBox;
     LinearLayout errorsLayout;
+
+    private final static String PREFS_NAME = "preferences";
+
+    private static final String PREFS_KEY = "key";
+    private String defaultKey = "";
+    private String key;
+
+    private static final String PREFS_SAVE_API_KEY = "save key";
+    private boolean defaultSaveAPIKey = false;
+    private boolean saveAPIKey;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
         apikeyParam = findViewById(R.id.log_in_api_key);
         signIn = findViewById(R.id.log_in_button);
         signIn.setOnClickListener(v -> sendTournamentIndexRequest());
+        savePasswordCheckBox = findViewById(R.id.log_in_save_password);
         errorsLayout = findViewById(R.id.log_in_errors_layout);
 
+        loadPreferences();
         //Intent intent = new Intent(this, HomeActivity.class);
         //startActivity(intent);
     }
@@ -79,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToHomeActivity() {
+        savePreferences();
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
@@ -141,5 +160,30 @@ public class MainActivity extends AppCompatActivity {
             });
         });
         dialog.show();
+    }
+
+
+    private void savePreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        if (savePasswordCheckBox.isChecked()) {
+            key = apikeyParam.getText().toString();
+            saveAPIKey = savePasswordCheckBox.isChecked();
+            editor.putString(PREFS_KEY, key);
+            editor.putBoolean(PREFS_SAVE_API_KEY, saveAPIKey);
+            editor.apply();
+        } else {
+            editor.clear();
+            editor.apply();
+        }
+    }
+
+    private void loadPreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        key = settings.getString(PREFS_KEY, defaultKey);
+        apikeyParam.setText(key);
+        saveAPIKey = settings.getBoolean(PREFS_SAVE_API_KEY, defaultSaveAPIKey);
+        savePasswordCheckBox.setChecked(saveAPIKey);
     }
 }

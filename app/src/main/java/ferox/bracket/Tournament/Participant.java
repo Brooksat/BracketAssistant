@@ -17,11 +17,18 @@ public class Participant {
     private int seed;
     @SerializedName("display_name")
     private String name;
+    @SerializedName("tournament_id")
     private String tournamentID;
+    @SerializedName("final_rank")
+    private String finalRank;
+    @SerializedName("challonge_username")
+    private String challongeUserName;
 
     public Participant() {
         name = "";
         tournamentID = "";
+        finalRank = "";
+        challongeUserName = "";
     }
 
 
@@ -41,6 +48,12 @@ public class Participant {
         }
         if (tournamentID == null) {
             tournamentID = "";
+        }
+        if (finalRank == null) {
+            finalRank = "";
+        }
+        if (challongeUserName == null) {
+            challongeUserName = "";
         }
     }
 
@@ -74,6 +87,22 @@ public class Participant {
 
     public void setTournamentID(String tournamentID) {
         this.tournamentID = tournamentID;
+    }
+
+    public String getFinalRank() {
+        return finalRank;
+    }
+
+    public void setFinalRank(String finalRank) {
+        this.finalRank = finalRank;
+    }
+
+    public String getChallongeUserName() {
+        return challongeUserName;
+    }
+
+    public void setChallongeUserName(String challongeUserName) {
+        this.challongeUserName = challongeUserName;
     }
 
     public String getSettings() {

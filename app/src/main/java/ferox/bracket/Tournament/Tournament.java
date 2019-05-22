@@ -288,56 +288,50 @@ public class Tournament implements Parcelable {
     }
 
 
-    //TODO make all variables call the encode method
+
     public String getSettings() {
         String settings = "";
 
-        try {
-
-            if (!getName().isEmpty()) {
-                settings += TOURNAMENT_NAME + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
-            }
-            if (!getType().isEmpty()) {
-                settings += TOURNAMENT_TYPE + URLEncoder.encode(getType(), StandardCharsets.UTF_8.toString());
-            }
-            if (!getUrl().isEmpty()) {
-
-                settings += TOURNAMENT_URL + getUrl();
-            }
-            if (!subdomain.isEmpty()) {
-                settings += TOURNAMENT_SUBDOMAIN + URLEncoder.encode(getSubdomain(), StandardCharsets.UTF_8.toString());
-            }
-            if (!getDescription().isEmpty()) {
-                settings += TOURNAMENT_DESCRIPTION + URLEncoder.encode(getDescription(), StandardCharsets.UTF_8.toString());
-            }
-
-
-            settings += TOURNAMENT_THIRD_PLACE + URLEncoder.encode(String.valueOf(isHoldThirdPlaceMatch()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_SWISS_MATCH_WIN + URLEncoder.encode(String.valueOf(getSwissPtsForMatchWin()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_SWISS_MATCH_TIE + URLEncoder.encode(String.valueOf(getSwissPtsForMatchTie()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_SWISS_GAME_WIN + URLEncoder.encode(String.valueOf(getSwissPtsForGameWin()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_SWISS_GAME_TIE + URLEncoder.encode(String.valueOf(getSwissPtsForGameTie()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_SWISS_PTS_BYE + URLEncoder.encode(String.valueOf(getSwissPtsForBye()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_SWISS_ROUNDS + URLEncoder.encode(String.valueOf(getSwissRounds()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_RANKED_BY + URLEncoder.encode(getRankedBy(), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_RR_MATCH_WIN + URLEncoder.encode(String.valueOf(getRrPtsForMatchWin()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_RR_MATCH_TIE + URLEncoder.encode(String.valueOf(getRrPtsForMatchTie()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_RR_GAME_WIN + URLEncoder.encode(String.valueOf(getRrPtsForGameWin()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_RR_GAME_TIE + URLEncoder.encode(String.valueOf(getRrPtsForGameTie()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_ACCEPT_ATTACHMENTS + URLEncoder.encode(String.valueOf(isAcceptAttachments()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_SHOW_ROUNDS + URLEncoder.encode(String.valueOf(isShowRounds()), StandardCharsets.UTF_8.toString());
-            settings += TOURNAMENT_PRIVATE + encode(isPrivate);
-            settings += TOURNAMENT_NOTIFY_MATCH_OPEN + encode(isNotifyUsersMatchesOpens());
-            settings += TOURNAMENT_NOTIFY_TOURNAMENT_ENDS + encode(isNotifyUsersTourneyOver());
-            settings += TOURNAMENT_SEQUENTIAL_PAIRINGS + encode(isSequentialPairings());
-            settings += TOURNAMENT_SIGNUP_CAP + encode(getSignUpCap());
-            settings += TOURNAMENT_START_AT + encode(getStartAt());
-            settings += TOURNAMENT_CHECK_IN_DURATION + encode(getCheckInDuration());
-            settings += TOURNAMENT_GRAND_FINALS_MODIFIER + encode(getGrandFinalsModifier());
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        if (!getName().isEmpty()) {
+            settings += TOURNAMENT_NAME + getName();
         }
+        if (!getType().isEmpty()) {
+            settings += TOURNAMENT_TYPE + getType();
+        }
+        if (!getUrl().isEmpty()) {
+
+            settings += TOURNAMENT_URL + getUrl();
+        }
+        if (!subdomain.isEmpty()) {
+            settings += TOURNAMENT_SUBDOMAIN + encode(getSubdomain());
+        }
+        if (!getDescription().isEmpty()) {
+            settings += TOURNAMENT_DESCRIPTION + encode(getDescription());
+        }
+
+
+        settings += TOURNAMENT_THIRD_PLACE + encode(isHoldThirdPlaceMatch());
+        settings += TOURNAMENT_SWISS_MATCH_WIN + encode(swissPtsForMatchWin);
+        settings += TOURNAMENT_SWISS_MATCH_TIE + encode(swissPtsForMatchTie);
+        settings += TOURNAMENT_SWISS_GAME_WIN + encode(swissPtsForGameWin);
+        settings += TOURNAMENT_SWISS_GAME_TIE + encode(swissPtsForGameTie);
+        settings += TOURNAMENT_SWISS_PTS_BYE + encode(swissPtsForBye);
+        settings += TOURNAMENT_SWISS_ROUNDS + encode(getSwissRounds());
+        settings += TOURNAMENT_RANKED_BY + encode(getRankedBy());
+        settings += TOURNAMENT_RR_MATCH_WIN + encode(getRrPtsForMatchWin());
+        settings += TOURNAMENT_RR_MATCH_TIE + encode(getRrPtsForMatchTie());
+        settings += TOURNAMENT_RR_GAME_WIN + encode(getRrPtsForGameWin());
+        settings += TOURNAMENT_RR_GAME_TIE + encode(getRrPtsForGameTie());
+        settings += TOURNAMENT_ACCEPT_ATTACHMENTS + encode(isAcceptAttachments());
+        settings += TOURNAMENT_SHOW_ROUNDS + encode(isShowRounds());
+        settings += TOURNAMENT_PRIVATE + encode(isPrivate);
+        settings += TOURNAMENT_NOTIFY_MATCH_OPEN + encode(isNotifyUsersMatchesOpens());
+        settings += TOURNAMENT_NOTIFY_TOURNAMENT_ENDS + encode(isNotifyUsersTourneyOver());
+        settings += TOURNAMENT_SEQUENTIAL_PAIRINGS + encode(isSequentialPairings());
+        settings += TOURNAMENT_SIGNUP_CAP + encode(getSignUpCap());
+        settings += TOURNAMENT_START_AT + encode(getStartAt());
+        settings += TOURNAMENT_CHECK_IN_DURATION + encode(getCheckInDuration());
+        settings += TOURNAMENT_GRAND_FINALS_MODIFIER + encode(getGrandFinalsModifier());
 
         return settings;
     }

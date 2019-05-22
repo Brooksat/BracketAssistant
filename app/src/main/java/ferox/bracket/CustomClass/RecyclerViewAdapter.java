@@ -26,6 +26,7 @@ import ferox.bracket.Interface.VolleyCallback;
 import ferox.bracket.R;
 import ferox.bracket.Tournament.Participant;
 import ferox.bracket.Tournament.ParticipantSettings;
+import ferox.bracket.Tournament.Tournament;
 
 //TODO fix refresh
 //TODO need to disable seed switching if tournament had started/invalid api
@@ -42,6 +43,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     ArrayList<Participant> players;
 
     AlertDialog.Builder builder;
+    Tournament tournament;
 
 
     public RecyclerViewAdapter(Context mContext, ArrayList<Participant> players, LinearLayoutManager linearLayoutManager, DefaultItemAnimator defaultItemAnimator) {
@@ -104,6 +106,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 }
             }
 
+            //TODO dont delete if tournament is over(low priority)
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();

@@ -507,10 +507,7 @@ public class BracketFragment extends Fragment {
                     if (matchTmp.getP1PrereqText() != null) {
                         player1.setName(matchTmp.getP1PrereqText());
                     }
-                    //TODO set previous match if needed
-//                    if(match.getAsJsonObject().get("player1_prereq_identifier")!=null){
-//                        //sets corresponding match as previous match
-//                    }
+
                 }
                 if (!match.getAsJsonObject().get("player2").isJsonNull()) {
                     player2 = gson.fromJson(match.getAsJsonObject().get("player2").getAsJsonObject(), Participant.class);
@@ -554,10 +551,7 @@ public class BracketFragment extends Fragment {
                 if (thirdPlace.getP1PrereqText() != null) {
                     player1.setName(thirdPlace.getP1PrereqText());
                 }
-                //TODO set previous match if needed
-//                    if(match.getAsJsonObject().get("player1_prereq_identifier")!=null){
-//                        //sets corresponding match as previous match
-//                    }
+
             }
             if (!thirdPlaceMatch.getAsJsonObject().get("player2").isJsonNull()) {
                 player2 = gson.fromJson(thirdPlaceMatch.getAsJsonObject().get("player2").getAsJsonObject(), Participant.class);

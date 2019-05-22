@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/menu_h2"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text='Type "Reset" below to reset:' />
+
+    <TextView
+        android:id="@+id/match_reset_tournament_name"
+        style="@style/menu_h2"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:hint='Tournament Name' />
+
+    <EditText
+        android:id="@+id/match_reset_prompt"
+        style="@style/menu_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:hint="Type Here" />
+
+    <LinearLayout
+        android:id="@+id/match_reset_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+</LinearLayout>

@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import ferox.bracket.CustomClass.ChallongeRequests;
 import ferox.bracket.Interface.VolleyCallback;
@@ -42,6 +44,7 @@ public class HomeActivity extends AppCompatActivity {
     ListView listView;
     ArrayAdapter<String> listViewAdapter;
     ImageButton homeOptions;
+    TextView homeSubdomain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +77,12 @@ public class HomeActivity extends AppCompatActivity {
             });
             popupMenu.show();
         });
+        homeSubdomain = findViewById(R.id.home_subdomain);
+        homeSubdomain.setOnClickListener(v -> makeSetSubdomainDialog());
 
         tournamentList = new ArrayList<>();
 
-        //TODO suggestion: set subdmain text view on page title that you can click on which will set you change is and see the subdomain
+
         ChallongeRequests.sendRequest(new VolleyCallback() {
             @Override
             public void onSuccess(String response) {
@@ -113,6 +118,9 @@ public class HomeActivity extends AppCompatActivity {
             tournamentList.add(0, tournament);
             Log.d("TOURID", String.valueOf(tournament.getId()));
         }
+        if (!subDomain.isEmpty()) {
+            Collections.reverse(tournamentList);
+        }
 
         for (int i = 0; i < tournamentList.size(); i++) {
             nameList.add(tournamentList.get(i).getName());
@@ -136,7 +144,7 @@ public class HomeActivity extends AppCompatActivity {
             builder.setPositiveButton("Reset", (dialog, which) -> {
             });
             AlertDialog dialog = builder.create();
-            setReopenDialog(dialog);
+            setReopenDialog(dialog, tournamentList.get(position));
             dialog.show();
             return true;
         });
@@ -146,18 +154,21 @@ public class HomeActivity extends AppCompatActivity {
         listView.invalidate();
     }
 
-    private void setReopenDialog(AlertDialog dialog) {
-        View dialogueLayout = getLayoutInflater().inflate(R.layout.match_reopen_dialog, null);
-        EditText reopenPrompt = dialogueLayout.findViewById(R.id.match_reopen_prompt);
-        LinearLayout errorsLayout = dialogueLayout.findViewById(R.id.match_reopen_error_layout);
+    private void setReopenDialog(AlertDialog dialog, Tournament tournament) {
+        View dialogueLayout = getLayoutInflater().inflate(R.layout.match_reset_dialog, null);
+        TextView tournamentResetName = dialogueLayout.findViewById(R.id.match_reset_tournament_name);
+        tournamentResetName.setText(tournament.getName());
+        EditText reopenPrompt = dialogueLayout.findViewById(R.id.match_reset_prompt);
+        LinearLayout errorsLayout = dialogueLayout.findViewById(R.id.match_reset_error_layout);
         dialog.setView(dialogueLayout);
         dialog.setOnShowListener(dialog1 -> {
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             button.setOnClickListener(v -> {
                 if (reopenPrompt.getText().toString().equals(RESET)) {
-                    sendTournamentResetRequest();
+                    sendTournamentResetRequest(tournament.getId(), errorsLayout);
                     dialog.dismiss();
                 } else {
+                    errorsLayout.removeAllViews();
                     TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
                     error.setText("Type 'Reset' with no spaces or other punctuation on either side");
                     error.setSelected(true);
@@ -168,7 +179,21 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void sendTournamentResetRequest() {
+    private void sendTournamentResetRequest(String id, LinearLayout errorsLayout) {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                Toast.makeText(HomeActivity.this, "Tournament Reset", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                errorsLayout.removeAllViews();
+                for (int i = 0; i < errorList.size(); i++) {
+                    Toast.makeText(HomeActivity.this, String.valueOf(errorList.get(i)), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, ChallongeRequests.tournamentReset(id));
 
     }
 
@@ -180,6 +205,7 @@ public class HomeActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", (dialog, which) -> {
 
             subDomain = subdomainText.getText().toString();
+            homeSubdomain.setText(String.format("(%s)", subDomain));
             refresh();
 
         })

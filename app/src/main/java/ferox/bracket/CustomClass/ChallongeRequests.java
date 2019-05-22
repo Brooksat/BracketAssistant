@@ -227,8 +227,7 @@ public class ChallongeRequests {
             Toast.makeText(getApplicationContext(), "Timeout Error", Toast.LENGTH_SHORT).show();
 
         } else if (error instanceof AuthFailureError) {
-            //TODO use this to validate tournament access with an API key, try something simple like changing the name of a tournament to itself
-            //TODO above^ when you do check make sure to send a request to get the current name of the tournament in case it changes and you do have access to avoid changing it to an outdated value
+
             Toast.makeText(getApplicationContext(), "Auth Failure", Toast.LENGTH_SHORT).show();
 
             ArrayList errorsList = new ArrayList();
