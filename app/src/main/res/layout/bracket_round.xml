@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/menu_round"
+    android:layout_width="@dimen/round_header_width"
+    android:layout_height="@dimen/round_header_height"
+    android:layout_marginEnd="@dimen/round_header_margin_end"
+    android:gravity="center">
+
+</Button>

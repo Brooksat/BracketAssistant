@@ -3,6 +3,7 @@ package ferox.bracket.CustomClass;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -19,34 +21,39 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 import ferox.bracket.Interface.VolleyCallback;
 import ferox.bracket.R;
 import ferox.bracket.Tournament.Participant;
-import ferox.bracket.Tournament.ParticipantSettings;
 import ferox.bracket.Tournament.Tournament;
 
-//TODO fix refresh
-//TODO need to disable seed switching if tournament had started/invalid api
+//TODO need to disable seed switching if invalid api
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.CustomViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
-    ItemTouchHelper helper;
-    LinearLayoutManager linearLayoutManager;
-    DefaultItemAnimator defaultItemAnimator;
+    private ItemTouchHelper helper;
+    private LinearLayoutManager linearLayoutManager;
+    private DefaultItemAnimator defaultItemAnimator;
 
-    Context mContext;
-    ArrayList<String> seeds = new ArrayList<>();
-    ArrayList<String> names = new ArrayList<>();
-    ArrayList<Participant> players;
+    private Context mContext;
 
-    AlertDialog.Builder builder;
+    private ArrayList<Participant> players;
+
+    private AlertDialog.Builder builder;
     Tournament tournament;
+    RecyclerView recyclerView;
 
 
     public RecyclerViewAdapter(Context mContext, ArrayList<Participant> players, LinearLayoutManager linearLayoutManager, DefaultItemAnimator defaultItemAnimator) {
+
         this.mContext = mContext;
         builder = new AlertDialog.Builder(this.mContext);
         builder.setTitle("Edit Participant Name");
@@ -65,6 +72,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 int movedPosition = viewHolder.getAdapterPosition();
                 int targetPostition = target.getAdapterPosition();
 
+                ((CustomViewHolder) target).initialListPos = viewHolder.getAdapterPosition();
+
                 swapSeed(players.get(movedPosition), players.get(targetPostition));
                 Collections.swap(players, movedPosition, targetPostition);
 
@@ -80,16 +89,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 
 
+                //defaultItemAnimator.setSupportsChangeAnimations(true);
                 if (viewHolder.getAdapterPosition() > -1) {
                     Participant player = players.get(viewHolder.getAdapterPosition());
                     //TODO add drag down to refresh list to make sure list is accurate
 
                     CustomViewHolder cvh = (CustomViewHolder) viewHolder;
 
+                    //changes player seed if viewholder is dropped in a different position than before
                     if (player.getSeed() != (cvh.initialListPos + 1)) {
+                        //Toast.makeText(getmContext(), player.getSeed() + "-" + (cvh.initialListPos + 1), Toast.LENGTH_SHORT).show();
                         player.setSeed(viewHolder.getAdapterPosition() + 1);
-                        ParticipantSettings settings = new ParticipantSettings();
-                        settings.setSeed(player.getSeed());
+                        cvh.initialListPos = viewHolder.getAdapterPosition();
+
                         ChallongeRequests.sendRequest(new VolleyCallback() {
                                                           @Override
                                                           public void onSuccess(String response) {
@@ -98,44 +110,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                                                           @Override
                                                           public void onErrorResponse(ArrayList errorResponse) {
-
+                                                              for (int i = 0; i < errorResponse.size(); i++) {
+                                                                  Toast.makeText(mContext, String.valueOf(errorResponse.get(i)), Toast.LENGTH_SHORT).show();
+                                                              }
                                                           }
                                                       },
-                                ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
+                                ChallongeRequests.participantUpdate(player));
+                    } else {
+                        //Toast.makeText(getmContext(), player.getSeed() + "-" + (cvh.initialListPos + 1), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
 
-            //TODO dont delete if tournament is over(low priority)
+
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                defaultItemAnimator.setSupportsChangeAnimations(true);
                 int position = viewHolder.getAdapterPosition();
                 Participant player = players.get(position);
-//                players.remove(position);
-//                notifyItemRemoved(position);
+                String dialogTitle = "Remove participant?";
+                if (tournament.hasStarted()) {
+                    dialogTitle = "Disqualify participant?";
+                }
 
-                new AlertDialog.Builder(viewHolder.itemView.getContext()).setMessage("Delete participant?")
+                new AlertDialog.Builder(viewHolder.itemView.getContext()).setMessage(dialogTitle)
                         .setPositiveButton("Yes", (dialog, which) -> {
+                            sendParticipantDeleteRequest(player, position);
 
-                            ChallongeRequests.sendRequest(new VolleyCallback() {
-                                                              @Override
-                                                              public void onSuccess(String response) {
-
-                                                              }
-
-                                                              @Override
-                                                              public void onErrorResponse(ArrayList errorResponse) {
-
-                                                              }
-                                                          },
-                                    ChallongeRequests.participantDestroy(String.valueOf(player.getTournamentID()), String.valueOf(player.getId())));
-
-                            players.remove(position);
-                            notifyItemRemoved(position);
                         })
                         .setNegativeButton("No", (dialog, which) -> {
-                            defaultItemAnimator.setSupportsChangeAnimations(true);
-                            notifyItemChanged(position, null);
+
+                            notifyItemChanged(position);
                         })
                         .create().show();
 
@@ -152,7 +157,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 return super.getSwipeEscapeVelocity(3f * defaultValue);
             }
 
-
             @Override
             public boolean isLongPressDragEnabled() {
                 return false;
@@ -167,6 +171,95 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     }
 
+
+    private void sendTournamentShowRequest() {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                tournament = new Gson().fromJson(new JsonParser().parse(response).getAsJsonObject().get("tournament"), Tournament.class);
+                tournament.undoJsonShenanigans();
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+
+            }
+        }, ChallongeRequests.tournamentShow(tournament.getId()));
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+
+    private void sendParticipantDeleteRequest(Participant participant, int position) {
+        if (!tournament.getState().equals(Tournament.COMPLETE)) {
+            ChallongeRequests.sendRequest(new VolleyCallback() {
+                                              @Override
+                                              public void onSuccess(String response) {
+                                                  //                                              players.remove(position);
+                                                  //                                              notifyItemRemoved(position);
+                                                  //                                              notifyItemRangeChanged(position, getItemCount());
+                                                  //                                              for (int i=position;i<players.size();i++){
+                                                  //                                                  players.get(i).setSeed(players.get(i).getSeed()-1);
+                                                  //                                              }
+                                                  sendParticipantIndexRequest();
+
+                                              }
+
+                                              @Override
+                                              public void onErrorResponse(ArrayList errorResponse) {
+                                                  notifyItemChanged(position);
+                                              }
+                                          },
+                    ChallongeRequests.participantDestroy(participant));
+        } else {
+            Toast.makeText(mContext, "Tournament has already ended, cannot remove", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void sendParticipantIndexRequest() {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                initPlayerList(response);
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorResponse) {
+                Log.d("RequestError", errorResponse.toString());
+            }
+        }, ChallongeRequests.participantIndex(tournament.getId()));
+    }
+
+    public void initPlayerList(String jsonString) {
+        // Toast.makeText(mContext, "initplayerList called", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(mContext, tournament.getState() + " - " + tournament.hasStarted(), Toast.LENGTH_SHORT).show();
+        players.clear();
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray participants = jsonParser.parse(jsonString).getAsJsonArray();
+
+
+        for (JsonElement participant : participants) {
+
+            JsonObject participantObject = participant.getAsJsonObject().get("participant").getAsJsonObject();
+            Participant player = new Gson().fromJson(participantObject, Participant.class);
+            players.add(player);
+            // playerSeeds.add(String.valueOf(player.getSeed()));
+
+        }
+        defaultItemAnimator.setSupportsChangeAnimations(true);
+        notifyDataSetChanged();
+        //if (recyclerView!=null){
+        recyclerView.requestLayout();
+        //}
+    }
+
     @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -178,21 +271,51 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
 
-
-        holder.participantSeedView.setText(String.valueOf(players.get(position).getSeed()));
+        holder.participantSeedView.setText(String.valueOf(position + 1));
         holder.participantNameView.setText(players.get(position).getName());
-        holder.participantDragHandle.setOnTouchListener((v, event) -> {
+        if (!tournament.hasStarted()) {
+            holder.participantDragHandle.setImageTintList(holder.participantDragHandle.getResources().getColorStateList(R.color.menu_title));
+            holder.participantDragHandle.setOnTouchListener((v, event) -> {
 
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                //defaultitemanimator randomly breaks when scroll but setting this parameter to false seems to fix the issue
-                holder.initialListPos = holder.getAdapterPosition();
-                defaultItemAnimator.setSupportsChangeAnimations(false);
-                helper.startDrag(holder);
-            }
 
-            return false;
-        });
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        defaultItemAnimator.setSupportsChangeAnimations(false);
+                        holder.initialListPos = position;
+                        //Toast.makeText(getmContext(), String.valueOf(holder.initialListPos+1),Toast.LENGTH_SHORT).show();
 
+                        helper.startDrag(holder);
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        defaultItemAnimator.setSupportsChangeAnimations(true);
+                        break;
+
+                }
+                return false;
+            });
+
+            holder.participantListItemLayout.setOnTouchListener((v, event) -> {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        holder.initialListPos = position;
+                        //Toast.makeText(getmContext(), String.valueOf(holder.initialListPos+1),Toast.LENGTH_SHORT).show();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        defaultItemAnimator.setSupportsChangeAnimations(true);
+                        break;
+                }
+                return false;
+            });
+        } else {
+            holder.participantDragHandle.setOnTouchListener((v, event) -> {
+                return false;
+            });
+            holder.participantListItemLayout.setOnTouchListener((v, event) -> {
+                return false;
+            });
+            holder.participantDragHandle.setImageTintList(holder.participantDragHandle.getResources().getColorStateList(R.color.menu_background_light));
+        }
 
         holder.participantEditView.setOnClickListener(v -> {
 
@@ -207,8 +330,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 if (!player.getName().equals(input.getText().toString())) {
                     holder.participantNameView.setText(input.getText().toString());
                     player.setName(input.getText().toString());
-                    ParticipantSettings settings = new ParticipantSettings();
-                    settings.setName(player.getName());
+
                     ChallongeRequests.sendRequest(new VolleyCallback() {
                         @Override
                         public void onSuccess(String response) {
@@ -219,7 +341,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         public void onErrorResponse(ArrayList errorResponse) {
 
                         }
-                    }, ChallongeRequests.participantUpdate(player.getTournamentID(), String.valueOf(player.getId()), settings));
+                    }, ChallongeRequests.participantUpdate(player));
                 }
             });
             builder.show();
@@ -256,6 +378,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         }
+
 
     }
 
@@ -294,21 +417,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mContext = mContext;
     }
 
-    public ArrayList<String> getSeeds() {
-        return seeds;
-    }
-
-    public void setSeeds(ArrayList<String> seeds) {
-        this.seeds = seeds;
-    }
-
-    public ArrayList<String> getNames() {
-        return names;
-    }
-
-    public void setNames(ArrayList<String> names) {
-        this.names = names;
-    }
 
     public ArrayList<Participant> getPlayers() {
         return players;
@@ -316,5 +424,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public void setPlayers(ArrayList<Participant> players) {
         this.players = players;
+    }
+
+    public Tournament getTournament() {
+        return tournament;
+    }
+
+    public void setTournament(Tournament tournament) {
+        this.tournament = tournament;
     }
 }

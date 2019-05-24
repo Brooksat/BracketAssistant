@@ -13,6 +13,7 @@ public class Round {
     boolean isWinners;
     ArrayList<Match> matchList;
 
+
     public Round(String title, int number, boolean isGrandFinals, ArrayList<Match> matchList) {
         this.title = title;
         this.number = number;
@@ -26,6 +27,16 @@ public class Round {
         this.number = 0;
         this.isGrandFinals = true;
         matchList = new ArrayList<>();
+    }
+
+
+    public boolean isFinished() {
+        for (int i = 0; i < matchList.size(); i++) {
+            if (!matchList.get(i).getState().equals(Match.COMPLETE)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

@@ -62,6 +62,10 @@ public class BracketActivity extends AppCompatActivity {
                             AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
                     tabLayout.setLayoutParams(layoutParams);
                 }
+                //if participantstab is selected
+                if (tab.getPosition() == 1) {
+                    mBracketPagerAdapter.getCurrentParticipantsFragment().refresh();
+                }
             }
 
             @Override

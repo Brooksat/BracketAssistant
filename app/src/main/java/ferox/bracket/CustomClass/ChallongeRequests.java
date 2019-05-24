@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import ferox.bracket.Interface.VolleyCallback;
 import ferox.bracket.Tournament.Match;
 import ferox.bracket.Tournament.Participant;
-import ferox.bracket.Tournament.ParticipantSettings;
 import ferox.bracket.Tournament.Tournament;
 
 public class ChallongeRequests {
@@ -149,22 +148,22 @@ public class ChallongeRequests {
         return new APIRequest(url, Request.Method.POST);
     }
 
-    static public APIRequest participantUpdate(String tournamentUrl, String id, ParticipantSettings settings) {
+    static public APIRequest participantUpdate(Participant participant) {
         String url = API_URL;
-        url += "/" + tournamentUrl;
+        url += "/" + participant.getTournamentID();
         url += PARTICIPANTS;
-        url += "/" + id;
+        url += "/" + participant.getId();
         url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
-        url += settings.getSettings();
+        url += participant.getSettings();
 
         return new APIRequest(url, Request.Method.PUT);
     }
 
-    static public APIRequest participantDestroy(String tournamentURL, String ID) {
+    static public APIRequest participantDestroy(Participant participant) {
         String url = API_URL;
-        url += "/" + tournamentURL;
+        url += "/" + participant.getTournamentID();
         url += PARTICIPANTS;
-        url += "/" + ID;
+        url += "/" + participant.getId();
         url += JSON_TAG + API_KEY_SEGMENT + apiKey + "&";
         return new APIRequest(url, Request.Method.DELETE);
     }

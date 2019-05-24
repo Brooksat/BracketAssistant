@@ -26,9 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
@@ -55,9 +52,10 @@ public class ParticipantsFragment extends Fragment {
 
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
-    ArrayList<String> playerSeeds = new ArrayList<>();
+    // ArrayList<String> playerSeeds = new ArrayList<>();
     ArrayList<Participant> players = new ArrayList<>();
 
+    DefaultItemAnimator defaultItemAnimator;
 
     @Nullable
     @Override
@@ -94,17 +92,7 @@ public class ParticipantsFragment extends Fragment {
                         break;
                     }
                     case "Refresh": {
-                        ChallongeRequests.sendRequest(new VolleyCallback() {
-                            @Override
-                            public void onSuccess(String response) {
-                                initPlayerList(response);
-                            }
-
-                            @Override
-                            public void onErrorResponse(ArrayList errorResponse) {
-                                Log.d("RequestError", errorResponse.toString());
-                            }
-                        }, ChallongeRequests.participantIndex(url));
+                        refresh();
                         break;
                     }
                 }
@@ -114,11 +102,12 @@ public class ParticipantsFragment extends Fragment {
         });
 
 
-        DefaultItemAnimator defaultItemAnimator = new DefaultItemAnimator();
+        defaultItemAnimator = new DefaultItemAnimator();
         defaultItemAnimator.setSupportsChangeAnimations(false);
 
         adapter = new RecyclerViewAdapter(getContext(), players, linearLayoutManager, defaultItemAnimator);
 
+        adapter.setTournament(tournament);
         recyclerView = v.findViewById(R.id.participant_list);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(defaultItemAnimator);
@@ -128,7 +117,7 @@ public class ParticipantsFragment extends Fragment {
 
 
         if (!tournament.isSearched()) {
-            sendParticipantRequest();
+            sendParticipantIndexRequest();
         } else {
             participantsOptions.setClickable(false);
         }
@@ -136,11 +125,28 @@ public class ParticipantsFragment extends Fragment {
     }
 
 
-    private void sendParticipantRequest() {
+    public void refresh() {
         ChallongeRequests.sendRequest(new VolleyCallback() {
             @Override
             public void onSuccess(String response) {
-                initPlayerList(response);
+                tournament = new Gson().fromJson(new JsonParser().parse(response).getAsJsonObject().get("tournament"), Tournament.class);
+                tournament.undoJsonShenanigans();
+                adapter.setTournament(tournament);
+                sendParticipantIndexRequest();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+
+            }
+        }, ChallongeRequests.tournamentShow(tournament.getId()));
+    }
+
+    private void sendParticipantIndexRequest() {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                adapter.initPlayerList(response);
             }
 
             @Override
@@ -150,36 +156,27 @@ public class ParticipantsFragment extends Fragment {
         }, ChallongeRequests.participantIndex(url));
     }
 
-    //TODO Refreshing list causes some views to be blanked out
 
-    //TODO make participant from gson
-    public void initPlayerList(String jsonString) {
+//    public void initPlayerList(String jsonString) {
+//
+//        players.clear();
+//
+//        JsonParser jsonParser = new JsonParser();
+//        JsonArray participants = jsonParser.parse(jsonString).getAsJsonArray();
+//
+//
+//        for (JsonElement participant : participants) {
+//
+//            JsonObject participantObject = participant.getAsJsonObject().get("participant").getAsJsonObject();
+//            Participant player = new Gson().fromJson(participantObject, Participant.class);
+//            players.add(player);
+//           // playerSeeds.add(String.valueOf(player.getSeed()));
+//
+//        }
+//
+//        adapter.notifyDataSetChanged();
+//    }
 
-        players.clear();
-
-        JsonParser jsonParser = new JsonParser();
-        JsonArray participants = jsonParser.parse(jsonString).getAsJsonArray();
-
-
-        for (JsonElement participant : participants) {
-            Participant player = new Participant();
-            JsonObject participantObject = participant.getAsJsonObject().get("participant").getAsJsonObject();
-            Participant player1 = new Gson().fromJson(participantObject, Participant.class);
-
-            player.setId(participantObject.get("id").getAsString());
-            player.setName(participantObject.get("name").getAsString());
-            player.setSeed(participantObject.get("seed").getAsInt());
-            player.setTournamentID(participantObject.get("tournament_id").getAsString());
-            players.add(player1);
-            playerSeeds.add(String.valueOf(player.getSeed()));
-
-        }
-
-
-        adapter.notifyDataSetChanged();
-    }
-
-    //TODO If players puts in a seed out of bounds than seed field should be removed
     //TODO disable delete and other function if tournament has ended
     //TODO add invite by challonge username
 
@@ -219,7 +216,7 @@ public class ParticipantsFragment extends Fragment {
                             @Override
                             public void onSuccess(String response) {
 
-                                initPlayerList(response);
+                                adapter.initPlayerList(response);
 
                             }
 
@@ -258,7 +255,7 @@ public class ParticipantsFragment extends Fragment {
                     ChallongeRequests.sendRequest(new VolleyCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            initPlayerList(response);
+                            adapter.initPlayerList(response);
                         }
 
                         @Override

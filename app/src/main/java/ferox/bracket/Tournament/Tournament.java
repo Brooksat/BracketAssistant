@@ -15,6 +15,8 @@ public class Tournament implements Parcelable {
     public static final String SINGLE_ELIM = "single elimination";
     public static final String DOUBLE_ELIM = "double elimination";
     public static final String ROUND_ROBIN = "round robin";
+    public static final String FREE_FOR_ALL = "free for all";
+
     public static final String AWAITING_REVIEW = "awaiting_review";
     public static final String UNDERWAY = "underway";
     public static final String PENDING = "pending";
@@ -194,6 +196,9 @@ public class Tournament implements Parcelable {
         }
         if (grandFinalsModifier == null) {
             grandFinalsModifier = DEFAULT_GRANDS;
+        }
+        if (state == null) {
+            state = "";
         }
     }
 
@@ -385,6 +390,11 @@ public class Tournament implements Parcelable {
                 Objects.equals(startAt, that.startAt) &&
                 Objects.equals(grandFinalsModifier, that.grandFinalsModifier) &&
                 Objects.equals(state, that.state);
+    }
+
+
+    public boolean hasStarted() {
+        return state.equals(UNDERWAY) || state.equals(AWAITING_REVIEW) || state.equals(COMPLETE);
     }
 
     @Override

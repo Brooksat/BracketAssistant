@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -276,13 +275,14 @@ public class BracketFragment extends Fragment {
                                     reset();
                                     getTournamentRoundInfo(response);
                                     makeBracketDisplay();
-
                                 } else {
                                     resetRounds();
                                     getTournamentRoundInfo(response);
                                     setMatchInfo();
                                 }
-
+                                if (tournament.getType().equals(Tournament.SINGLE_ELIM) || tournament.getType().equals(Tournament.DOUBLE_ELIM)) {
+                                    setRoundColor();
+                                }
                                 setOldValues();
                             }
                         }
@@ -370,6 +370,7 @@ public class BracketFragment extends Fragment {
             @Override
             public void onSuccess(String response) {
                 sendTournamentRequest();
+                Toast.makeText(getContext(), "Tournament Started", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -384,6 +385,7 @@ public class BracketFragment extends Fragment {
             @Override
             public void onSuccess(String response) {
                 sendTournamentRequest();
+                Toast.makeText(getContext(), "Tournament Finalized", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -402,6 +404,7 @@ public class BracketFragment extends Fragment {
                 actionButton.setOnClickListener(v -> sendStartRequest());
                 break;
             case CHECKING_IN:
+                //TODO process checkins on click
                 actionButton.setVisibility(View.VISIBLE);
                 actionButton.setText("Check In");
                 break;
@@ -440,6 +443,10 @@ public class BracketFragment extends Fragment {
 
     private void getTournamentRoundInfo(String jsonString) {
         Gson gson = new Gson();
+        //separate gson to deal with matchs expose tags
+        GsonBuilder builder = new GsonBuilder();
+        builder.excludeFieldsWithoutExposeAnnotation();
+        Gson gsonMatch = builder.create();
         JsonParser jsonParser = new JsonParser();
         JsonElement tournamentField = jsonParser.parse(jsonString);
 
@@ -486,9 +493,7 @@ public class BracketFragment extends Fragment {
                 roundTmp.setIsWinners(true);
                 winnersRounds.add(roundTmp);
             }
-            GsonBuilder builder = new GsonBuilder();
-            builder.excludeFieldsWithoutExposeAnnotation();
-            Gson gsonMatch = builder.create();
+
             for (JsonElement match : round) {
                 Participant player1 = new Participant();
                 Participant player2 = new Participant();
@@ -535,7 +540,7 @@ public class BracketFragment extends Fragment {
         if (tournament.getType().equals(SINGLE_ELIM) && !tournamentField.getAsJsonObject().get("third_place_match").isJsonNull()) {
             tournament.setHoldThirdPlaceMatch(true);
             JsonObject thirdPlaceMatch = tournamentField.getAsJsonObject().get("third_place_match").getAsJsonObject();
-            Match thirdPlace = gson.fromJson(thirdPlaceMatch, Match.class);
+            Match thirdPlace = gsonMatch.fromJson(thirdPlaceMatch, Match.class);
             thirdPlace.undoJsonShenanigans();
             winnersRounds.get(winnersRounds.size() - 1).getMatchList().add(thirdPlace);
             Participant player1 = new Participant();
@@ -623,6 +628,7 @@ public class BracketFragment extends Fragment {
         makeLosers();
         setUnusedMatchesInvisible();
         setMatchInfo();
+
 
     }
 
@@ -807,6 +813,7 @@ public class BracketFragment extends Fragment {
 
         return builder;
     }
+
     private AlertDialog.Builder makeMatchReportDialogBuilder(Match match) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Report Score");
@@ -902,8 +909,6 @@ public class BracketFragment extends Fragment {
             }
         }, ChallongeRequests.matchUpdate(match));
     }
-
-
 
 
     private void setUpMatchReportButtons(MatchReportButton p1, MatchReportButton p2) {
@@ -1149,33 +1154,68 @@ public class BracketFragment extends Fragment {
     }
 
 
+    private void hideRound(int roundNumber, boolean winners) {
+        if (winners) {
+            Toast.makeText(getContext(), String.valueOf(roundLabelsW.get(roundNumber).getTitle()), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), String.valueOf(roundLabelsL.get(roundNumber).getTitle()), Toast.LENGTH_SHORT).show();
+        }
+    }
 
     //Constructs round headers
     private void setRoundHeaders() {
         LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
         LinearLayout roundLosers = getView().findViewById(R.id.round_losers);
 
-        ViewGroup.MarginLayoutParams roundHeaderLayoutParams = new ViewGroup.MarginLayoutParams(
-                getResources().getDimensionPixelSize(R.dimen.match_width) + getResources().getDimensionPixelSize(R.dimen.bcv_width), getResources().getDimensionPixelSize(R.dimen.round_header_height));
-        roundHeaderLayoutParams.setMargins(0, 0, 0, 0);
-
 
         //adds round headers
         for (int i = 0; i < roundLabelsW.size(); i++) {
-            TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
-            roundNumber.setLayoutParams(roundHeaderLayoutParams);
-            roundNumber.setGravity(Gravity.CENTER);
+            Button roundNumber = (Button) getLayoutInflater().inflate(R.layout.bracket_round, roundWinners, false);
             roundNumber.setText(roundLabelsW.get(i).getTitle());
             roundWinners.addView(roundNumber);
+            //Make custom button to bypass this
+            int finalI = i;
+            roundNumber.setOnClickListener(v -> {
+                hideRound(finalI, true);
+            });
+
         }
         for (int i = 0; i < roundLabelsL.size(); i++) {
-            TextView roundNumber = new TextView(this.getContext(), null, 0, R.style.menu_round);
-            roundNumber.setLayoutParams(roundHeaderLayoutParams);
-            roundNumber.setGravity(Gravity.CENTER);
+            Button roundNumber = (Button) getLayoutInflater().inflate(R.layout.bracket_round, roundWinners, false);
             roundNumber.setText(roundLabelsL.get(i).getTitle());
             roundLosers.addView(roundNumber);
+            int finalI = i;
+            roundNumber.setOnClickListener(v -> {
+                hideRound(finalI, false);
+            });
         }
 
+
+    }
+
+    /**
+     * if round is complete then change the color of the round header
+     */
+    //TODO doesnt work with round robin/swiss
+    private void setRoundColor() {
+        for (int i = 0; i < winnersRounds.size(); i++) {
+            Button roundNumber = (Button) roundWinners.getChildAt(i);
+
+            if (winnersRounds.get(i).isFinished()) {
+                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_title)));
+            } else {
+                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_background)));
+            }
+        }
+        for (int i = 0; i < losersRounds.size(); i++) {
+            Button roundNumber = (Button) roundLosers.getChildAt(i);
+
+            if (losersRounds.get(i).isFinished()) {
+                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_title)));
+            } else {
+                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_background)));
+            }
+        }
     }
 
 
@@ -1251,24 +1291,6 @@ public class BracketFragment extends Fragment {
         }
 
 
-    }
-
-
-
-    public LinearLayout getRoundWinners() {
-        return roundWinners;
-    }
-
-    public LinearLayout getRoundLosers() {
-        return roundLosers;
-    }
-
-    public LinearLayout getBracketWinners() {
-        return bracketWinners;
-    }
-
-    public LinearLayout getBracketLosers() {
-        return bracketLosers;
     }
 
 

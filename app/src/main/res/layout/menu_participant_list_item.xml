@@ -32,7 +32,7 @@
         android:text="0"
         android:textColor="@color/menu_text"
         android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="@id/participant_drag_handle"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/participants_list_name"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/participant_drag_handle"
@@ -51,7 +51,7 @@
         android:ellipsize="marquee"
         android:textColor="@color/menu_text"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@id/participant_drag_handle"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/participant_edit"
         app:layout_constraintStart_toEndOf="@id/participant_seed"
         app:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +63,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="5dp"
         android:src="@drawable/ic_edit_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@id/participant_drag_handle"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/participants_list_name"
         app:layout_constraintTop_toTopOf="parent" />

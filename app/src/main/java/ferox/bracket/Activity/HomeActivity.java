@@ -115,7 +115,9 @@ public class HomeActivity extends AppCompatActivity {
 
             Tournament tournament = gson.fromJson(tournaments.get(i).getAsJsonObject().get("tournament"), Tournament.class);
             tournament.undoJsonShenanigans();
-            tournamentList.add(0, tournament);
+            if (!tournament.getType().equals(Tournament.FREE_FOR_ALL)) {
+                tournamentList.add(0, tournament);
+            }
             Log.d("TOURID", String.valueOf(tournament.getId()));
         }
         if (!subDomain.isEmpty()) {

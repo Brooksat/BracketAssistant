@@ -10,7 +10,9 @@ import ferox.bracket.fragments.ParticipantsFragment;
 import ferox.bracket.fragments.SettingsFragment;
 
 public class BracketPagerAdapter extends FragmentPagerAdapter {
-
+    BracketFragment currentBracketFragment;
+    ParticipantsFragment currentParticipantsFragment;
+    SettingsFragment currentSettingsFragment = new SettingsFragment();
     public BracketPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -19,14 +21,14 @@ public class BracketPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                BracketFragment bracketFragment = new BracketFragment();
-                return bracketFragment;
+                currentBracketFragment = new BracketFragment();
+                return currentBracketFragment;
             case 1:
-                ParticipantsFragment participantsFragment = new ParticipantsFragment();
-                return participantsFragment;
+                currentParticipantsFragment = new ParticipantsFragment();
+                return currentParticipantsFragment;
             case 2:
-                SettingsFragment settingsFragment = new SettingsFragment();
-                return settingsFragment;
+                currentSettingsFragment = new SettingsFragment();
+                return currentSettingsFragment;
         }
         return null;
     }
@@ -50,5 +52,19 @@ public class BracketPagerAdapter extends FragmentPagerAdapter {
                 return null;
         }
 
+    }
+
+    public BracketFragment getCurrentBracketFragment() {
+
+        return currentBracketFragment;
+
+    }
+
+    public ParticipantsFragment getCurrentParticipantsFragment() {
+        return currentParticipantsFragment;
+    }
+
+    public SettingsFragment getCurrentSettingsFragment() {
+        return currentSettingsFragment;
     }
 }
