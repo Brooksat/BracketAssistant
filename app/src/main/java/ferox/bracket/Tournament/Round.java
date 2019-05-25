@@ -11,6 +11,7 @@ public class Round {
     int number;
     boolean isGrandFinals;
     boolean isWinners;
+    private boolean hidden;
     ArrayList<Match> matchList;
 
 
@@ -87,5 +88,13 @@ public class Round {
 
     public void setIsWinners(boolean winners) {
         isWinners = winners;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 }

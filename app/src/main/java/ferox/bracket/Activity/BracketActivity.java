@@ -2,7 +2,6 @@ package ferox.bracket.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -64,7 +63,11 @@ public class BracketActivity extends AppCompatActivity {
                 }
                 //if participantstab is selected
                 if (tab.getPosition() == 1) {
-                    mBracketPagerAdapter.getCurrentParticipantsFragment().refresh();
+                    try {
+                        mBracketPagerAdapter.getCurrentParticipantsFragment().refresh();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -80,16 +83,16 @@ public class BracketActivity extends AppCompatActivity {
         });
 
 
-        final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        };
-        final int delay = 800; //milliseconds
-
-        handler.postDelayed(runnable, delay);
+//        final Handler handler = new Handler();
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        };
+//        final int delay = 800; //milliseconds
+//
+//        handler.postDelayed(runnable, delay);
 
     }
 

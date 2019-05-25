@@ -127,6 +127,7 @@ public class Tournament implements Parcelable {
     @SerializedName("participants_count")
     private int participantCount;
     private boolean searched;
+    private boolean hasAccess;
 
 
     public Tournament() {
@@ -160,6 +161,7 @@ public class Tournament implements Parcelable {
         checkInDuration = 5;
         grandFinalsModifier = DEFAULT_GRANDS;
         searched = false;
+        hasAccess = true;
 
     }
 
@@ -334,8 +336,13 @@ public class Tournament implements Parcelable {
         settings += TOURNAMENT_NOTIFY_TOURNAMENT_ENDS + encode(isNotifyUsersTourneyOver());
         settings += TOURNAMENT_SEQUENTIAL_PAIRINGS + encode(isSequentialPairings());
         settings += TOURNAMENT_SIGNUP_CAP + encode(getSignUpCap());
-        settings += TOURNAMENT_START_AT + encode(getStartAt());
-        settings += TOURNAMENT_CHECK_IN_DURATION + encode(getCheckInDuration());
+        if (!this.hasStarted()) {
+            settings += TOURNAMENT_START_AT + encode(getStartAt());
+            settings += TOURNAMENT_CHECK_IN_DURATION + encode(getCheckInDuration());
+            boolean debug = hasStarted();
+            System.out.println(debug);
+        }
+
         settings += TOURNAMENT_GRAND_FINALS_MODIFIER + encode(getGrandFinalsModifier());
 
         return settings;
@@ -394,7 +401,11 @@ public class Tournament implements Parcelable {
 
 
     public boolean hasStarted() {
-        return state.equals(UNDERWAY) || state.equals(AWAITING_REVIEW) || state.equals(COMPLETE);
+        if (state != null) {
+            return state.equals(UNDERWAY) || state.equals(AWAITING_REVIEW) || state.equals(COMPLETE);
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -459,6 +470,11 @@ public class Tournament implements Parcelable {
 
     public String getName() {
         return name;
+    }
+
+    public String getNameParam() {
+        return TOURNAMENT_NAME + getName();
+
     }
 
     public void setName(String name) {
@@ -704,6 +720,14 @@ public class Tournament implements Parcelable {
 
     public void setSearched(boolean searched) {
         this.searched = searched;
+    }
+
+    public boolean isHasAccess() {
+        return hasAccess;
+    }
+
+    public void setHasAccess(boolean hasAccess) {
+        this.hasAccess = hasAccess;
     }
 }
 

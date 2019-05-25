@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, BracketActivity.class);
                         intent.putExtra("tournament", searchedTournament);
                         dialog.dismiss();
-                        startActivity(intent);
+
+                        validateTournament(searchedTournament, intent);
 
 
                     }
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
                         error.setText("Could not find tournament with supplied URL and subdomain");
-                        error.setSelected(true);
+                        error.postDelayed(() -> error.setSelected(true), 1000);
                         error.setTextColor(Color.RED);
                         errorsLayout.addView(error);
                     }
@@ -162,6 +163,21 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void validateTournament(Tournament tournament, Intent intent) {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                tournament.setHasAccess(true);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                tournament.setHasAccess(false);
+                startActivity(intent);
+            }
+        }, ChallongeRequests.validateAccess(tournament));
+    }
 
     private void savePreferences() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);

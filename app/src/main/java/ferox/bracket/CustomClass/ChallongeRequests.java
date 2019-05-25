@@ -132,9 +132,9 @@ public class ChallongeRequests {
     }
 
 
-    static public APIRequest participantIndex(String name) {
+    static public APIRequest participantIndex(String id) {
         String url = API_URL;
-        url += "/" + name;
+        url += "/" + id;
         url += "/participants";
         url += JSON_TAG + API_KEY_SEGMENT + apiKey;
         return new APIRequest(url, Request.Method.GET);
@@ -207,6 +207,14 @@ public class ChallongeRequests {
     }
 
 
+    static public APIRequest validateAccess(Tournament tournament) {
+        String requestURL = API_URL;
+        requestURL += "/" + tournament.getId();
+        requestURL += JSON_TAG + API_KEY_SEGMENT + apiKey;
+        requestURL += tournament.getNameParam();
+        return new APIRequest(requestURL, Request.Method.PUT);
+    }
+
     static public void sendRequest(final VolleyCallback callback, APIRequest request) {
 
 
@@ -224,7 +232,7 @@ public class ChallongeRequests {
 
         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
             Toast.makeText(getApplicationContext(), "Timeout Error", Toast.LENGTH_SHORT).show();
-
+            callback.onErrorResponse(new ArrayList());
         } else if (error instanceof AuthFailureError) {
 
             Toast.makeText(getApplicationContext(), "Auth Failure", Toast.LENGTH_SHORT).show();
@@ -258,7 +266,9 @@ public class ChallongeRequests {
             }
             callback.onErrorResponse(errorsList);
 
-        } else if (error instanceof ServerError) {
+        }
+        //test
+        else if (error instanceof ServerError) {
             Toast.makeText(getApplicationContext(), "Server error", Toast.LENGTH_SHORT).show();
 
             String responseBody = null;
@@ -266,14 +276,17 @@ public class ChallongeRequests {
                 responseBody = new String(error.networkResponse.data, "utf-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
+                return;
             }
 
+
             JsonParser parser = new JsonParser();
-            assert responseBody != null;
+            //assert responseBody != null;
             try {
                 JsonArray errorsArray = parser.parse(responseBody).getAsJsonObject().get("errors").getAsJsonArray();
                 ArrayList errorsList = new Gson().fromJson(errorsArray, ArrayList.class);
                 callback.onErrorResponse(errorsList);
+
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
                 try {
@@ -282,6 +295,8 @@ public class ChallongeRequests {
                     callback.onErrorResponse(errorsList);
                 } catch (JsonSyntaxException e1) {
                     e1.printStackTrace();
+                    ArrayList errorsList = new ArrayList();
+                    callback.onErrorResponse(errorsList);
                 }
             } catch (NullPointerException n) {
                 n.printStackTrace();
@@ -294,10 +309,13 @@ public class ChallongeRequests {
 
         } else if (error instanceof NetworkError) {
             Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_SHORT).show();
+            callback.onErrorResponse(new ArrayList());
 
         } else if (error instanceof ParseError) {
             Toast.makeText(getApplicationContext(), "Parse Error", Toast.LENGTH_SHORT).show();
-
+            callback.onErrorResponse(new ArrayList());
+        } else {
+            callback.onErrorResponse(new ArrayList());
         }
     }
 

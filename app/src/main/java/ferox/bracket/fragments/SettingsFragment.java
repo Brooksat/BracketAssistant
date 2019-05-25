@@ -262,45 +262,11 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             errorsLayout.removeAllViews();
             if (formatErrors.size() == 0) {
                 if (getContext() instanceof NewTournamentActivity) {
-                    ChallongeRequests.sendRequest(new VolleyCallback() {
-                        @Override
-                        public void onSuccess(String response) {
-                            Toast.makeText(getContext(), "Tournament Created", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onErrorResponse(ArrayList errorList) {
-                            if (errorList != null) {
-                                for (int i = 0; i < errorList.size(); i++) {
-                                    TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
-                                    error.setText(String.valueOf(errorList.get(i)));
-                                    error.setSelected(true);
-                                    error.setTextColor(Color.RED);
-                                    errorsLayout.addView(error);
-                                }
-                            }
-                        }
-                    }, ChallongeRequests.tounamentCreate(updatedTournament));
-                } else if (getContext() instanceof BracketActivity) {
-                    ChallongeRequests.sendRequest(new VolleyCallback() {
-                        @Override
-                        public void onSuccess(String response) {
-                            Toast.makeText(getContext(), "Tournament Updated", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onErrorResponse(ArrayList errorList) {
-                            if (errorList != null) {
-                                for (int i = 0; i < errorList.size(); i++) {
-                                    TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
-                                    error.setText(String.valueOf(errorList.get(i)));
-                                    error.setSelected(true);
-                                    error.setTextColor(Color.RED);
-                                    errorsLayout.addView(error);
-                                }
-                            }
-                        }
-                    }, ChallongeRequests.tournamentUpdate(updatedTournament));
+                    sendTournamentCreateRequest();
+                }
+                //
+                else if (getContext() instanceof BracketActivity) {
+                    sendTournamentUpdateRequest();
                 }
             } else {
                 for (int i = 0; i < formatErrors.size(); i++) {
@@ -320,6 +286,52 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
     }
 
+    private void sendTournamentUpdateRequest() {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                Toast.makeText(getContext(), "Tournament Updated", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                if (errorList != null) {
+                    for (int i = 0; i < errorList.size(); i++) {
+                        TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                        error.setText(String.valueOf(errorList.get(i)));
+                        error.setSelected(true);
+                        error.setTextColor(Color.RED);
+                        errorsLayout.addView(error);
+                    }
+                }
+                //TODO inconvenient if changing multiple settings and an error only pertains to one
+                //sendSettingsRequest();
+            }
+        }, ChallongeRequests.tournamentUpdate(updatedTournament));
+    }
+
+    private void sendTournamentCreateRequest() {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                Toast.makeText(getContext(), "Tournament Created", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                if (errorList != null) {
+                    for (int i = 0; i < errorList.size(); i++) {
+                        TextView error = (TextView) getLayoutInflater().inflate(R.layout.menu_spinner_item, null);
+                        error.setText(String.valueOf(errorList.get(i)));
+                        error.postDelayed(() -> error.setSelected(true), 1500);
+                        error.setTextColor(Color.RED);
+                        errorsLayout.addView(error);
+                    }
+                }
+            }
+        }, ChallongeRequests.tounamentCreate(updatedTournament));
+    }
+
 
     private void sendSettingsRequest() {
         if (tournament.getId() != null) {
@@ -330,18 +342,16 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
                     tournament = new Gson().fromJson(new JsonParser().parse(response).getAsJsonObject().get("tournament"), Tournament.class);
                     tournament.undoJsonShenanigans();
-                    getTournamentInfo(response);
+                    getTournamentInfo();
                     Objects.requireNonNull(getView()).jumpDrawablesToCurrentState();
 
                 }
 
                 @Override
                 public void onErrorResponse(ArrayList errorList) {
-
+                    getTournamentInfo();
                 }
             }, ChallongeRequests.tournamentShow(tournament.getId()));
-        } else {
-
         }
     }
 
@@ -535,12 +545,14 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         updatedTournament.setSequentialPairings(!traditionalSeeding.isChecked());
         updatedTournament.setAcceptAttachments(allowAttachments.isChecked());
 
+        updatedTournament.setState(tournament.getState());
+
         Log.d("applySettings", updatedTournament.toString());
 
 
     }
 
-    private void getTournamentInfo(String response) {
+    private void getTournamentInfo() {
 
         Log.d("getTournamentInfo", "ran");
         name.setText(tournament.getName());
@@ -572,20 +584,22 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
         checkInDuration.setText(String.valueOf(tournament.getCheckInDuration()));
 
-        if (tournament.getStartAt() != null) {
+        if (!StringUtils.isEmpty(tournament.getStartAt())) {
             try {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(simpleDateFormat.parse(tournament.getStartAt()));
                 setDay(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 setTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+                startAt.setChecked(true);
                 Log.d("theDate", tournament.getStartAt() + " -> " + cal.getTime());
 
             } catch (ParseException e) {
                 e.printStackTrace();
-                Toast.makeText(getContext(), "Couldn't parse calendar", Toast.LENGTH_SHORT).show();
 
             }
+        } else {
+            startAt.setChecked(false);
         }
 
         maxParticipants.setText(String.valueOf(tournament.getSignUpCap()));

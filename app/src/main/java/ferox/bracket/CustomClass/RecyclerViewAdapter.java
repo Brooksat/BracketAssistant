@@ -35,7 +35,6 @@ import ferox.bracket.R;
 import ferox.bracket.Tournament.Participant;
 import ferox.bracket.Tournament.Tournament;
 
-//TODO need to disable seed switching if invalid api
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.CustomViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
@@ -273,7 +272,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.participantSeedView.setText(String.valueOf(position + 1));
         holder.participantNameView.setText(players.get(position).getName());
-        if (!tournament.hasStarted()) {
+        if (!tournament.hasStarted() && !tournament.isSearched()) {
             holder.participantDragHandle.setImageTintList(holder.participantDragHandle.getResources().getColorStateList(R.color.menu_title));
             holder.participantDragHandle.setOnTouchListener((v, event) -> {
 
@@ -308,12 +307,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 return false;
             });
         } else {
-            holder.participantDragHandle.setOnTouchListener((v, event) -> {
-                return false;
-            });
-            holder.participantListItemLayout.setOnTouchListener((v, event) -> {
-                return false;
-            });
+            holder.participantDragHandle.setOnTouchListener((v, event) -> false);
+            holder.participantListItemLayout.setOnTouchListener((v, event) -> false);
             holder.participantDragHandle.setImageTintList(holder.participantDragHandle.getResources().getColorStateList(R.color.menu_background_light));
         }
 

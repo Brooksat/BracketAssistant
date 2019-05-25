@@ -116,11 +116,13 @@ public class ParticipantsFragment extends Fragment {
         adapter.getHelper().attachToRecyclerView(recyclerView);
 
 
-        if (!tournament.isSearched()) {
+
             sendParticipantIndexRequest();
-        } else {
+
+        if (tournament.isSearched()) {
             participantsOptions.setClickable(false);
         }
+
         return v;
     }
 
@@ -153,7 +155,7 @@ public class ParticipantsFragment extends Fragment {
             public void onErrorResponse(ArrayList errorResponse) {
                 Log.d("RequestError", errorResponse.toString());
             }
-        }, ChallongeRequests.participantIndex(url));
+        }, ChallongeRequests.participantIndex(tournament.getId()));
     }
 
 
@@ -177,15 +179,14 @@ public class ParticipantsFragment extends Fragment {
 //        adapter.notifyDataSetChanged();
 //    }
 
-    //TODO disable delete and other function if tournament has ended
-    //TODO add invite by challonge username
 
     private void makeAddParticipantDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Add Paricipant");
         View dialogueLayout = getLayoutInflater().inflate(R.layout.fragment_participant_add_dialog, null);
-        LinearLayout addDialogLayout = dialogueLayout.findViewById(R.id.participant_add_dialog_layout);
         EditText nameText = dialogueLayout.findViewById(R.id.new_participant_name);
+        EditText emailText = dialogueLayout.findViewById(R.id.new_participant_email);
+        EditText usernameText = dialogueLayout.findViewById(R.id.new_participant_username);
         EditText seedText = dialogueLayout.findViewById(R.id.new_participant_seed);
         LinearLayout errorsLayout = dialogueLayout.findViewById(R.id.participant_add_dialog_error_layout);
         builder.setView(dialogueLayout);
@@ -201,6 +202,9 @@ public class ParticipantsFragment extends Fragment {
             button.setOnClickListener(v -> {
                 Participant player = new Participant();
                 player.setName(nameText.getText().toString());
+                player.setInviteEmail(emailText.getText().toString());
+                player.setChallongeUserName(usernameText.getText().toString());
+
                 try {
                     player.setSeed(Integer.parseInt(seedText.getText().toString()));
                 } catch (NumberFormatException e) {

@@ -10,6 +10,9 @@ public class Participant {
 
     final static String NAME = "participant[name]=";
     final static String SEED = "participant[seed]=";
+    final static String EMAIL = "participant[email]=";
+    final static String USERNAME = "participant[challonge_username]=";
+
 
     @SerializedName("id")
     String id;
@@ -23,6 +26,8 @@ public class Participant {
     private String finalRank;
     @SerializedName("challonge_username")
     private String challongeUserName;
+    @SerializedName("invite_email")
+    private String inviteEmail;
 
     public Participant() {
         name = "";
@@ -105,6 +110,15 @@ public class Participant {
         this.challongeUserName = challongeUserName;
     }
 
+    public String getInviteEmail() {
+        return inviteEmail;
+    }
+
+    public void setInviteEmail(String inviteEmail) {
+        this.inviteEmail = inviteEmail;
+    }
+
+
     public String getSettings() {
         String settings = "";
         try {
@@ -112,9 +126,18 @@ public class Participant {
 
                 settings += "&" + NAME + URLEncoder.encode(getName(), StandardCharsets.UTF_8.toString());
             }
+            if (getInviteEmail() != null) {
+
+                settings += "&" + EMAIL + URLEncoder.encode(getInviteEmail(), StandardCharsets.UTF_8.toString());
+            }
+            if (getChallongeUserName() != null) {
+
+                settings += "&" + USERNAME + URLEncoder.encode(getChallongeUserName(), StandardCharsets.UTF_8.toString());
+            }
             if (getSeed() > 0) {
                 settings += "&" + SEED + URLEncoder.encode(String.valueOf(getSeed()), StandardCharsets.UTF_8.toString());
             }
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
