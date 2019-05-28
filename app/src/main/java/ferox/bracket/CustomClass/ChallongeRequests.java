@@ -117,7 +117,7 @@ public class ChallongeRequests {
     moment of serendipity that made me privy to this information because this will make developing
     this app much more convenient.
      */
-    static public APIRequest jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(String url, String subdomain) {
+    static public APIRequest jsonAtTheEndOfTheNormalURL(String url, String subdomain) {
 
         if (!TextUtils.isEmpty(subdomain)) {
             String s = "https://" + subdomain + ".challonge.com/";

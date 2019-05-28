@@ -2,7 +2,6 @@ package ferox.bracket.CustomViews;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
@@ -33,20 +32,19 @@ public class MatchView extends ConstraintLayout {
 
     public MatchView(Context context) {
         super(context);
-        Log.d("MatchConstructor1", "Called");
+
         init(context, null);
 
     }
 
     public MatchView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Log.d("MatchConstructor2", "Called");
+
 
     }
 
     public MatchView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        Log.d("MatchConstructor3", "Called");
         init(context, attrs);
 
     }

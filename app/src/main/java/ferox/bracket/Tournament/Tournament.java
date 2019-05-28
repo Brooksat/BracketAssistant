@@ -30,6 +30,8 @@ public class Tournament implements Parcelable {
     public static final String SINGLE_MATCH = "single match";
     public static final String SKIP = "skip";
 
+    public final static String REOPEN = "Reopen";
+
     private static final String TOURNAMENT_NAME = "&tournament[name]=";
     private static final String TOURNAMENT_TYPE = "&tournament[tournament_type]=";
     private static final String TOURNAMENT_URL = "&tournament[url]=";

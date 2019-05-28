@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         error.setTextColor(Color.RED);
                         errorsLayout.addView(error);
                     }
-                }, ChallongeRequests.jsonAtTheEndOfTheNormalURLThatGivesYouInfoNotInTheActualAPIMethodsLikeSeriouslyWTFWhyIsThisAThingChallongeGetItTogether(searchURL.getText().toString(), searchSubdomain.getText().toString()));
+                }, ChallongeRequests.jsonAtTheEndOfTheNormalURL(searchURL.getText().toString(), searchSubdomain.getText().toString()));
             });
         });
         dialog.show();
