@@ -61,6 +61,7 @@ public class BracketActivity extends AppCompatActivity {
                             AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
                     tabLayout.setLayoutParams(layoutParams);
                 }
+                //TODO doesnt seem to be calling refresh on select
                 //if participantstab is selected
                 if (tab.getPosition() == 1) {
                     try {

@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import ferox.bracket.R;
 
-public class bracketConnectorView extends View {
+public class BracketConnectorView extends View {
 
     public final static int MODE_TEST = 0;
     public final static int MODE_TOP = 1;
@@ -26,8 +26,11 @@ public class bracketConnectorView extends View {
     int color;
 
 
+    public BracketConnectorView(Context context) {
+        super(context);
+    }
 
-    public bracketConnectorView(Context context, @Nullable AttributeSet attrs, int heightInput, int mode, String lol) {
+    public BracketConnectorView(Context context, @Nullable AttributeSet attrs, int heightInput, int mode, String lol) {
         super(context, attrs);
         this.heightInput = heightInput;
         this.mode = mode;

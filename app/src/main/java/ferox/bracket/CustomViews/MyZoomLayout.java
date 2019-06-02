@@ -3,7 +3,6 @@ package ferox.bracket.CustomViews;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -231,7 +230,7 @@ public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.On
         switch (action) {
             case (MotionEvent.ACTION_DOWN): {
                 mode = Mode.DRAG;
-                Log.d("InterceptDown", "called");
+                //  Log.d("InterceptDown", "called");
 
                 prevX = event.getX();
                 prevY = event.getY();
@@ -243,7 +242,7 @@ public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.On
             }
             //use DX/DY instead of thread sleep
             case (MotionEvent.ACTION_MOVE): {
-                Log.d("InterceptMove", "called");
+                // Log.d("InterceptMove", "called");
 
                 final int pointerIndex = event.findPointerIndex(mActivePointerID);
 
@@ -259,7 +258,7 @@ public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.On
                     prevY = event.getY(pointerIndex);
                 }
                 int touchDelta = (int) (dX + dY);
-                Log.d("TouchDelta", String.valueOf(Math.abs((int) (dX + dY))));
+                //  Log.d("TouchDelta", String.valueOf(Math.abs((int) (dX + dY))));
                 return Math.abs(touchDelta) > 3;
 
 
@@ -305,7 +304,7 @@ public class MyZoomLayout extends FrameLayout implements ScaleGestureDetector.On
 
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
-        Log.i(TAG, "onScaleBegin");
+        // Log.i(TAG, "onScaleBegin");
         return true;
     }
 

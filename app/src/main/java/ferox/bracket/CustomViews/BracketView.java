@@ -3,11 +3,10 @@ package ferox.bracket.CustomViews;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.LinearLayout;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-
-public class BracketView extends ConstraintLayout {
+public class BracketView extends LinearLayout {
 
     Context mContext;
 

@@ -19,14 +19,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ferox.bracket.CustomViews.BracketView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <ferox.bracket.CustomViews.BracketView xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/bracket_root"
-            style="@style/menu_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
+            android:orientation="vertical"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:context=".Activity.BracketActivity">
@@ -49,31 +47,16 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:id="@+id/round_winners"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/menu_background_light"
-                android:orientation="horizontal"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/bracket_winners"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:orientation="horizontal"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/round_winners" />
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:id="@+id/round_losers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/menu_background_light"
-                android:orientation="horizontal"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bracket_winners" />
 
             <LinearLayout
                 android:id="@+id/bracket_losers"
@@ -81,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/round_losers" />
+                app:layout_constraintTop_toBottomOf="@id/bracket_winners" />
 
 
         </ferox.bracket.CustomViews.BracketView>

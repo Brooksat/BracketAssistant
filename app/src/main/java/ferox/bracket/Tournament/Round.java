@@ -26,7 +26,7 @@ public class Round {
     public Round() {
         this.title = "";
         this.number = 0;
-        this.isGrandFinals = true;
+        this.isGrandFinals = false;
         matchList = new ArrayList<>();
     }
 

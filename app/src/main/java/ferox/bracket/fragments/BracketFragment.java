@@ -35,12 +35,12 @@ import java.util.Objects;
 
 import ferox.bracket.CustomClass.ChallongeRequests;
 import ferox.bracket.CustomClass.StringJsonArrayPair;
+import ferox.bracket.CustomViews.BracketConnectorView;
 import ferox.bracket.CustomViews.LoadingView;
 import ferox.bracket.CustomViews.MatchReportButton;
 import ferox.bracket.CustomViews.MatchView;
 import ferox.bracket.CustomViews.MyZoomLayout;
 import ferox.bracket.CustomViews.RoundLayout;
-import ferox.bracket.CustomViews.bracketConnectorView;
 import ferox.bracket.Interface.VolleyCallback;
 import ferox.bracket.R;
 import ferox.bracket.Tournament.Match;
@@ -150,8 +150,7 @@ public class BracketFragment extends Fragment {
 
     private MyZoomLayout zoomLayout;
     private LoadingView lv;
-    private LinearLayout roundWinners;
-    private LinearLayout roundLosers;
+
     private LinearLayout bracketWinners;
     private LinearLayout bracketLosers;
 
@@ -181,10 +180,13 @@ public class BracketFragment extends Fragment {
 //        dy = v.findViewById(R.id.bracket_dy);
 //        scale = v.findViewById(R.id.bracket_scale);
 
-        roundWinners = v.findViewById(R.id.round_winners);
+
         bracketWinners = v.findViewById(R.id.bracket_winners);
-        roundLosers = v.findViewById(R.id.round_losers);
+
         bracketLosers = v.findViewById(R.id.bracket_losers);
+        bracketLosers.setOnSystemUiVisibilityChangeListener(visibility -> {
+            Toast.makeText(getContext(), "Visibility Changed", Toast.LENGTH_SHORT).show();
+        });
         lv = v.findViewById(R.id.loading_view);
 
         mHeightUnit = getResources().getDimensionPixelSize(R.dimen.match_height);
@@ -242,14 +244,12 @@ public class BracketFragment extends Fragment {
     }
 
 
-
     private void setOldValues() {
         oldType = tournament.getType();
         oldParticipantCount = tournament.getParticipantCount();
         oldHoldThirdPlace = tournament.isHoldThirdPlaceMatch();
         oldGrandsModifier = tournament.getGrandFinalsModifier();
     }
-
 
 
     private void setSearchTournamentValues() {
@@ -371,6 +371,7 @@ public class BracketFragment extends Fragment {
     private void newMakeBrackets(boolean refresh) {
         RoundLayout.setTournament(tournament);
         makeWinners(refresh);
+        newMakeLosers(refresh);
 
     }
 
@@ -380,11 +381,32 @@ public class BracketFragment extends Fragment {
 
         for (int i = 0; i < winnersRounds.size(); i++) {
             RoundLayout roundLayout = new RoundLayout(getContext());
+            roundLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
             roundLayoutsWinners.add(roundLayout);
         }
         for (int i = 0; i < losersRounds.size(); i++) {
             RoundLayout roundLayout = new RoundLayout(getContext());
+            roundLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
             roundLayoutsLosers.add(roundLayout);
+        }
+
+
+        for (int i = 0; i < roundLayoutsWinners.size(); i++) {
+            if (i > 0) {
+                roundLayoutsWinners.get(i).setPrevRoundLayout(roundLayoutsWinners.get(i - 1));
+            }
+            if (i < roundLayoutsWinners.size() - 1) {
+                roundLayoutsWinners.get(i).setNextRoundLayout(roundLayoutsWinners.get(i + 1));
+            }
+        }
+
+        for (int i = 0; i < roundLayoutsLosers.size(); i++) {
+            if (i > 0) {
+                roundLayoutsLosers.get(i).setPrevRoundLayout(roundLayoutsLosers.get(i - 1));
+            }
+            if (i < roundLayoutsLosers.size() - 1) {
+                roundLayoutsLosers.get(i).setNextRoundLayout(roundLayoutsLosers.get(i + 1));
+            }
         }
 
         refreshRoundLayouts();
@@ -397,6 +419,11 @@ public class BracketFragment extends Fragment {
         }
         for (int i = 0; i < losersRounds.size(); i++) {
             roundLayoutsLosers.get(i).setRound(losersRounds.get(i));
+        }
+
+        //sets grandfinals boolean
+        if (tournament.getType().equals(DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(Tournament.SKIP)) {
+            winnersRounds.get(winnersRounds.size() - 1).setGrandFinals(true);
         }
 
         //sets prev/next rounds of roundLayouts
@@ -422,8 +449,6 @@ public class BracketFragment extends Fragment {
     private void resetViewsViewGroups() {
         bracketWinners.removeAllViews();
         bracketLosers.removeAllViews();
-        roundWinners.removeAllViews();
-        roundLosers.removeAllViews();
     }
 
     private void reset() {
@@ -492,7 +517,6 @@ public class BracketFragment extends Fragment {
             roundTmp.setNumber(Integer.parseInt(name));
             if (roundTmp.getNumber() < 0) {
                 losersRounds.add(roundTmp);
-                roundTmp.setGrandFinals(false);
             } else {
                 roundTmp.setIsWinners(true);
                 winnersRounds.add(roundTmp);
@@ -639,7 +663,6 @@ public class BracketFragment extends Fragment {
     private void makeWinners(boolean refresh) {
 
 
-
         //total number of rounds minus grand finals which is constructed separately
         int totalRounds;
         if (tournament.getType().equals(DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(GRANDS_SKIP)) {
@@ -669,8 +692,11 @@ public class BracketFragment extends Fragment {
                 int numMatches = (int) Math.pow(2, totalRounds - (i + 1));
 
                 if (!refresh) {
-                    bracketWinners.addView(roundLayoutsWinners.get(i));
-                    roundLayoutsWinners.get(i).initializeLayouts(numMatches, i);
+                    RoundLayout roundLayout = roundLayoutsWinners.get(i);
+                    bracketWinners.addView(roundLayout);
+                    roundLayout.setFullRoundSize(numMatches);
+                    roundLayout.setSizeMultiplier(i);
+                    roundLayout.initializeLayouts(numMatches, i);
                 }
 
                 if (i == 0) {
@@ -682,6 +708,12 @@ public class BracketFragment extends Fragment {
 
             }
 
+            if (tournament.getType().equals(Tournament.DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(Tournament.SKIP)) {
+
+                newMakeGrandFinals(refresh);
+
+            }
+
             //double elimination grand finals
 //            if (tournament.getType().equals(DOUBLE_ELIM) && !tournament.getGrandFinalsModifier().equals(GRANDS_SKIP)) {
 //                makeGrandFinals();
@@ -690,7 +722,9 @@ public class BracketFragment extends Fragment {
 //                makeThirdPlaceMatch();
 //            }
 
-        } else if (tournament.getType().equals(ROUND_ROBIN) || tournament.getType().equals(SWISS)) {
+        }
+        //rr swiss
+        else if (tournament.getType().equals(ROUND_ROBIN) || tournament.getType().equals(SWISS)) {
             for (int i = 0; i < winnersRounds.size(); i++) {
                 bracketWinners.setOrientation(LinearLayout.VERTICAL);
                 LayoutInflater inflater = getLayoutInflater();
@@ -708,6 +742,44 @@ public class BracketFragment extends Fragment {
                 bracketWinners.addView(round);
                 bracketWinners.addView(roundLayout);
             }
+        }
+    }
+
+    private void newMakeGrandFinals(boolean refresh) {
+        RoundLayout roundLayout = roundLayoutsWinners.get(roundLayoutsWinners.size() - 1);
+        if (!refresh) {
+            bracketWinners.addView(roundLayout);
+        }
+        roundLayout.setSizeMultiplier(roundLayout.getPrevRoundLayout().getSizeMultiplier());
+        roundLayout.setFullRoundSize(1);
+        roundLayout.initializeLayouts(roundLayout.getFullRoundSize(), roundLayout.getSizeMultiplier());
+    }
+
+    private void newMakeLosers(boolean refresh) {
+
+        double shift = (losersRounds.size() % 2) == 0 ? 0.5 : 0;
+        int start = (int) Math.ceil(roundLayoutsLosers.size() / 2.0) * 2;
+
+
+        for (int i = losersRounds.size(), j = 0; i > 0; i--, j++) {
+            RoundLayout roundLayout = roundLayoutsLosers.get(i - 1);
+            int multiplier = (int) Math.ceil((start - j) / 2.0);
+            int fullSizeRound = (int) Math.pow(2, Math.floor((roundLayoutsLosers.size() - i) / 2.0));
+            int preRoundMultiplier = (int) Math.floor((i / 2.0) + 1 + shift);
+            roundLayout.setSizeMultiplier(multiplier - 1);
+            roundLayout.setFullRoundSize(fullSizeRound);
+            roundLayout.setPreRoundMultiplier(preRoundMultiplier - 1);
+            if (!refresh) {
+                bracketLosers.addView(roundLayout, 0);
+            }
+
+
+        }
+
+        for (int i = 0; i < roundLayoutsLosers.size(); i++) {
+
+            RoundLayout roundLayout = roundLayoutsLosers.get(i);
+            roundLayout.initializeLayouts(roundLayout.getFullRoundSize(), roundLayout.getSizeMultiplier());
         }
 
     }
@@ -749,8 +821,8 @@ public class BracketFragment extends Fragment {
             if ((totalRounds - i) % 2 == 0) {
                 for (int j = 0; j < numMatches / 2; j++) {
                     bcvLayout.addView(makeSpaceComponent(Math.pow(2, i / 2) - 0.5));
-                    bcvLayout.addView(makeBCVComponent(i / 2, bracketConnectorView.MODE_TOP));
-                    bcvLayout.addView(makeBCVComponent(i / 2, bracketConnectorView.MODE_BOTTOM));
+                    bcvLayout.addView(makeBCVComponent(i / 2, BracketConnectorView.MODE_TOP));
+                    bcvLayout.addView(makeBCVComponent(i / 2, BracketConnectorView.MODE_BOTTOM));
                     bcvLayout.addView(makeSpaceComponent(Math.pow(2, i / 2) - 0.5));
                     bcvLayout.addView(makeSpaceComponent(1));
                 }
@@ -758,7 +830,7 @@ public class BracketFragment extends Fragment {
                 //preround space for BCV
                 bcvLayout.addView(makeSpaceComponent(Math.pow(2, multiplier - 1) - 1));
                 for (int j = 0; j < numMatches; j++) {
-                    bcvLayout.addView(makeBCVComponent(0, bracketConnectorView.MODE_MIDDLE));
+                    bcvLayout.addView(makeBCVComponent(0, BracketConnectorView.MODE_MIDDLE));
                     if (j < numMatches - 1) {
                         bcvLayout.addView(makeSpaceComponent(Math.pow(2, multiplier) - 1));
                     }
@@ -772,6 +844,10 @@ public class BracketFragment extends Fragment {
             bracketLosers.addView(roundLayout, 0);
 
         }
+    }
+
+    private LinearLayout.LayoutParams params(int width, int height) {
+        return new LinearLayout.LayoutParams(width, height);
     }
 
     private void makeBracketDisplay() {
@@ -883,7 +959,7 @@ public class BracketFragment extends Fragment {
         grandFinals.setOrientation(LinearLayout.VERTICAL);
         BCV1.addView(makeSpaceComponent(Math.pow(2, size - 2) - 0.5));
         grandFinals.addView(makeSpaceComponent(Math.pow(2, size - 2)));
-        BCV1.addView(makeBCVComponent(0, bracketConnectorView.MODE_TOP));
+        BCV1.addView(makeBCVComponent(0, BracketConnectorView.MODE_TOP));
         grandFinals.addView(makeMatchComponent());
         bracketWinners.addView(BCV1);
         bracketWinners.addView(grandFinals);
@@ -898,7 +974,7 @@ public class BracketFragment extends Fragment {
             grandFinalsReset.setOrientation(LinearLayout.VERTICAL);
             BCV2.addView(makeSpaceComponent(Math.pow(2, size - 2)));
             grandFinalsReset.addView(makeSpaceComponent(Math.pow(2, size - 2)));
-            BCV2.addView(makeBCVComponent(0, bracketConnectorView.MODE_MIDDLE));
+            BCV2.addView(makeBCVComponent(0, BracketConnectorView.MODE_MIDDLE));
             grandFinalsReset.addView(makeMatchComponent());
             bracketWinners.addView(BCV2);
             bracketWinners.addView(grandFinalsReset);
@@ -1125,10 +1201,10 @@ public class BracketFragment extends Fragment {
         return space;
     }
 
-    //TODO this takes in an int multiplier whereas makeSpaceComponent takes in a double, should probably be the same for consistency
+
     //get bracketConnectorView
-    private bracketConnectorView makeBCVComponent(int heightMultiplier, int mode) {
-        bracketConnectorView bcv = new bracketConnectorView(getContext(), null, mHeightUnit * (int) Math.pow(2, heightMultiplier), mode, null);
+    private BracketConnectorView makeBCVComponent(int heightMultiplier, int mode) {
+        BracketConnectorView bcv = new BracketConnectorView(getContext(), null, mHeightUnit * (int) Math.pow(2, heightMultiplier), mode, null);
         return bcv;
     }
 
@@ -1141,47 +1217,6 @@ public class BracketFragment extends Fragment {
         }
     }
 
-    //Constructs round headers
-    private void setRoundHeaders() {
-        LinearLayout roundWinners = getView().findViewById(R.id.round_winners);
-        LinearLayout roundLosers = getView().findViewById(R.id.round_losers);
-
-
-        //adds round headers
-        for (int i = 0; i < roundLabelsW.size(); i++) {
-            Button roundNumber = (Button) getLayoutInflater().inflate(R.layout.bracket_round, roundWinners, false);
-            roundNumber.setText(roundLabelsW.get(i).getTitle());
-            roundWinners.addView(roundNumber);
-            //Make custom button to bypass this
-            int finalI = i;
-            roundNumber.setOnClickListener(v -> {
-                //winnersRounds.get(finalI).setHidden(!winnersRounds.get(finalI).isHidden());
-                View roundLayout = bracketWinners.getChildAt(finalI * 2);
-                View bcvLayout = bracketWinners.getChildAt(finalI * 2 + 1);
-                roundLayout.setVisibility(roundLayout.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-                bcvLayout.setVisibility(bcvLayout.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-                //resetViewsViewGroups();
-                //makeBracketDisplay();
-                //bracketWinners.requestLayout();
-                Toast.makeText(getContext(), String.valueOf(winnersRounds.get(finalI).isHidden()), Toast.LENGTH_SHORT).show();
-            });
-
-        }
-        for (int i = 0; i < roundLabelsL.size(); i++) {
-            Button roundNumber = (Button) getLayoutInflater().inflate(R.layout.bracket_round, roundWinners, false);
-            roundNumber.setText(roundLabelsL.get(i).getTitle());
-            roundLosers.addView(roundNumber);
-            int finalI = i;
-            roundNumber.setOnClickListener(v -> {
-                losersRounds.get(finalI).setHidden(!losersRounds.get(finalI).isHidden());
-                resetViewsViewGroups();
-                makeBracketDisplay();
-                Toast.makeText(getContext(), String.valueOf(losersRounds.get(finalI).isHidden()), Toast.LENGTH_SHORT).show();
-            });
-        }
-
-
-    }
 
 
 
@@ -1196,7 +1231,7 @@ public class BracketFragment extends Fragment {
             ArrayList<Match> secondRoundMatches = secondRound.getMatchList();
             for (int i = 0; i < secondRoundMatches.size(); i++) {
 
-                //TODO Possible change so that the match will go through the layout until its gotten to the i matchLayout, gets rid of magic number but loses out on random access
+
                 //Or just refactor these numbers to static final ints
                 if (secondRoundMatches.get(i).getP1PrereqIdentifier() == 0) {
                     //index of of matchLayout and BCV corresponding to current second round index
@@ -1260,7 +1295,6 @@ public class BracketFragment extends Fragment {
     }
 
 
-    //TODO predicting bug where is someone reports a match on one device but doesnt not show on another device,
     private void buildMatchReportDialog(Match match) {
 
         if (match.getState().equals(Match.OPEN)) {
@@ -1430,30 +1464,7 @@ public class BracketFragment extends Fragment {
 
     }
 
-    /**
-     * if round is complete then change the color of the round header
-     */
-    //TODO doesnt work with round robin/swiss
-    private void setRoundColor() {
-        for (int i = 0; i < winnersRounds.size(); i++) {
-            Button roundNumber = (Button) roundWinners.getChildAt(i);
 
-            if (winnersRounds.get(i).isFinished()) {
-                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_title)));
-            } else {
-                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_background)));
-            }
-        }
-        for (int i = 0; i < losersRounds.size(); i++) {
-            Button roundNumber = (Button) roundLosers.getChildAt(i);
-
-            if (losersRounds.get(i).isFinished()) {
-                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_title)));
-            } else {
-                roundNumber.setBackgroundColor((getResources().getColor(R.color.menu_background)));
-            }
-        }
-    }
 
 
 }
