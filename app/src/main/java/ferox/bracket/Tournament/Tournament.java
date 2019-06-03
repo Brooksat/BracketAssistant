@@ -15,6 +15,7 @@ public class Tournament implements Parcelable {
     public static final String SINGLE_ELIM = "single elimination";
     public static final String DOUBLE_ELIM = "double elimination";
     public static final String ROUND_ROBIN = "round robin";
+    public final static String SWISS = "swiss";
     public static final String FREE_FOR_ALL = "free for all";
 
     public static final String AWAITING_REVIEW = "awaiting_review";

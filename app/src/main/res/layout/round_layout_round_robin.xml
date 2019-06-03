@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/round_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/round_layout_button"
+        style="@style/menu_round"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/round_header_height"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="@dimen/round_header_margin_end"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:text="Round" />
+
+    <Space
+        android:id="@+id/round_layout_grand_finals_space"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+    </Space>
+
+    <LinearLayout
+        android:id="@+id/round_layout_match_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+    <TextView
+        android:id="@+id/round_layout_view_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="1"
+        android:background="@color/menu_background_light"
+        android:textColor="@color/menu_text"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+
+</LinearLayout>

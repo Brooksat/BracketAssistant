@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -43,7 +44,7 @@ public class RoundLayout extends LinearLayout {
     private int fullRoundSize;
     private int preRoundMultiplier;
 
-
+    private boolean roundRobin;
     private boolean hidden;
 
     /**
@@ -125,60 +126,75 @@ public class RoundLayout extends LinearLayout {
 
     }
 
-    private void initLayoutWinneres(int fullRoundSize, int sizeMultiplier) {
-        matchLayout.removeAllViews();
-        bcvLayout.removeAllViews();
-        matchLayout.setVisibility(VISIBLE);
-        bcvLayout.setVisibility(VISIBLE);
-        matchLayoutCover.setVisibility(GONE);
-        //make space that goes before each round(2^(n-1)-1, n = round)
-        matchLayout.addView(makeSpaceComponent(((Math.pow(2, sizeMultiplier)) - 1)));
+    private void initLayoutWinners(int fullRoundSize, int sizeMultiplier) {
+        //double/single elim bracket
+        if (!roundRobin) {
+            matchLayout.removeAllViews();
+            bcvLayout.removeAllViews();
+            matchLayout.setVisibility(VISIBLE);
+            bcvLayout.setVisibility(VISIBLE);
+            matchLayoutCover.setVisibility(GONE);
+            //make space that goes before each round(2^(n-1)-1, n = round)
+            matchLayout.addView(makeSpaceComponent(((Math.pow(2, sizeMultiplier)) - 1)));
 
-        //matches
-        for (int j = 0; j < fullRoundSize; j++) {
-            //make  match
-            matchLayout.addView(makeMatchComponent());
-            //then space((2^n)-1)
-            if (j < fullRoundSize - 1) {
-                matchLayout.addView(makeSpaceComponent(Math.pow(2, sizeMultiplier + 1) - 1));
+            //matches
+            for (int j = 0; j < fullRoundSize; j++) {
+                //make  match
+                matchLayout.addView(makeMatchComponent());
+                //then space((2^n)-1)
+                if (j < fullRoundSize - 1) {
+                    matchLayout.addView(makeSpaceComponent(Math.pow(2, sizeMultiplier + 1) - 1));
+                }
             }
-        }
 
-        //bracket connectors
-        for (int j = 0; j < fullRoundSize / 2; j++) {
-            bcvLayout.addView(makeSpaceComponent(Math.pow(2, sizeMultiplier) - 0.5));
-            bcvLayout.addView(makeBCVComponent(sizeMultiplier, BracketConnectorView.MODE_TOP));
-            bcvLayout.addView(makeBCVComponent(sizeMultiplier, BracketConnectorView.MODE_BOTTOM));
-            if (j < (fullRoundSize / 2 - 1)) {
+            //bracket connectors
+            for (int j = 0; j < fullRoundSize / 2; j++) {
                 bcvLayout.addView(makeSpaceComponent(Math.pow(2, sizeMultiplier) - 0.5));
-                bcvLayout.addView(makeSpaceComponent(1));
+                bcvLayout.addView(makeBCVComponent(sizeMultiplier, BracketConnectorView.MODE_TOP));
+                bcvLayout.addView(makeBCVComponent(sizeMultiplier, BracketConnectorView.MODE_BOTTOM));
+                if (j < (fullRoundSize / 2 - 1)) {
+                    bcvLayout.addView(makeSpaceComponent(Math.pow(2, sizeMultiplier) - 0.5));
+                    bcvLayout.addView(makeSpaceComponent(1));
+                }
+            }
+            if (nextRoundLayout != null && nextRoundLayout.getRound().isGrandFinals()) {
+                bcvLayout.addView(makeSpaceComponent(((Math.pow(2, sizeMultiplier)) - 1) + 0.5));
+                bcvLayout.addView(makeBCVComponent(0, BracketConnectorView.MODE_TOP));
+            }
+
+            if (round.getNumber() == 1 && !roundRobin) {
+                setUnusedMatchesInvisible();
             }
         }
-        if (nextRoundLayout != null && nextRoundLayout.getRound().isGrandFinals()) {
-            bcvLayout.addView(makeSpaceComponent(((Math.pow(2, sizeMultiplier)) - 1) + 0.5));
-            bcvLayout.addView(makeBCVComponent(0, BracketConnectorView.MODE_TOP));
-        }
-
-        if (round.getNumber() == 1) {
-            setUnusedMatchesInvisible();
+        //round robin/swiss bracket
+        else {
+            bcvLayout.setVisibility(GONE);
+            matchLayout.setOrientation(HORIZONTAL);
+            for (int i = 0; i < round.getMatchList().size(); i++) {
+                matchLayout.addView(makeMatchComponent());
+                Space space = makeSpaceComponent(1);
+                space.getLayoutParams().width = mWidthUnit / 2;
+                matchLayout.addView(space);
+            }
         }
         updateMatchViews();
     }
 
 
+    //this methods changes the parameters of certain layouts to make it display correctly
     private void initGrandFinals(int fullRoundSize, int sizeMultiplier) {
 
         minusButtonLayout.setOrientation(VERTICAL);
         matchLayout.setOrientation(HORIZONTAL);
 
         matchLayout.removeAllViews();
-        bcvLayout.removeAllViews();
+        //bcvLayout.removeAllViews();
         if (minusButtonLayout.getChildAt(0) instanceof Space) {
             minusButtonLayout.removeViewAt(0);
         }
         matchLayout.setVisibility(VISIBLE);
 
-        bcvLayout.setVisibility(VISIBLE);
+        bcvLayout.setVisibility(GONE);
         matchLayoutCover.setVisibility(GONE);
         //make space that goes before each round(2^(n-1)-1, n = round)
         minusButtonLayout.addView(makeSpaceComponent(((Math.pow(2, sizeMultiplier)) - 1) + 1), 0);
@@ -258,7 +274,7 @@ public class RoundLayout extends LinearLayout {
 
     public void initializeLayouts(int fullRoundSize, int sizeMultiplier) {
 
-        roundHeaderButton.setText(String.valueOf(sizeMultiplier));
+        roundHeaderButton.setText(round.getTitle());
         //Layout is unhidden
         if (!hidden) {
             if (round.isWinners()) {
@@ -266,7 +282,7 @@ public class RoundLayout extends LinearLayout {
                 if (round.isGrandFinals()) {
                     initGrandFinals(fullRoundSize, sizeMultiplier);
                 } else {
-                    initLayoutWinneres(fullRoundSize, sizeMultiplier);
+                    initLayoutWinners(fullRoundSize, sizeMultiplier);
                 }
             } else {
                 initLayoutLosers(fullRoundSize, sizeMultiplier);
@@ -274,7 +290,7 @@ public class RoundLayout extends LinearLayout {
 
 
         }
-        //TODO when grand finals match is hidden the layout cover less space than it should
+
         //Layout is hidden
         else {
             //there is a another round
@@ -315,7 +331,10 @@ public class RoundLayout extends LinearLayout {
                                 }
                             }
                         }
-                        bcvLayout.addView(makeSpaceComponent(Math.pow(2, nextRoundLayout.getSizeMultiplier() + 1) - 1));
+                        //dont add space after last bcv in the layout
+                        if (i < numberbcv - 1) {
+                            bcvLayout.addView(makeSpaceComponent(Math.pow(2, nextRoundLayout.getSizeMultiplier() + 1) - 1));
+                        }
                     }
 
                 }
@@ -325,10 +344,17 @@ public class RoundLayout extends LinearLayout {
                     matchLayoutCover.setVisibility(VISIBLE);
                     bcvLayout.setVisibility(GONE);
                 }
-            } else {
+            }
+            //last round
+            else {
                 matchLayout.setVisibility(GONE);
                 matchLayoutCover.setVisibility(VISIBLE);
                 bcvLayout.setVisibility(GONE);
+                //when dealing with grands finals
+                if (minusButtonLayout.getChildAt(0) instanceof Space) {
+                    minusButtonLayout.removeViewAt(0);
+                }
+
             }
 
         }
@@ -477,6 +503,7 @@ public class RoundLayout extends LinearLayout {
 
     }
 
+    //TODO change roundheader/viewcover color when all matches of round are complete
 
     public void updateMatchViews() {
 
@@ -767,6 +794,9 @@ public class RoundLayout extends LinearLayout {
 
     public void setRound(Round round) {
         this.round = round;
+        if (round.isGrandFinals()) {
+            matchLayoutCover = findViewById(R.id.round_layout_view_cover_gf);
+        }
     }
 
     public Button getRoundHeaderButton() {
@@ -855,5 +885,18 @@ public class RoundLayout extends LinearLayout {
 
     public void setPreRoundMultiplier(int preRoundMultiplier) {
         this.preRoundMultiplier = preRoundMultiplier;
+    }
+
+    public boolean isRoundRobin() {
+        return roundRobin;
+    }
+
+    public void setRoundRobin(boolean roundRobin) {
+        //TODO button function should be handle in hide function
+        if (roundRobin) {
+            roundHeaderButton.setEnabled(false);
+            roundHeaderButton.setGravity(Gravity.CENTER_VERTICAL);
+        }
+        this.roundRobin = roundRobin;
     }
 }

@@ -382,6 +382,9 @@ public class BracketFragment extends Fragment {
         for (int i = 0; i < winnersRounds.size(); i++) {
             RoundLayout roundLayout = new RoundLayout(getContext());
             roundLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            if (tournament.getType().equals(Tournament.ROUND_ROBIN) || tournament.getType().equals(Tournament.SWISS)) {
+                roundLayout.setRoundRobin(true);
+            }
             roundLayoutsWinners.add(roundLayout);
         }
         for (int i = 0; i < losersRounds.size(); i++) {
@@ -390,7 +393,7 @@ public class BracketFragment extends Fragment {
             roundLayoutsLosers.add(roundLayout);
         }
 
-
+        //sets prev/next roundLayouts
         for (int i = 0; i < roundLayoutsWinners.size(); i++) {
             if (i > 0) {
                 roundLayoutsWinners.get(i).setPrevRoundLayout(roundLayoutsWinners.get(i - 1));
@@ -672,9 +675,13 @@ public class BracketFragment extends Fragment {
         }
 
 
+        //       if (tournament.getType().equals(SINGLE_ELIM) || tournament.getType().equals(DOUBLE_ELIM)) {
         if (tournament.getType().equals(SINGLE_ELIM) || tournament.getType().equals(DOUBLE_ELIM)) {
             bracketWinners.setOrientation(LinearLayout.HORIZONTAL);
-            for (int i = 0, i1 = 0; i < totalRounds; i++, i1++) {
+        } else {
+            bracketWinners.setOrientation(LinearLayout.VERTICAL);
+        }
+        for (int i = 0, i1 = 0; i < totalRounds; i++, i1++) {
 
                 //make a Linear Layout to hold each round
 //                LinearLayout roundLayout = new LinearLayout(getContext());
@@ -700,7 +707,7 @@ public class BracketFragment extends Fragment {
                 }
 
                 if (i == 0) {
-                    roundLayoutsWinners.get(i).setUnusedMatchesInvisible();
+                    // roundLayoutsWinners.get(i).setUnusedMatchesInvisible();
                 }
 
                 roundLayoutsWinners.get(i).updateMatchViews();
@@ -722,33 +729,35 @@ public class BracketFragment extends Fragment {
 //                makeThirdPlaceMatch();
 //            }
 
-        }
+        // }
         //rr swiss
-        else if (tournament.getType().equals(ROUND_ROBIN) || tournament.getType().equals(SWISS)) {
-            for (int i = 0; i < winnersRounds.size(); i++) {
-                bracketWinners.setOrientation(LinearLayout.VERTICAL);
-                LayoutInflater inflater = getLayoutInflater();
-                TextView round = (TextView) inflater.inflate(R.layout.menu_list_item, null);
-                round.setText("Round" + (i + 1));
-                LinearLayout roundLayout = new LinearLayout(getContext());
-                roundLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                for (int j = 0; j < winnersRounds.get(i).getMatchList().size(); j++) {
-                    roundLayout.addView(makeMatchComponent());
-                    Space space = makeSpaceComponent(1);
-                    space.getLayoutParams().width = mWidthUnit / 2;
-                    roundLayout.addView(space);
-                }
-                bracketWinners.addView(round);
-                bracketWinners.addView(roundLayout);
-            }
-        }
+//        else if (tournament.getType().equals(ROUND_ROBIN) || tournament.getType().equals(SWISS)) {
+//            for (int i = 0; i < winnersRounds.size(); i++) {
+//                bracketWinners.setOrientation(LinearLayout.VERTICAL);
+//                LayoutInflater inflater = getLayoutInflater();
+//                TextView round = (TextView) inflater.inflate(R.layout.menu_list_item, null);
+//                round.setText("Round" + (i + 1));
+//                LinearLayout roundLayout = new LinearLayout(getContext());
+//                roundLayout.setLayoutParams(new LinearLayout.LayoutParams(
+//                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+//                for (int j = 0; j < winnersRounds.get(i).getMatchList().size(); j++) {
+//                    roundLayout.addView(makeMatchComponent());
+//                    Space space = makeSpaceComponent(1);
+//                    space.getLayoutParams().width = mWidthUnit / 2;
+//                    roundLayout.addView(space);
+//                }
+//                bracketWinners.addView(round);
+//                bracketWinners.addView(roundLayout);
+//            }
+//        }
     }
+
 
     private void newMakeGrandFinals(boolean refresh) {
         RoundLayout roundLayout = roundLayoutsWinners.get(roundLayoutsWinners.size() - 1);
         if (!refresh) {
             bracketWinners.addView(roundLayout);
+
         }
         roundLayout.setSizeMultiplier(roundLayout.getPrevRoundLayout().getSizeMultiplier());
         roundLayout.setFullRoundSize(1);
