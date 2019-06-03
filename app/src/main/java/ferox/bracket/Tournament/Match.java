@@ -20,7 +20,7 @@ public class Match {
     private String tournamentID;
     @SerializedName("identifier")
     @Expose
-    private int identifier;
+    private String identifier;
 
     private int p1Seed;
     private int p2Seed;
@@ -67,12 +67,11 @@ public class Match {
     private String p2Score;
 
 
-    public Match(String id, int number, int p1Seed, int p2Seed, Participant p1, Participant p2,
+    public Match(String id, int p1Seed, int p2Seed, Participant p1, Participant p2,
                  Match p1PreviousMatch, Match p2PreviousMatch, boolean P1Decided, boolean P2Decided,
                  String p1PrereqText, String p2PrereqText) {
         super();
         this.id = id;
-        this.identifier = number;
         this.p1Seed = p1Seed;
         this.p2Seed = p2Seed;
         this.p1 = p1;
@@ -89,7 +88,7 @@ public class Match {
     public Match() {
         id = "";
         tournamentID = "";
-        identifier = 0;
+        identifier = "";
         p1Seed = 0;
         p2Seed = 0;
         p1PrereqIdentifier = 0;
@@ -126,6 +125,9 @@ public class Match {
     public void undoJsonShenanigans() {
         if (id == null) {
             id = "";
+        }
+        if (identifier == null) {
+            identifier = "";
         }
         if (tournamentID == null) {
             tournamentID = "";
@@ -199,11 +201,11 @@ public class Match {
         this.p2IsPrereqLoser = p2IsPrereqLoser;
     }
 
-    public int getIdentifier() {
+    public String getIdentifier() {
         return identifier;
     }
 
-    public void setIdentifier(int identifier) {
+    public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 

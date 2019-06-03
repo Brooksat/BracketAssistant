@@ -18,6 +18,12 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
 
 import ferox.bracket.CustomClass.ChallongeRequests;
@@ -626,12 +632,80 @@ public class RoundLayout extends LinearLayout {
                 } else if (p2Win.isWon()) {
                     match.setWinnerID(match.getP2().getId());
                 }
-                sendMatchUpdateRequest(match, errorsLayout, dialog);
+                sendMatchCheckRequest(match, errorsLayout, dialog);
             });
 
         });
 
+    }
 
+    /**
+     * When reporting the match it will check to make sure the match hasnt already been reported
+     */
+    private void sendMatchCheckRequest(Match match, LinearLayout errorsLayout, AlertDialog dialog) {
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+
+
+                GsonBuilder builder = new GsonBuilder();
+                builder.excludeFieldsWithoutExposeAnnotation();
+                Gson gsonMatch = builder.create();
+                JsonParser parser = new JsonParser();
+                JsonElement element = parser.parse(response);
+                JsonObject object = element.getAsJsonObject().get("match").getAsJsonObject();
+
+
+                Match matchTmp = gsonMatch.fromJson(object, Match.class);
+                matchTmp.undoJsonShenanigans();
+                if (matchTmp.getState().equals(Match.COMPLETE)) {
+                    matchAlreadyCompletedWarningDialog(match, errorsLayout, dialog).show();
+                } else {
+                    sendMatchUpdateRequest(match, errorsLayout, dialog);
+                }
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+
+            }
+        }, ChallongeRequests.matchShow(match));
+    }
+
+    private AlertDialog matchAlreadyCompletedWarningDialog(Match match, LinearLayout errorsLayout, AlertDialog alertDialog) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        TextView warning = (TextView) inflate(getContext(), R.layout.warning_textview, null);
+        builder.setView(warning);
+        builder.setNegativeButton("Cancel", (dialog1, which) -> {
+        });
+        builder.setPositiveButton("Submit Anyway", (dialog, which) -> {
+            sendMatchUpdateRequest(match, errorsLayout, alertDialog);
+        });
+
+        return builder.create();
+    }
+
+    private void sendMatchUpdateRequest(Match match, LinearLayout errorsLayout, AlertDialog dialog) {
+
+        ChallongeRequests.sendRequest(new VolleyCallback() {
+            @Override
+            public void onSuccess(String response) {
+                fragment.newRefresh();
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onErrorResponse(ArrayList errorList) {
+                errorsLayout.removeAllViews();
+                for (int i = 0; i < errorList.size(); i++) {
+                    TextView error = (TextView) mInflater.inflate(R.layout.menu_spinner_item, null);
+                    error.setText(String.valueOf(errorList.get(i)));
+                    error.setSelected(true);
+                    error.setTextColor(Color.RED);
+                    errorsLayout.addView(error);
+                }
+            }
+        }, ChallongeRequests.matchUpdate(match));
     }
 
     private void setReopenDialog(AlertDialog dialog, Match match) {
@@ -677,27 +751,7 @@ public class RoundLayout extends LinearLayout {
         }, ChallongeRequests.matchReopen(match));
     }
 
-    private void sendMatchUpdateRequest(Match match, LinearLayout errorsLayout, AlertDialog dialog) {
-        dialog.dismiss();
-        ChallongeRequests.sendRequest(new VolleyCallback() {
-            @Override
-            public void onSuccess(String response) {
-                fragment.newRefresh();
-            }
 
-            @Override
-            public void onErrorResponse(ArrayList errorList) {
-                errorsLayout.removeAllViews();
-                for (int i = 0; i < errorList.size(); i++) {
-                    TextView error = (TextView) mInflater.inflate(R.layout.menu_spinner_item, null);
-                    error.setText(String.valueOf(errorList.get(i)));
-                    error.setSelected(true);
-                    error.setTextColor(Color.RED);
-                    errorsLayout.addView(error);
-                }
-            }
-        }, ChallongeRequests.matchUpdate(match));
-    }
 
     private AlertDialog.Builder buildReopenDialog(Match match) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

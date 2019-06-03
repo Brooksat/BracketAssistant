@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/menu_h2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Match has already been reported, doing so again may cause subsequent matches to be reset. Consider refreshing bracket."
+    android:textColor="@color/colorAccent">
+
+
+</TextView>
